@@ -50,28 +50,24 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <form method="post">
+                            <form method="post" action="{% url 'calendarapp:kaydet_rezervasyon_ajax' %}">
                                 {% csrf_token %}
                                 <div class="modal-body">
-                                    <div class="form-group">
-                                        <label for="recipient-name" class="col-form-label">Başlık:</label>
-                                        {{ form.baslik }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="message-text" class="col-form-label">Açıklama:</label>
-                                        {{ form.aciklama }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="message-text" class="col-form-label">Başlangıç Tarih Saat</label>
-                                        {{ form.baslangic_tarih_saat }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="message-text" class="col-form-label">Bitiş Tarih Saat:</label>
-                                        {{ form.bitis_tarih_saat }}
-                                    </div>
+                                    {% for field in form %}
+                                        <div class="form-group">
+                                            {% if field.name != 'pk' %}
+                                                <label for="message-text"
+                                                       class="col-form-label">{{ field.label_tag }}</label>
+                                            {% endif %}
+                                            {{ field }}
+                                        </div>
+                                    {% endfor %}
                                 </div>
                                 <div class="modal-footer">
-                                    <button id="modalClose2" type="button" class="btn btn-danger">Kapat</button>
+                                    <button id="modalClose2" type="button" class="btn btn-secondary">Kapat</button>
+                                    <button id="btnSil" onclick="RezervasyonSil()" type="button"
+                                            class="btn btn-danger">Temizle
+                                    </button>
                                     <button type="submit" class="btn btn-primary">Kaydet</button>
                                 </div>
                             </form>
@@ -94,16 +90,21 @@
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,list'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,list',
                 },
                 initialDate: today,
+                initalView: 'd',
                 navLinks: true, // can click day/week names to navigate views
                 selectable: true,
                 selectMirror: true,
                 select: function (arg) {
                     console.log('clicked')
-                    console.log(arg.end)
-                    console.log(arg.start)
+                    clearModalFields();
+                    //Burası düzeltilecek
+                    $("#id_baslangic_tarih_saat").val(new Date(arg.start.toUTCString()).toJSON().slice(0, 19));
+                    $("#id_bitis_tarih_saat").val(new Date(arg.end.toUTCString()).toJSON().slice(0, 19));
+                    console.log(arg.start.toUTCString())
+                    console.log(arg.end.toUTCString())
                     var modal = document.getElementById('eventModal')
                     modal.style.display = 'block'
                     calendar.unselect()
@@ -116,9 +117,11 @@
                 // bangladesh Holidays
                 // events: 'bn.bd#holiday@group.v.calendar.google.com',
                 eventClick: function (arg) {
-                    if (confirm('Bu Rezervasyon silinsin mi?')) {
-                        arg.event.remove()
-                    }
+                    // if (confirm('Bu Rezervasyon silinsin mi?')) {
+                    //     arg.event.remove()
+                    // }
+                    document.getElementById("btnSil").innerText = "Sil"
+                    openEditModal(arg.event);
                 },
                 eventDragStop: function (arg) {
                     console.log("sürükle başladı")
@@ -166,5 +169,56 @@
             const eventModal = document.getElementById('eventModal')
             eventModal.style.display = 'none';
         });
+
+        //function to open modal with event details
+        function openEditModal(event) {
+            document.getElementById('id_pk').value = event.id;
+            $.ajax({
+                url: '{% url 'calendarapp:getir_rezervasyon_bilgisi_by_id' %}',
+                type: 'GET',
+                data: {
+                    'id': event.id
+                },
+                success: function (data) {
+                    const eventModal = document.getElementById('eventModal')
+                    eventModal.style.display = 'block';
+                    for (let item in data) {
+                        if (data[item] != "null" || data[item] != "undefined" || data[item] != "") {
+                            let key = item == 'id' ? 'pk' : item
+                            let element = document.getElementById("id_" + key);
+                            if (element)
+                                element.value = data[item];
+                        }
+                    }
+                }
+            });
+        }
+
+        function RezervasyonSil() {
+            id = document.getElementById("id_pk").value;
+            if (id) {
+                if (confirm('Bu Rezervasyon silinsin mi?')) {
+                    $.ajax({
+                        url: '{% url 'calendarapp:sil_rezervasyon_by_id' %}',
+                        type: 'GET',
+                        data: {
+                            'id': id
+                        },
+                        success: function (data) {
+                            location.reload();
+                        }
+                    });
+                }
+            } else
+                clearModalFields();
+        }
+
+        //function clear modal fields
+        function clearModalFields() {
+            let elements = document.getElementsByClassName("form-control");
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].value = "";
+            }
+        }
     </script>
 {% endblock extrascripts %}

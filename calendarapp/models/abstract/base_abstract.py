@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class RezervasyonAbstract(models.Model):
+class BaseAbstract(models.Model):
     """ RezervasyonModel abstract model """
 
     is_active = models.BooleanField(default=True)

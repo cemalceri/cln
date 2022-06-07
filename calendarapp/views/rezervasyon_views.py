@@ -1,7 +1,7 @@
 # cal/views.py
-
+from django.forms import model_to_dict
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.views import generic
 from datetime import timedelta, datetime, date
 import calendar
@@ -22,7 +22,8 @@ class AllEventsListView(ListView):
     model = RezervasyonModel
 
     def get_queryset(self):
-        return RezervasyonModel.objects.getir_butun_rezervasyonlar(user=self.request.user)
+        events = RezervasyonModel.objects.getir_butun_rezervasyonlar(user=self.request.user)
+        return events
 
 
 class RunningEventsListView(ListView):
@@ -73,60 +74,38 @@ def next_month(d):
 #         return context
 
 
-@login_required(login_url="signup")
-def create_event(request):
-    form = RezervasyonForm(request.POST or None)
-    if request.POST and form.is_valid():
-        title = form.cleaned_data["title"]
-        description = form.cleaned_data["description"]
-        start_time = form.cleaned_data["start_time"]
-        end_time = form.cleaned_data["end_time"]
-        RezervasyonModel.objects.get_or_create(
-            user=request.user,
-            title=title,
-            description=description,
-            start_time=start_time,
-            end_time=end_time,
-        )
-        return HttpResponseRedirect(reverse("calendarapp:ta"))
-    return render(request, "event.html", {"form": form})
+# @login_required(login_url="signup")
+# def create_event(request):
+#     form = RezervasyonForm(request.POST or None)
+#     if request.POST and form.is_valid():
+#         item = form.save(commit=False)
+#         item.user = request.user
+#         return HttpResponseRedirect(reverse("calendarapp:ta"))
+#     print(form.errors)
+#     return render(request, "event.html", {"form": form})
 
 
 class EventEdit(generic.UpdateView):
     model = RezervasyonModel
-    fields = ["title", "description", "start_time", "end_time"]
+    fields = ["Id", "title", "description", "start_time", "end_time"]
     template_name = "event.html"
 
 
 @login_required(login_url="signup")
-def event_details(request, event_id):
-    event = RezervasyonModel.objects.get(id=event_id)
-    eventmember = RezervasyonMember.objects.filter(event=event)
-    context = {"event": event, "eventmember": eventmember}
-    return render(request, "event-details.html", context)
+def getir_rezervasyon_bilgisi_ajax(request):
+    id = request.GET.get("id")
+    event = RezervasyonModel.objects.get(id=id)
+    event_dict = model_to_dict(event)
+    return JsonResponse(event_dict)
 
 
-# def add_eventmember(request, event_id):
-#     forms = AddMemberForm()
-#     if request.method == "POST":
-#         forms = AddMemberForm(request.POST)
-#         if forms.is_valid():
-#             member = RezervasyonMember.objects.filter(event=event_id)
-#             event = RezervasyonModel.objects.get(id=event_id)
-#             if member.count() <= 9:
-#                 user = forms.cleaned_data["user"]
-#                 RezervasyonMember.objects.create(event=event, user=user)
-#                 return redirect("calendarapp:calendar")
-#             else:
-#                 print("--------------User limit exceed!-----------------")
-#     context = {"form": forms}
-#     return render(request, "add_member.html", context)
-
-
-# class EventMemberDeleteView(generic.DeleteView):
-#     model = RezervasyonMember
-#     template_name = "event_delete.html"
-#     success_url = reverse_lazy("calendarapp:calendar")
+@login_required(login_url="signup")
+def sil_rezervasyon_ajax(request):
+    id = request.GET.get("id")
+    rezv = RezervasyonModel.objects.filter(pk=id).first()
+    if rezv:
+        rezv.delete()
+    return JsonResponse({"data": "success"})
 
 
 class TakvimView(LoginRequiredMixin, generic.View):
@@ -143,6 +122,7 @@ class TakvimView(LoginRequiredMixin, generic.View):
         for event in events:
             event_list.append(
                 {
+                    "id": event.id,
                     "title": event.baslik,
                     "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                     "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -155,9 +135,55 @@ class TakvimView(LoginRequiredMixin, generic.View):
     def post(self, request, *args, **kwargs):
         forms = self.form_class(request.POST)
         if forms.is_valid():
-            form = forms.save(commit=False)
+            if forms.cleaned_data["pk"] > 0:
+                form = RezervasyonForm(data=request.POST,
+                                       instance=RezervasyonModel.objects.get(id=forms.cleaned_data["pk"]))
+                form.save()
+                return redirect("calendarapp:takvim-getir")
+            form = forms.create_(commit=False)
             form.user = request.user
             form.save()
             return redirect("calendarapp:takvim-getir")
         context = {"form": forms}
         return render(request, self.template_name, context)
+
+
+@login_required
+def takvim_getir(request):
+    form = RezervasyonForm()
+    events = RezervasyonModel.objects.getir_butun_rezervasyonlar()
+    events_month = RezervasyonModel.objects.getir_devam_eden_rezervasyonlar()
+    event_list = []
+    # start: '2020-09-16T16:00:00'
+    for event in events:
+        event_list.append(
+            {
+                "id": event.id,
+                "title": event.baslik,
+                "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
+                "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
+            }
+        )
+    context = {"form": form, "events": event_list,
+               "aktif_rezervasyonlar": events_month}
+    return render(request, 'calendarapp/takvim.html', context)
+
+
+@login_required
+def kaydet_rezervasyon_ajax(request):
+    form = RezervasyonForm(request.POST)
+    if form.is_valid():
+        print(form.cleaned_data["pk"])
+        if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
+            form = RezervasyonForm(data=request.POST,
+                                   instance=RezervasyonModel.objects.get(id=form.cleaned_data["pk"]))
+            form.save()
+            return redirect("calendarapp:takvim-getir")
+        item = form.save(commit=False)
+        item.user = request.user
+        item.save()
+        return redirect("calendarapp:takvim-getir")
+    else:
+        print(form.errors)
+    context = {"form": form}
+    return render(request, 'calendarapp/takvim.html', context)

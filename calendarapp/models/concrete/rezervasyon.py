@@ -2,19 +2,21 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 from accounts.models import User
-from calendarapp.models.abstract.rezervasyon_abstract import RezervasyonAbstract
+from calendarapp.models.abstract.base_abstract import BaseAbstract
 
 
 class RezervasyonManager(models.Manager):
     """ RezervasyonModel manager """
 
-    def getir_butun_rezervasyonlar(self, user):
-        events = RezervasyonModel.objects.filter(user=user, is_active=True, is_deleted=False)
+    def getir_butun_rezervasyonlar(self, user=None):
+        events = RezervasyonModel.objects.filter(
+            # user=user,
+            is_active=True, is_deleted=False)
         return events
 
-    def getir_devam_eden_rezervasyonlar(self, user):
+    def getir_devam_eden_rezervasyonlar(self, user=None):
         running_events = RezervasyonModel.objects.filter(
-            user=user,
+            # user=user,
             is_active=True,
             is_deleted=False,
             bitis_tarih_saat__gte=datetime.now().date(),
@@ -22,11 +24,11 @@ class RezervasyonManager(models.Manager):
         return running_events
 
 
-class RezervasyonModel(RezervasyonAbstract):
+class RezervasyonModel(BaseAbstract):
     """ RezervasyonModel model """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="events")
-    baslik = models.CharField(max_length=200, unique=True)
+    baslik = models.CharField(max_length=200)
     aciklama = models.TextField()
     baslangic_tarih_saat = models.DateTimeField()
     bitis_tarih_saat = models.DateTimeField()

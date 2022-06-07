@@ -5,6 +5,8 @@ from calendarapp.models.member.rezervasyon_member import RezervasyonMember
 
 
 class RezervasyonForm(ModelForm):
+    pk = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+
     class Meta:
         model = RezervasyonModel
         fields = ["baslik", "aciklama", "baslangic_tarih_saat", "bitis_tarih_saat"]
@@ -13,7 +15,7 @@ class RezervasyonForm(ModelForm):
             "baslik": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter event title"}
             ),
-            "aciklama": forms.Textarea(
+            "aciklama": forms.TextInput(
                 attrs={
                     "class": "form-control",
                     "placeholder": "Enter event description",
@@ -35,7 +37,6 @@ class RezervasyonForm(ModelForm):
         # input_formats to parse HTML5 datetime-local input to datetime field
         self.fields["baslangic_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)
         self.fields["bitis_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)
-
 
 # class AddMemberForm(forms.ModelForm):
 #     class Meta:
