@@ -25,10 +25,14 @@
                     <div id="external-events">
                         <h4 class="mb-4">Aktif Rezervasyonlar</h4>
                         {% for rezervasyon in aktif_rezervasyonlar %}
-                            <div class="fc-event">
+                            <div id="rzvListItem" value="{{ rezervasyon.id }}" class="fc-event"
+                                 style="background-color: {{ rezervasyon.renk }}">
                                 <h3>{{ rezervasyon.baslik }}</h3>
-                                <p>Baslangıç: {{ rezervasyon.baslangic_tarih_saat }}</p>
-                                <p>Bitiş: {{ rezervasyon.bitis_tarih_saat }}</p>
+                                <ul class="list-group">
+                                    <li>Saat: {{ rezervasyon.baslangic_tarih_saat | date:"H:i" }}
+                                        - {{ rezervasyon.bitis_tarih_saat | date:"H:i" }}</li>
+                                    <li>Açıklama: {{ rezervasyon.aciklama }}</li>
+                                </ul>
                             </div>
                         {% empty %}
                             <p>Aktif Rezervasyon Bulunamadı</p>
@@ -82,10 +86,10 @@
 {% block extrascripts %}
     <script src="{% static 'calender/main.js' %}"></script>
     <script>
+        let _selectedEvent;
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
             var today = new Date();
-
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 headerToolbar: {
                     left: 'prev,next today',
@@ -98,15 +102,12 @@
                 selectable: true,
                 selectMirror: true,
                 select: function (arg) {
-                    console.log('clicked')
                     clearModalFields();
-                    //Burası düzeltilecek
-                    $("#id_baslangic_tarih_saat").val(new Date(arg.start.toUTCString()).toJSON().slice(0, 19));
-                    $("#id_bitis_tarih_saat").val(new Date(arg.end.toUTCString()).toJSON().slice(0, 19));
-                    console.log(arg.start.toUTCString())
-                    console.log(arg.end.toUTCString())
-                    var modal = document.getElementById('eventModal')
-                    modal.style.display = 'block'
+                    baslangic_saat = arg.startStr.split('+')[0];
+                    bitis_saat = arg.endStr.split('+')[0];
+                    $("#id_baslangic_tarih_saat").val(baslangic_saat);
+                    $("#id_bitis_tarih_saat").val(bitis_saat);
+                    openModal();
                     calendar.unselect()
                 },
                 // THIS KEY WON'T WORK IN PRODUCTION!!!
@@ -124,10 +125,10 @@
                     openEditModal(arg.event);
                 },
                 eventDragStop: function (arg) {
-                    console.log("sürükle başladı")
+                    console.log("sürükle bitti");
                 },
                 eventDragStart: function (arg) {
-                    console.log("sürükle bitti")
+                    console.log("sürükle basladı")
                 },
                 eventAdd: function (arg) {
                     console.log("eklendi")
@@ -135,44 +136,22 @@
                 editable: true,
                 dayMaxEvents: true, // allow "more" link when too many events
                 events: {{ events|safe }},
-                // events: [
-                //   {
-                //     title: 'All Day Event',
-                //     start: '2021-06-26'
-                //   },
-                //   {
-                //     groupId: 999,
-                //     title: 'Repeating Event',
-                //     start: '2020-09-16T16:00:00'
-                //   },
-                //   {
-                //     title: 'Conference',
-                //     start: '2020-09-11',
-                //     end: '2020-09-13'
-                //   },
-                //   {
-                //     title: 'Click for Google',
-                //     url: 'http://google.com/',
-                //     start: '2020-09-28'
-                //   }
-                // ]
+                eventDidMount: function (arg) {
+                    console.log(arg.event.backgroundColor)
+                    arg.el.style.backgroundColor = arg.event.backgroundColor
+                },
+
             });
             calendar.render();
         });
         const closeBtn1 = document.getElementById('modalClose1');
         const closeBtn2 = document.getElementById('modalClose2');
-        closeBtn1.addEventListener('click', () => {
-            const eventModal = document.getElementById('eventModal')
-            eventModal.style.display = 'none';
-        });
-        closeBtn2.addEventListener('click', () => {
-            const eventModal = document.getElementById('eventModal')
-            eventModal.style.display = 'none';
-        });
+        closeBtn1.addEventListener('click', () => closeModal());
+        closeBtn2.addEventListener('click', () => closeModal());
 
         //function to open modal with event details
         function openEditModal(event) {
-            document.getElementById('id_pk').value = event.id;
+            _selectedEvent = event;
             $.ajax({
                 url: '{% url 'calendarapp:getir_rezervasyon_bilgisi_by_id' %}',
                 type: 'GET',
@@ -195,17 +174,19 @@
         }
 
         function RezervasyonSil() {
-            id = document.getElementById("id_pk").value;
-            if (id) {
+            if (_selectedEvent) {
                 if (confirm('Bu Rezervasyon silinsin mi?')) {
                     $.ajax({
                         url: '{% url 'calendarapp:sil_rezervasyon_by_id' %}',
                         type: 'GET',
                         data: {
-                            'id': id
+                            'id': _selectedEvent.id
                         },
-                        success: function (data) {
-                            location.reload();
+                        success: function (result) {
+                            console.log(result.message)
+                            _selectedEvent.remove();
+                            closeModal();
+                            popupMesajGoster(result.message);
                         }
                     });
                 }
@@ -219,6 +200,20 @@
             for (let i = 0; i < elements.length; i++) {
                 elements[i].value = "";
             }
+        }
+
+        // function modal close
+        function closeModal() {
+            _selectedEvent = null;
+            const eventModal = document.getElementById('eventModal')
+            eventModal.style.display = 'none';
+        }
+
+        function openModal() {
+            _selectedEvent = null;
+            document.getElementById("btnSil").innerText = "Temizle";
+            const eventModal = document.getElementById('eventModal')
+            eventModal.style.display = 'block';
         }
     </script>
 {% endblock extrascripts %}

@@ -1,0 +1,26 @@
+<script>
+    function popupMesajGoster(mesaj, durum="success") {
+        debugger;
+        if (durum == "success") {
+            toastr.success(mesaj);
+        } else {
+            toastr.error(mesaj);
+        }
+    }
+</script>
+
+{% block message %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <script>
+                    popupMesajGoster("{{ message.message }}", "success");
+                </script>
+            {% elif message.tags == 'danger' %}
+                <script>
+                    popupMesajGoster("{{ message.message }}", "danger");
+                </script>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}

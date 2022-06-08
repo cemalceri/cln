@@ -6,13 +6,10 @@ from django.views import generic
 from datetime import timedelta, datetime, date
 import calendar
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
-
-from calendarapp.models.member.rezervasyon_member import RezervasyonMember
 from calendarapp.forms.rezervasyon_forms import RezervasyonForm
 from django.views.generic import ListView
 from calendarapp.models.concrete.rezervasyon import RezervasyonModel
+from django.contrib import messages
 
 
 class AllEventsListView(ListView):
@@ -105,47 +102,7 @@ def sil_rezervasyon_ajax(request):
     rezv = RezervasyonModel.objects.filter(pk=id).first()
     if rezv:
         rezv.delete()
-    return JsonResponse({"data": "success"})
-
-
-class TakvimView(LoginRequiredMixin, generic.View):
-    login_url = "accounts:signin"
-    template_name = "calendarapp/takvim.html"
-    form_class = RezervasyonForm
-
-    def get(self, request, *args, **kwargs):
-        forms = self.form_class()
-        events = RezervasyonModel.objects.getir_butun_rezervasyonlar(user=request.user)
-        events_month = RezervasyonModel.objects.getir_devam_eden_rezervasyonlar(user=request.user)
-        event_list = []
-        # start: '2020-09-16T16:00:00'
-        for event in events:
-            event_list.append(
-                {
-                    "id": event.id,
-                    "title": event.baslik,
-                    "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                }
-            )
-        context = {"form": forms, "events": event_list,
-                   "aktif_rezervasyonlar": events_month}
-        return render(request, self.template_name, context)
-
-    def post(self, request, *args, **kwargs):
-        forms = self.form_class(request.POST)
-        if forms.is_valid():
-            if forms.cleaned_data["pk"] > 0:
-                form = RezervasyonForm(data=request.POST,
-                                       instance=RezervasyonModel.objects.get(id=forms.cleaned_data["pk"]))
-                form.save()
-                return redirect("calendarapp:takvim-getir")
-            form = forms.create_(commit=False)
-            form.user = request.user
-            form.save()
-            return redirect("calendarapp:takvim-getir")
-        context = {"form": forms}
-        return render(request, self.template_name, context)
+    return JsonResponse({"status": "success", "message": "Rezervasyon silindi."})
 
 
 @login_required
@@ -162,6 +119,8 @@ def takvim_getir(request):
                 "title": event.baslik,
                 "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                 "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
+                "backgroundColor": event.renk,
+                # "eventColor": event.renk,
             }
         )
     context = {"form": form, "events": event_list,
@@ -173,17 +132,19 @@ def takvim_getir(request):
 def kaydet_rezervasyon_ajax(request):
     form = RezervasyonForm(request.POST)
     if form.is_valid():
-        print(form.cleaned_data["pk"])
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
             form = RezervasyonForm(data=request.POST,
                                    instance=RezervasyonModel.objects.get(id=form.cleaned_data["pk"]))
             form.save()
-            return redirect("calendarapp:takvim-getir")
-        item = form.save(commit=False)
-        item.user = request.user
-        item.save()
+        else:
+            item = form.save(commit=False)
+            item.user = request.user
+            item.save()
+        messages.success(request, "İşlem başarılı.")
         return redirect("calendarapp:takvim-getir")
     else:
+        for message in form.error_messages:
+            messages.error(request, f"{message}: {form.error_messages[message]}")
         print(form.errors)
     context = {"form": form}
     return render(request, 'calendarapp/takvim.html', context)
