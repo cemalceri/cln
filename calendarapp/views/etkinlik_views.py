@@ -1,36 +1,36 @@
 # cal/views.py
 from django.forms import model_to_dict
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.views import generic
 from datetime import timedelta, datetime, date
 import calendar
 from django.contrib.auth.decorators import login_required
-from calendarapp.forms.rezervasyon_forms import RezervasyonForm
+from calendarapp.forms.etkinlik_forms import EtkinlikForm
 from django.views.generic import ListView
-from calendarapp.models.concrete.rezervasyon import RezervasyonModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from django.contrib import messages
 
 
 class AllEventsListView(ListView):
     """ All event list views """
 
-    template_name = "calendarapp/rezervasyon_listesi.html"
-    model = RezervasyonModel
+    template_name = "calendarapp/etkinlik_listesi.html"
+    model = EtkinlikModel
 
     def get_queryset(self):
-        events = RezervasyonModel.objects.getir_butun_rezervasyonlar(user=self.request.user)
+        events = EtkinlikModel.objects.getir_butun_etkinlikler(user=self.request.user)
         return events
 
 
 class RunningEventsListView(ListView):
     """ Running events list view """
 
-    template_name = "calendarapp/rezervasyon_listesi.html"
-    model = RezervasyonModel
+    template_name = "calendarapp/etkinlik_listesi.html"
+    model = EtkinlikModel
 
     def get_queryset(self):
-        return RezervasyonModel.objects.getir_devam_eden_rezervasyonlar(user=self.request.user)
+        return EtkinlikModel.objects.getir_devam_eden_etkinlikler(user=self.request.user)
 
 
 def get_date(req_day):
@@ -83,33 +83,33 @@ def next_month(d):
 
 
 class EventEdit(generic.UpdateView):
-    model = RezervasyonModel
+    model = EtkinlikModel
     fields = ["Id", "title", "description", "start_time", "end_time"]
     template_name = "event.html"
 
 
 @login_required(login_url="signup")
-def getir_rezervasyon_bilgisi_ajax(request):
+def getir_etkinlik_bilgisi_ajax(request):
     id = request.GET.get("id")
-    event = RezervasyonModel.objects.get(id=id)
+    event = EtkinlikModel.objects.get(id=id)
     event_dict = model_to_dict(event)
     return JsonResponse(event_dict)
 
 
 @login_required(login_url="signup")
-def sil_rezervasyon_ajax(request):
+def sil_etkinlik_ajax(request):
     id = request.GET.get("id")
-    rezv = RezervasyonModel.objects.filter(pk=id).first()
+    rezv = EtkinlikModel.objects.filter(pk=id).first()
     if rezv:
         rezv.delete()
-    return JsonResponse({"status": "success", "message": "Rezervasyon silindi."})
+    return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
 
 
 @login_required
 def takvim_getir(request):
-    form = RezervasyonForm()
-    events = RezervasyonModel.objects.getir_butun_rezervasyonlar()
-    events_month = RezervasyonModel.objects.getir_devam_eden_rezervasyonlar()
+    form = EtkinlikForm()
+    events = EtkinlikModel.objects.getir_butun_etkinlikler()
+    events_month = EtkinlikModel.objects.getir_devam_eden_etkinlikler()
     event_list = []
     # start: '2020-09-16T16:00:00'
     for event in events:
@@ -124,17 +124,17 @@ def takvim_getir(request):
             }
         )
     context = {"form": form, "events": event_list,
-               "aktif_rezervasyonlar": events_month}
+               "aktif_etkinlikler": events_month}
     return render(request, 'calendarapp/takvim.html', context)
 
 
 @login_required
-def kaydet_rezervasyon_ajax(request):
-    form = RezervasyonForm(request.POST)
+def kaydet_etkinlik_ajax(request):
+    form = EtkinlikForm(request.POST)
     if form.is_valid():
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
-            form = RezervasyonForm(data=request.POST,
-                                   instance=RezervasyonModel.objects.get(id=form.cleaned_data["pk"]))
+            form = EtkinlikForm(data=request.POST,
+                                instance=EtkinlikModel.objects.get(id=form.cleaned_data["pk"]))
             form.save()
         else:
             item = form.save(commit=False)
@@ -145,6 +145,5 @@ def kaydet_rezervasyon_ajax(request):
     else:
         for message in form.error_messages:
             messages.error(request, f"{message}: {form.error_messages[message]}")
-        print(form.errors)
     context = {"form": form}
     return render(request, 'calendarapp/takvim.html', context)

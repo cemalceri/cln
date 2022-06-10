@@ -14,17 +14,21 @@ class MusteriManager(models.Manager):
 
 
 class MusteriModel(BaseAbstract):
-    """ RezervasyonModel model """
+    """ EtkinlikModel model """
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="events", null=True, blank=True,
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="ekleyen", null=True, blank=True,
                              verbose_name="Ekleyen")
     baslik = models.CharField(max_length=200, verbose_name="Başlık")
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
 
-
     objects = MusteriManager()
+
+    class Meta:
+        verbose_name = "Müşteri"
+        verbose_name_plural = "Müşteriler"
+        ordering = ["-id"]
 
     def __str__(self):
         return self.baslik

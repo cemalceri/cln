@@ -1,14 +1,13 @@
 from django.forms import ModelForm, DateInput
 from django import forms
-from calendarapp.models.concrete.rezervasyon import RezervasyonModel
-from calendarapp.models.member.rezervasyon_member import RezervasyonMember
+from calendarapp.models.concrete.etkinlik import EtkinlikModel
 
 
-class RezervasyonForm(ModelForm):
+class EtkinlikForm(ModelForm):
     pk = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
-        model = RezervasyonModel
+        model = EtkinlikModel
         fields = '__all__'
         exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
         # datetime-local is a HTML5 input type
@@ -24,7 +23,7 @@ class RezervasyonForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(RezervasyonForm, self).__init__(*args, **kwargs)
+        super(EtkinlikForm, self).__init__(*args, **kwargs)
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control'
@@ -34,5 +33,5 @@ class RezervasyonForm(ModelForm):
 
 # class AddMemberForm(forms.ModelForm):
 #     class Meta:
-#         model = RezervasyonMember
+#         model = EtkinlikMember
 #         fields = ["user"]

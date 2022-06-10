@@ -6,17 +6,17 @@ from calendarapp.models.Enums import RenkEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 
 
-class RezervasyonManager(models.Manager):
-    """ RezervasyonModel manager """
+class EtkinlikManager(models.Manager):
+    """ EtkinliknModel manager """
 
-    def getir_butun_rezervasyonlar(self, user=None):
-        events = RezervasyonModel.objects.filter(
+    def getir_butun_etkinlikler(self, user=None):
+        events = EtkinlikModel.objects.filter(
             # user=user,
             is_active=True, is_deleted=False)
         return events
 
-    def getir_devam_eden_rezervasyonlar(self, user=None):
-        running_events = RezervasyonModel.objects.filter(
+    def getir_devam_eden_etkinlikler(self, user=None):
+        running_events = EtkinlikModel.objects.filter(
             # user=user,
             is_active=True,
             is_deleted=False,
@@ -26,8 +26,8 @@ class RezervasyonManager(models.Manager):
         return running_events
 
 
-class RezervasyonModel(BaseAbstract):
-    """ RezervasyonModel model """
+class EtkinlikModel(BaseAbstract):
+    """ EtkinlikModel model """
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="events", null=True, blank=True,
                              verbose_name="Ekleyen")
@@ -39,7 +39,12 @@ class RezervasyonModel(BaseAbstract):
                             verbose_name="Renk")
     tekrar = models.IntegerField(blank=True, null=True, verbose_name="Tekrar Sayısı")
 
-    objects = RezervasyonManager()
+    objects = EtkinlikManager()
+
+    class Meta:
+        verbose_name = "Etkinlik"
+        verbose_name_plural = "Etkinlikler"
+        ordering = ["-id"]
 
     def __str__(self):
         return self.baslik

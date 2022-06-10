@@ -1,7 +1,7 @@
 # calendarapp/utils.py
 from calendar import HTMLCalendar
 
-from calendarapp.models.concrete.rezervasyon import RezervasyonModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel
 
 
 class Calendar(HTMLCalendar):
@@ -31,7 +31,7 @@ class Calendar(HTMLCalendar):
     # formats a month as a table
     # filter events by year and month
     def formatmonth(self, withyear=True):
-        events = RezervasyonModel.objects.filter(
+        events = EtkinlikModel.objects.filter(
             start_time__year=self.year, start_time__month=self.month
         )
         cal = (

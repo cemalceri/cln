@@ -2,7 +2,7 @@ from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 
-from calendarapp.models.concrete.rezervasyon import RezervasyonModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -10,9 +10,9 @@ class DashboardView(LoginRequiredMixin, View):
     template_name = "calendarapp/dashboard.html"
 
     def get(self, request, *args, **kwargs):
-        events = RezervasyonModel.objects.getir_butun_rezervasyonlar()
-        running_events = RezervasyonModel.objects.getir_devam_eden_rezervasyonlar()
-        latest_events = RezervasyonModel.objects.all().order_by("-id")[:10]
+        events = EtkinlikModel.objects.getir_butun_etkinlikler()
+        running_events = EtkinlikModel.objects.getir_devam_eden_etkinlikler()
+        latest_events = EtkinlikModel.objects.all().order_by("-id")[:10]
         context = {
             "total_event": events.count(),
             "running_events": running_events,

@@ -23,19 +23,19 @@
             <div class="tile row">
                 <div class="col-md-2">
                     <div id="external-events">
-                        <h4 class="mb-4">Aktif Rezervasyonlar</h4>
-                        {% for rezervasyon in aktif_rezervasyonlar %}
-                            <div id="rzvListItem" value="{{ rezervasyon.id }}" class="fc-event"
-                                 style="background-color: {{ rezervasyon.renk }}">
-                                <h3>{{ rezervasyon.baslik }}</h3>
+                        <h4 class="mb-4">Aktif Etkinlikler</h4>
+                        {% for etkinlik in aktif_etkinliler %}
+                            <div id="rzvListItem" value="{{ etkinlik.id }}" class="fc-event"
+                                 style="background-color: {{ etkinlik.renk }}">
+                                <h3>{{ etkinlik.baslik }}</h3>
                                 <ul class="list-group">
-                                    <li>Saat: {{ rezervasyon.baslangic_tarih_saat | date:"H:i" }}
-                                        - {{ rezervasyon.bitis_tarih_saat | date:"H:i" }}</li>
-                                    <li>Açıklama: {{ rezervasyon.aciklama }}</li>
+                                    <li>Saat: {{ etkinlik.baslangic_tarih_saat | date:"H:i" }}
+                                        - {{ etkinlik.bitis_tarih_saat | date:"H:i" }}</li>
+                                    <li>Açıklama: {{ etkinlik.aciklama }}</li>
                                 </ul>
                             </div>
                         {% empty %}
-                            <p>Aktif Rezervasyon Bulunamadı</p>
+                            <p>Aktif Etkinlik Bulunamadı</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -48,13 +48,13 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-primary">
-                                <h5 class="modal-title text-white" id="exampleModalLongTitle">Rezervasyon Ekle</h5>
+                                <h5 class="modal-title text-white" id="exampleModalLongTitle">Etkinlik Ekle</h5>
                                 <button id="modalClose1" type="button" class="close" data-dismiss="modal"
                                         aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <form method="post" action="{% url 'calendarapp:kaydet_rezervasyon_ajax' %}">
+                            <form method="post" action="{% url 'calendarapp:kaydet_etkinlik_ajax' %}">
                                 {% csrf_token %}
                                 <div class="modal-body">
                                     {% for field in form %}
@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button id="modalClose2" type="button" class="btn btn-secondary">Kapat</button>
-                                    <button id="btnSil" onclick="RezervasyonSil()" type="button"
+                                    <button id="btnSil" onclick="EtkinlikSil()" type="button"
                                             class="btn btn-danger">Temizle
                                     </button>
                                     <button type="submit" class="btn btn-primary">Kaydet</button>
@@ -118,7 +118,7 @@
                 // bangladesh Holidays
                 // events: 'bn.bd#holiday@group.v.calendar.google.com',
                 eventClick: function (arg) {
-                    // if (confirm('Bu Rezervasyon silinsin mi?')) {
+                    // if (confirm('Bu Etkinlik silinsin mi?')) {
                     //     arg.event.remove()
                     // }
                     document.getElementById("btnSil").innerText = "Sil"
@@ -153,7 +153,7 @@
         function openEditModal(event) {
             _selectedEvent = event;
             $.ajax({
-                url: '{% url 'calendarapp:getir_rezervasyon_bilgisi_by_id' %}',
+                url: '{% url 'calendarapp:getir_etkinlik_by_id' %}',
                 type: 'GET',
                 data: {
                     'id': event.id
@@ -173,11 +173,11 @@
             });
         }
 
-        function RezervasyonSil() {
+        function EtkinlikSil() {
             if (_selectedEvent) {
-                if (confirm('Bu Rezervasyon silinsin mi?')) {
+                if (confirm('Bu Etkinlik silinsin mi?')) {
                     $.ajax({
-                        url: '{% url 'calendarapp:sil_rezervasyon_by_id' %}',
+                        url: '{% url 'calendarapp:sil_etkinlik_by_id' %}',
                         type: 'GET',
                         data: {
                             'id': _selectedEvent.id
