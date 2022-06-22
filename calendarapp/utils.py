@@ -44,3 +44,17 @@ class Calendar(HTMLCalendar):
         for week in self.monthdays2calendar(self.year, self.month):
             cal += f"{self.formatweek(week, events)}\n"
         return cal
+
+
+def get_verbose_name(model, field):
+    return model._meta.get_field(field).verbose_name
+
+def formErrorsToText(Errors, instance):
+    errorText = ""
+    for field in Errors.get_json_data():
+        if Errors.get_json_data()[field][0]["code"] == "required":
+            errorText += get_verbose_name(instance, field) + ": Bu alan boş bırakılamaz.<br>"
+        else:
+            errorText += get_verbose_name(instance, field) + ": " + Errors.get_json_data()[field][0][
+                "message"] + "<br>"
+    return errorText

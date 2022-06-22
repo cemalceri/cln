@@ -9,16 +9,16 @@ class EtkinlikForm(ModelForm):
     class Meta:
         model = EtkinlikModel
         fields = '__all__'
-        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
+        exclude = ['ilk_etkinlik_id', 'created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
         # datetime-local is a HTML5 input type
         widgets = {
             "baslangic_tarih_saat": DateInput(
                 attrs={"type": "datetime-local", "class": "form-control"},
-                format="%Y-%m-%dT%H:%M",
+                format="%d-%m-%YT%H:%M",
             ),
             "bitis_tarih_saat": DateInput(
                 attrs={"type": "datetime-local", "class": "form-control"},
-                format="%Y-%m-%dT%H:%M",
+                format="%d-%m-%YT%H:%M",
             ),
         }
 
@@ -26,7 +26,7 @@ class EtkinlikForm(ModelForm):
         super(EtkinlikForm, self).__init__(*args, **kwargs)
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({
-                'class': 'form-control'
+                'class': 'form-control',
             })
         # self.fields["baslangic_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)
         # self.fields["bitis_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)

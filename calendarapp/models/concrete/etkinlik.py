@@ -4,6 +4,7 @@ from django.urls import reverse
 from accounts.models import User
 from calendarapp.models.Enums import RenkEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
+from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel
 
 
 class EtkinlikManager(models.Manager):
@@ -27,17 +28,18 @@ class EtkinlikManager(models.Manager):
 
 
 class EtkinlikModel(BaseAbstract):
-    """ EtkinlikModel model """
-
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="events", null=True, blank=True,
-                             verbose_name="Ekleyen")
     baslik = models.CharField(max_length=200, verbose_name="Başlık")
-    aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
+    grup = models.ForeignKey(UyeGrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
+                             null=True, related_name="grup")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
-    renk = models.CharField(max_length=20, choices=RenkEnum.choices(), null=False, blank=False, default="gray",
+    renk = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray",
                             verbose_name="Renk")
+    aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     tekrar = models.IntegerField(blank=True, null=True, verbose_name="Tekrar Sayısı")
+    ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="events", null=True, blank=True,
+                             verbose_name="Ekleyen")
 
     objects = EtkinlikManager()
 

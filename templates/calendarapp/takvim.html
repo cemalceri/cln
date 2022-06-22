@@ -54,7 +54,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <form method="post" action="{% url 'calendarapp:kaydet_etkinlik_ajax' %}">
+                            <form method="post" action="#" role="form" id="etkinlikForm">
                                 {% csrf_token %}
                                 <div class="modal-body">
                                     {% for field in form %}
@@ -72,7 +72,10 @@
                                     <button id="btnSil" onclick="EtkinlikSil()" type="button"
                                             class="btn btn-danger">Temizle
                                     </button>
-                                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                                    <button id="btnSeriyiSil" hidden onclick="EtkinlikSerisiSil()" type="button"
+                                            class="btn btn-outline-danger">Seriyi Sil
+                                    </button>
+                                    <button type="button" id="kaydetBtn" class="btn btn-primary">Kaydet</button>
                                 </div>
                             </form>
                         </div>
@@ -118,10 +121,9 @@
                 // bangladesh Holidays
                 // events: 'bn.bd#holiday@group.v.calendar.google.com',
                 eventClick: function (arg) {
-                    // if (confirm('Bu Etkinlik silinsin mi?')) {
-                    //     arg.event.remove()
-                    // }
+                    // Etkinlik güncelle
                     document.getElementById("btnSil").innerText = "Sil"
+                    document.getElementById("btnSeriyiSil").hidden = false;
                     openEditModal(arg.event);
                 },
                 eventDragStop: function (arg) {
@@ -137,7 +139,7 @@
                 dayMaxEvents: true, // allow "more" link when too many events
                 events: {{ events|safe }},
                 eventDidMount: function (arg) {
-                    console.log(arg.event.backgroundColor)
+                    // Takvim üzerindeki etkinlik renklerinin gösterilmesi için
                     arg.el.style.backgroundColor = arg.event.backgroundColor
                 },
 
@@ -149,9 +151,33 @@
         closeBtn1.addEventListener('click', () => closeModal());
         closeBtn2.addEventListener('click', () => closeModal());
 
-        //function to open modal with event details
+        $('#kaydetBtn').click(function () {
+            let form = $('#etkinlikForm');
+            let data = form.serialize();
+            debugger;
+            $.ajax({
+                url: "{% url 'calendarapp:kaydet_etkinlik_ajax' %}",
+                data: data,
+                type: "post",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.durum == "ok") {
+                        $('#etkinlikForm').modal('hide');
+                        clearModalFields();
+                        popupMesajGoster(data.mesaj, 'success');
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        popupMesajGoster(data.mesaj, "error");
+                    }
+                }
+            });
+        });
+
         function openEditModal(event) {
             _selectedEvent = event;
+
             $.ajax({
                 url: '{% url 'calendarapp:getir_etkinlik_by_id' %}',
                 type: 'GET',
@@ -175,7 +201,7 @@
 
         function EtkinlikSil() {
             if (_selectedEvent) {
-                if (confirm('Bu Etkinlik silinsin mi?')) {
+                if (confirm('Bu etkinlik silinsin mi?')) {
                     $.ajax({
                         url: '{% url 'calendarapp:sil_etkinlik_by_id' %}',
                         type: 'GET',
@@ -193,6 +219,32 @@
             } else
                 clearModalFields();
         }
+
+        function EtkinlikSerisiSil() {
+            if (_selectedEvent) {
+                debugger;
+                if (confirm('Bu etkinlik serisi silinsin mi?')) {
+                    $.ajax({
+                        url: '{% url 'calendarapp:sil_etkinlik_serisi_by_id' %}',
+                        type: 'GET',
+                        data: {
+                            'id': _selectedEvent.id
+                        },
+                        success: function (result) {
+                            console.log(result.message)
+                            _selectedEvent.remove();
+                            closeModal();
+                            popupMesajGoster(result.message);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    });
+                }
+            } else
+                clearModalFields();
+        }
+
 
         //function clear modal fields
         function clearModalFields() {
@@ -212,6 +264,7 @@
         function openModal() {
             _selectedEvent = null;
             document.getElementById("btnSil").innerText = "Temizle";
+            document.getElementById("btnSeriyiSil").hidden = true;
             const eventModal = document.getElementById('eventModal')
             eventModal.style.display = 'block';
         }

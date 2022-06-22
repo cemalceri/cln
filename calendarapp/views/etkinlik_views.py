@@ -1,4 +1,7 @@
 # cal/views.py
+from itertools import chain
+
+from django.db.models import Q
 from django.forms import model_to_dict
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -10,6 +13,8 @@ from calendarapp.forms.etkinlik_forms import EtkinlikForm
 from django.views.generic import ListView
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from django.contrib import messages
+
+from calendarapp.utils import get_verbose_name, formErrorsToText
 
 
 class AllEventsListView(ListView):
@@ -92,8 +97,18 @@ class EventEdit(generic.UpdateView):
 def getir_etkinlik_bilgisi_ajax(request):
     id = request.GET.get("id")
     event = EtkinlikModel.objects.get(id=id)
-    event_dict = model_to_dict(event)
+    event_dict = to_dict(event)
     return JsonResponse(event_dict)
+
+
+def to_dict(instance):
+    opts = instance._meta
+    data = {}
+    for f in chain(opts.concrete_fields, opts.private_fields):
+        data[f.name] = f.value_from_object(instance)
+    for f in opts.many_to_many:
+        data[f.name] = [i.id for i in f.value_from_object(instance)]
+    return data
 
 
 @login_required(login_url="signup")
@@ -102,6 +117,20 @@ def sil_etkinlik_ajax(request):
     rezv = EtkinlikModel.objects.filter(pk=id).first()
     if rezv:
         rezv.delete()
+    return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
+
+
+@login_required(login_url="signup")
+def sil_etkinlik_serisi_ajax(request):
+    id = request.GET.get("id")
+    etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+    print(etkinlik.ilk_etkinlik_id)
+    etkinlik_list = EtkinlikModel.objects.filter(
+        Q(pk=id) | Q(pk=etkinlik.ilk_etkinlik_id) | Q(ilk_etkinlik_id=etkinlik.ilk_etkinlik_id, ilk_etkinlik_id__isnull=False) | Q(
+            ilk_etkinlik_id=id, ilk_etkinlik_id__isnull=False))
+    print(etkinlik_list)
+    if etkinlik_list:
+        etkinlik_list.delete()
     return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
 
 
@@ -132,6 +161,9 @@ def takvim_getir(request):
 def kaydet_etkinlik_ajax(request):
     form = EtkinlikForm(request.POST)
     if form.is_valid():
+        result = etkinlik_kaydi_hata_mesaji(form)
+        if result:
+            return result
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
             form = EtkinlikForm(data=request.POST,
                                 instance=EtkinlikModel.objects.get(id=form.cleaned_data["pk"]))
@@ -140,10 +172,40 @@ def kaydet_etkinlik_ajax(request):
             item = form.save(commit=False)
             item.user = request.user
             item.save()
-        messages.success(request, "İşlem başarılı.")
-        return redirect("calendarapp:takvim-getir")
+            etkinlik_tekrar_sayisi_kadar_ekle(request, form, item.id)
+        return JsonResponse(data={"durum": "ok", "mesaj": "Etkinlik kaydedildi."})
     else:
-        for message in form.error_messages:
-            messages.error(request, f"{message}: {form.error_messages[message]}")
-    context = {"form": form}
-    return render(request, 'calendarapp/takvim.html', context)
+        # for error in form.errors:
+        return JsonResponse(data={"durum": "error", "mesaj": formErrorsToText(form.errors, EtkinlikModel)})
+
+
+def etkinlik_kaydi_hata_mesaji(form):
+    if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
+        return JsonResponse(
+            data={"durum": "error", "mesaj": "Etkinlik başlangıç tarihi bitiş tarihinden sonra olamaz."})
+    elif ayni_saatte_etkinlik_var_mi(form):
+        return JsonResponse(data={"durum": "error", "mesaj": "Seçilen tarih saatlerde başka etkinlik kayıtlı."})
+    return False
+
+
+def ayni_saatte_etkinlik_var_mi(form):
+    baslangic_saat = form.cleaned_data["baslangic_tarih_saat"]
+    bitis_saat = form.cleaned_data["bitis_tarih_saat"]
+    result = EtkinlikModel.objects.filter(
+        Q(baslangic_tarih_saat__lt=baslangic_saat, bitis_tarih_saat__gt=baslangic_saat) |
+        Q(baslangic_tarih_saat__lt=bitis_saat, bitis_tarih_saat__gt=bitis_saat)).exclude(id=form.cleaned_data["pk"])
+    return result.count() > 0
+
+
+def etkinlik_tekrar_sayisi_kadar_ekle(request, form, etkinlik_id):
+    tekrar_sayisi = form.cleaned_data["tekrar"]
+    baslangic_tarih_saat = form.cleaned_data["baslangic_tarih_saat"]
+    bitis_tarih_saat = form.cleaned_data["bitis_tarih_saat"]
+    for i in range(tekrar_sayisi) if tekrar_sayisi and tekrar_sayisi > 0 else range(52):
+        form.cleaned_data["baslangic_tarih_saat"] = baslangic_tarih_saat + timedelta(days=7 * (i + 1))
+        form.cleaned_data["bitis_tarih_saat"] = bitis_tarih_saat + timedelta(days=7 * (i + 1))
+        if not ayni_saatte_etkinlik_var_mi(form):
+            item = EtkinlikForm(data=form.cleaned_data).save(commit=False)
+            item.user = request.user
+            item.ilk_etkinlik_id = etkinlik_id
+            item.save()
