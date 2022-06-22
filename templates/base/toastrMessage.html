@@ -1,5 +1,5 @@
 <script>
-    function popupMesajGoster(mesaj, durum="success") {
+    function popupMesajGoster(mesaj, durum = "success") {
         debugger;
         if (durum == "success") {
             toastr.success(mesaj);
@@ -14,7 +14,7 @@
         {% for message in messages %}
             {% if message.tags == 'success' %}
                 <script>
-                    popupMesajGoster("{{ message.message }}", "success");
+                    popupMesajGoster("{{ message.message }}");
                 </script>
             {% elif message.tags == 'danger' %}
                 <script>

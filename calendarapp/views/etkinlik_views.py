@@ -20,7 +20,7 @@ from calendarapp.utils import get_verbose_name, formErrorsToText
 class AllEventsListView(ListView):
     """ All event list views """
 
-    template_name = "calendarapp/etkinlik_listesi.html"
+    template_name = "calendarapp/etkinlik/etkinlik_listesi.html"
     model = EtkinlikModel
 
     def get_queryset(self):
@@ -31,7 +31,7 @@ class AllEventsListView(ListView):
 class RunningEventsListView(ListView):
     """ Running events list view """
 
-    template_name = "calendarapp/etkinlik_listesi.html"
+    template_name = "calendarapp/etkinlik/etkinlik_listesi.html"
     model = EtkinlikModel
 
     def get_queryset(self):
@@ -124,11 +124,9 @@ def sil_etkinlik_ajax(request):
 def sil_etkinlik_serisi_ajax(request):
     id = request.GET.get("id")
     etkinlik = EtkinlikModel.objects.filter(pk=id).first()
-    print(etkinlik.ilk_etkinlik_id)
     etkinlik_list = EtkinlikModel.objects.filter(
         Q(pk=id) | Q(pk=etkinlik.ilk_etkinlik_id) | Q(ilk_etkinlik_id=etkinlik.ilk_etkinlik_id, ilk_etkinlik_id__isnull=False) | Q(
             ilk_etkinlik_id=id, ilk_etkinlik_id__isnull=False))
-    print(etkinlik_list)
     if etkinlik_list:
         etkinlik_list.delete()
     return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
@@ -138,7 +136,8 @@ def sil_etkinlik_serisi_ajax(request):
 def takvim_getir(request):
     form = EtkinlikForm()
     events = EtkinlikModel.objects.getir_butun_etkinlikler()
-    events_month = EtkinlikModel.objects.getir_devam_eden_etkinlikler()
+    bugunun_etkinlikleri = EtkinlikModel.objects.getir_devam_eden_etkinlikler()
+    print(bugunun_etkinlikleri)
     event_list = []
     # start: '2020-09-16T16:00:00'
     for event in events:
@@ -153,8 +152,8 @@ def takvim_getir(request):
             }
         )
     context = {"form": form, "events": event_list,
-               "aktif_etkinlikler": events_month}
-    return render(request, 'calendarapp/takvim.html', context)
+               "bugunun_etkinlikleri": bugunun_etkinlikleri}
+    return render(request, 'calendarapp/etkinlik/takvim.html', context)
 
 
 @login_required

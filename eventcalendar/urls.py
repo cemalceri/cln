@@ -14,8 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include, re_path
-from ajax_select import urls as ajax_select_urls
+from django.urls import path, include
 from .views import DashboardView
 
 urlpatterns = [
@@ -23,5 +22,4 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("", include("calendarapp.urls")),
-    # re_path(r'^ajax_select/', include(ajax_select_urls)),
 ]

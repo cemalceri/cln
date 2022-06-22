@@ -23,8 +23,8 @@
             <div class="tile row">
                 <div class="col-md-2">
                     <div id="external-events">
-                        <h4 class="mb-4">Aktif Etkinlikler</h4>
-                        {% for etkinlik in aktif_etkinliler %}
+                        <h4 class="mb-4 border-bottom">Bugün Aktif Etkinlikler</h4>
+                        {% for etkinlik in bugunun_etkinlikleri %}
                             <div id="rzvListItem" value="{{ etkinlik.id }}" class="fc-event"
                                  style="background-color: {{ etkinlik.renk }}">
                                 <h3>{{ etkinlik.baslik }}</h3>
@@ -47,7 +47,7 @@
                      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
-                            <div class="modal-header bg-primary">
+                            <div class="modal-header bg-info">
                                 <h5 class="modal-title text-white" id="exampleModalLongTitle">Etkinlik Ekle</h5>
                                 <button id="modalClose1" type="button" class="close" data-dismiss="modal"
                                         aria-label="Close">
@@ -58,12 +58,14 @@
                                 {% csrf_token %}
                                 <div class="modal-body">
                                     {% for field in form %}
-                                        <div class="form-group">
+                                        <div class="form-group row ">
                                             {% if field.name != 'pk' %}
-                                                <label for="message-text"
-                                                       class="col-form-label">{{ field.label_tag }}</label>
+                                                <label for="{{ field.name }}"
+                                                       class="col-md-3 form-control-label">{{ field.label_tag }}</label>
                                             {% endif %}
-                                            {{ field }}
+                                            <div class="col-md-9">
+                                                {{ field }}
+                                            </div>
                                         </div>
                                     {% endfor %}
                                 </div>
