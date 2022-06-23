@@ -24,8 +24,7 @@
     {% endblock extracss %}
 </head>
 <body class="app sidebar-mini">
-
-
+{% include 'base/delete_modal.html' %}
 <!-- Navbar-->
 <header class="app-header">
     <a class="app-header__logo" href="#">Fit Calendar</a>
@@ -37,6 +36,7 @@
             <input class="app-search__input" type="search" placeholder="Search"/>
             <button class="app-search__button"><i class="fa fa-search"></i></button>
         </li>
+
         <!--Notification Menu-->
         <li class="dropdown">
             <a class="app-nav__item" href="#" data-toggle="dropdown" aria-label="Show notifications"><i

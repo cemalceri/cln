@@ -1,0 +1,59 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Üye Kayıt{% endblock title %}
+
+{% block breadcrumb %}
+    <div>
+        <h1><i class="fa fa-dashboard"></i> Kayıt Formu</h1>
+        <p>Üye Kayıt</p>
+    </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
+    </ul>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="page-content">
+        <div class="panel">
+            <div class="panel-body">
+                <form autocomplete="nope" method="post"
+                        {% if form.instance.id %}
+                      action="{% url 'calendarapp:guncelle_uye' form.instance.id %}">
+                        {% else %}
+                            action="{% url 'calendarapp:kaydet_uye' %}">
+                        {% endif %}
+                {% csrf_token %}
+                <div class="row ">
+                    {% for field in form %}
+                        <div class="col-md-4 offset-md-4">
+                            <div class="form-group row">
+                                <div class="col-md-2">
+                                    {{ field.label_tag }}
+                                </div>
+                                <div class="col-md-10">
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            <span class="text-help">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row">
+                    <div class="col-md-4 offset-md-4">
+                        <button type="submit" class="btn btn-primary float-right">Kaydet</button>
+                        <a href="{% url 'calendarapp:index_uye' %}"
+                           class="btn btn-secondary float-right mr-2">Geri</a>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

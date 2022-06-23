@@ -22,7 +22,9 @@ urlpatterns = [
     # Uye
     path("uye/index", uye_views.index_uye, name="index_uye"),
     path("uye/kaydet", uye_views.kaydet_uye, name="kaydet_uye"),
+    path("uye/kaydet/<int:id>", uye_views.kaydet_uye, name="guncelle_uye"),
     path("uye/detay/<int:id>", uye_views.detay_uye, name="detay_uye"),
+    path("uye/sil/<int:id>", uye_views.sil_uye, name="sil_uye"),
 
     # Kort
     path("kort/index", kort_views.index_kort, name="index_kort"),

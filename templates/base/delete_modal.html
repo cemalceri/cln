@@ -1,0 +1,30 @@
+<!-- Delete Modal-->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" caller-id="" role="dialog"
+     aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body confirm-delete">
+                <h5>Silmek istediğinize emin misiniz?</h5>
+                <h6 style="color: red"> Not: Bu kayda bağlı bütün veriler silinecektir!</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteButtonModal">
+                    Evet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).on('click', '.confirm-delete', function () {
+        $("#confirmDeleteModal").attr("caller-id", $(this).attr("id"));
+    });
+
+    $(document).on('click', '#confirmDeleteButtonModal', function () {
+        var caller = $("#confirmDeleteButtonModal").closest(".modal").attr("caller-id");
+        window.location = $("#".concat(caller)).attr("href");
+    });
+</script>
