@@ -21,6 +21,9 @@ class EtkinlikForm(ModelForm):
                 format="%d-%m-%YT%H:%M",
             ),
         }
+        help_texts = {
+            "tekrar": '*Boş bırakıldığında 52 haftalık abonelik oluşturur.',
+        }
 
     def __init__(self, *args, **kwargs):
         super(EtkinlikForm, self).__init__(*args, **kwargs)

@@ -34,7 +34,7 @@ class UyeModel(BaseAbstract):
     #                          related_name='musterinin_tipi', verbose_name='Müşteri Tipi')
 
     def __str__(self):
-        return str(self.adi) + " " + str(self.soyadi) + " - KimlikNo: " + str(self.kimlikNo)
+        return str(self.adi) + " " + str(self.soyadi)
 
     objects = UyeManager()
 

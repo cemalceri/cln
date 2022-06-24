@@ -16,13 +16,22 @@ class EtkinlikManager(models.Manager):
             is_active=True, is_deleted=False)
         return events
 
-    def getir_devam_eden_etkinlikler(self, user=None):
+    def getir_bugun_devam_eden_etkinlikler(self, user=None):
         running_events = EtkinlikModel.objects.filter(
             # user=user,
             is_active=True,
             is_deleted=False,
             bitis_tarih_saat__gte=datetime.now(),
             bitis_tarih_saat__lt=(datetime.now() + timedelta(days=1)),
+        ).order_by("baslangic_tarih_saat")
+        return running_events
+
+    def getir_gelecek_etkinlikler(self, user=None):
+        running_events = EtkinlikModel.objects.filter(
+            # user=user,
+            is_active=True,
+            is_deleted=False,
+            bitis_tarih_saat__gte=datetime.now(),
         ).order_by("baslangic_tarih_saat")
         return running_events
 

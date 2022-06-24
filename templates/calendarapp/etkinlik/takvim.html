@@ -3,7 +3,7 @@
 {% block title %}Event Calendar{% endblock title %}
 
 {% block extracss %}
-    <link href="{% static 'calender/main.css' %}" rel="stylesheet"/>
+    <link href="{% static 'calendar/main.css' %}" rel="stylesheet"/>
 {% endblock extracss %}
 
 {% block breadcrumb %}
@@ -27,11 +27,12 @@
                         {% for etkinlik in bugunun_etkinlikleri %}
                             <div id="rzvListItem" value="{{ etkinlik.id }}" class="fc-event"
                                  style="background-color: {{ etkinlik.renk }}">
-                                <h3>{{ etkinlik.baslik }}</h3>
                                 <ul class="list-group">
+                                    <li>Başlık: {{ etkinlik.baslik }}</li>
                                     <li>Saat: {{ etkinlik.baslangic_tarih_saat | date:"H:i" }}
                                         - {{ etkinlik.bitis_tarih_saat | date:"H:i" }}</li>
-                                    <li>Açıklama: {{ etkinlik.aciklama }}</li>
+                                    <li>Açıklama: {{ etkinlik.aciklama |default_if_none:"" }}</li>
+                                    <li>Grup: {{ etkinlik.grup }}</li>
                                 </ul>
                             </div>
                         {% empty %}
@@ -65,6 +66,7 @@
                                             {% endif %}
                                             <div class="col-md-9">
                                                 {{ field }}
+                                                <p style="color:darkred">{{ field.help_text }}</p>
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -89,7 +91,7 @@
 {% endblock content %}
 
 {% block extrascripts %}
-    <script src="{% static 'calender/main.js' %}"></script>
+    <script src="{% static 'calendar/main.js' %}"></script>
     <script>
         let _selectedEvent;
         document.addEventListener('DOMContentLoaded', function () {
@@ -102,7 +104,6 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay,list',
                 },
                 initialDate: today,
-                initalView: 'd',
                 navLinks: true, // can click day/week names to navigate views
                 selectable: true,
                 selectMirror: true,
@@ -137,22 +138,34 @@
                     if (!confirm(info.event.title + " etkinliği  " + tarih + " - " + saat + " tarih saate taşınsın mı?")) {
                         info.revert();
                     } else {
-                        if (info.event.startStr != "undefined" && info.event.endStr != "undefined") {
-                            id = info.event.id;
-                            start = info.event.startStr.split('+')[0];
-                            end = info.event.endStr.split('+')[0];
-                            let result = etkinlikTasi(id, start, end);
-                            console.log("return value:", result);
-                            debugger;
-                            if (!result) {
-                                info.revert();
-                            }
+                        id = info.event.id;
+                        start = info.event.startStr.split('+')[0];
+                        end = info.event.endStr.split('+')[0];
+                        let result = etkinlikTasi(id, start, end);
+                        debugger;
+                        if (!result) {
+                            info.revert();
+                        }
+                    }
+                },
+                eventResize: function (info) {
+                    tarih = info.event.startStr.split('+')[0].split('T')[0];
+                    saat = info.event.startStr.split('+')[0].split('T')[1];
+                    if (!confirm(info.event.title + " etkinliği  " + tarih + " - " + saat + " tarih saat olarak değiştirilsin mi?")) {
+                        info.revert();
+                    } else {
+                        id = info.event.id;
+                        start = info.event.startStr.split('+')[0];
+                        end = info.event.endStr.split('+')[0];
+                        let result = etkinlikTasi(id, start, end);
+                        debugger;
+                        if (!result) {
+                            info.revert();
                         }
                     }
                 },
 
                 eventDragStart: function (arg) {
-                    console.log("sürükle basladı")
                 },
                 eventAdd: function (arg) {
                     console.log("eklendi")
@@ -161,6 +174,7 @@
                 dayMaxEvents: true, // allow "more" link when too many events
                 events: {{ events|safe }},
                 eventDidMount: function (arg) {
+                    console.log({{ events|safe }})
                     // Takvim üzerindeki etkinlik renklerinin gösterilmesi için
                     arg.el.style.backgroundColor = arg.event.backgroundColor
                 },
@@ -294,7 +308,7 @@
         function etkinlikTasi(id, start, end) {
             let retVal = false;
             $.ajax({
-                url: '{% url 'calendarapp:tasi_etkinlik_ajax' %}',
+                url: '{% url 'calendarapp:saat_guncelle_etkinlik_ajax' %}',
                 type: 'GET',
                 async: false,
                 data: {
@@ -314,7 +328,6 @@
                     popupMesajGoster(result.message, "error");
                 },
             });
-            console.log("return value function end: ", retVal);
             return retVal;
         }
     </script>

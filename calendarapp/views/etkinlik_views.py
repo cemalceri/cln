@@ -137,14 +137,14 @@ def sil_etkinlik_serisi_ajax(request):
 def takvim_getir(request):
     form = EtkinlikForm()
     events = EtkinlikModel.objects.getir_butun_etkinlikler()
-    bugunun_etkinlikleri = EtkinlikModel.objects.getir_devam_eden_etkinlikler()
+    bugunun_etkinlikleri = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler()
     event_list = []
     # start: '2020-09-16T16:00:00'
     for event in events:
         event_list.append(
             {
                 "id": event.id,
-                "title": event.baslik,
+                "title": event.grup.__str__(),
                 "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                 "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                 "backgroundColor": event.renk,
@@ -191,13 +191,11 @@ def etkinlik_kaydi_hata_mesaji(form):
 
 
 def ayni_saatte_etkinlik_var_mi(baslangic_tarih_saat, bitis_tarih_saat, id=None):
-    print(baslangic_tarih_saat, bitis_tarih_saat, id)
     result = EtkinlikModel.objects.filter(
         Q(baslangic_tarih_saat__lt=baslangic_tarih_saat, bitis_tarih_saat__gt=baslangic_tarih_saat) | # başlangıç saati herhangi bir etkinliğin içinde olan
         Q(baslangic_tarih_saat=baslangic_tarih_saat, bitis_tarih_saat=bitis_tarih_saat) | # başlangıç ve bitiş tarihi aynı olan
         Q(baslangic_tarih_saat__lt=bitis_tarih_saat, bitis_tarih_saat__gt=bitis_tarih_saat) # bitiş tarihi herhangi bir etkinliğin içinde olan
     ).exclude(id=id)
-    print(result)
     return result.count() > 0
 
 
@@ -217,15 +215,14 @@ def etkinlik_tekrar_sayisi_kadar_ekle(request, form, etkinlik_id):
 
 
 @login_required
-def tasi_etkinlik_ajax(request):
+def saat_guncelle_etkinlik_ajax(request):
     id = request.GET.get("id")
     baslangic_tarih_saat = request.GET.get("baslangic_tarih_saat")
     bitis_tarih_saat = request.GET.get("bitis_tarih_saat")
     etkinlik = EtkinlikModel.objects.filter(pk=id).first()
-    print(etkinlik)
     if ayni_saatte_etkinlik_var_mi(baslangic_tarih_saat, bitis_tarih_saat, id):
         return JsonResponse(data={"durum": "error", "mesaj": "Seçilen tarih saatlerde başka etkinlik kayıtlı."})
     etkinlik.baslangic_tarih_saat = baslangic_tarih_saat
     etkinlik.bitis_tarih_saat = bitis_tarih_saat
     etkinlik.save()
-    return JsonResponse(data={"durum": "ok", "mesaj": "Etkinlik taşındı."})
+    return JsonResponse(data={"durum": "ok", "mesaj": "Etkinlik guncellendi."})

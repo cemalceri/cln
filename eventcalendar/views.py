@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
@@ -10,12 +12,13 @@ class DashboardView(LoginRequiredMixin, View):
     template_name = "calendarapp/dashboard.html"
 
     def get(self, request, *args, **kwargs):
-        events = EtkinlikModel.objects.getir_butun_etkinlikler()
-        running_events = EtkinlikModel.objects.getir_devam_eden_etkinlikler()
-        latest_events = EtkinlikModel.objects.all().order_by("-id")[:10]
+        tum_etkinlik_sayisi = EtkinlikModel.objects.filter(is_active=True, is_deleted=False).count()
+        bugun_kalan_etkinlik_sayisi = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler().count()
+        gelecek_etkinlikler = EtkinlikModel.objects.getir_gelecek_etkinlikler()
+
         context = {
-            "total_event": events.count(),
-            "running_events": running_events,
-            "latest_events": latest_events,
+            "tum_etkinlik_sayisi": tum_etkinlik_sayisi,
+            "bugun_kalan_etkinlik_sayisi": bugun_kalan_etkinlik_sayisi,
+            "gelecek_etkinlikler": gelecek_etkinlikler,
         }
         return render(request, self.template_name, context)

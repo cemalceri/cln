@@ -1712,7 +1712,7 @@ var FullCalendar = (function (exports) {
         forceEventDuration: false,
         nextDayThreshold: '00:00:00',
         dayHeaders: true,
-        initialView: '',
+        initialView: 'timeGridWeek', // hafta görünümü
         aspectRatio: 1.35,
         headerToolbar: {
             start: 'title',
@@ -1735,7 +1735,7 @@ var FullCalendar = (function (exports) {
         timeZoneParam: 'timeZone',
         timeZone: 'local',
         locales: [],
-        locale: '',
+        locale: 'tr', // Türkçe Dil
         themeSystem: 'standard',
         dragRevertDuration: 500,
         dragScroll: true,
