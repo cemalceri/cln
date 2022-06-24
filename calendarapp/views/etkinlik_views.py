@@ -17,9 +17,7 @@ from django.contrib import messages
 from calendarapp.utils import get_verbose_name, formErrorsToText
 
 
-class AllEventsListView(ListView):
-    """ All event list views """
-
+class ButunEtkinliklerListView(ListView):
     template_name = "calendarapp/etkinlik/etkinlik_listesi.html"
     model = EtkinlikModel
 
@@ -28,14 +26,20 @@ class AllEventsListView(ListView):
         return events
 
 
-class RunningEventsListView(ListView):
-    """ Running events list view """
-
+class BugunEtkinlikleriListView(ListView):
     template_name = "calendarapp/etkinlik/etkinlik_listesi.html"
     model = EtkinlikModel
 
     def get_queryset(self):
-        return EtkinlikModel.objects.getir_devam_eden_etkinlikler(user=self.request.user)
+        return EtkinlikModel.objects.getir_bugunun_etkinlikleri()
+
+
+class GelecekEtkinliklerListView(ListView):
+    template_name = "calendarapp/etkinlik/etkinlik_listesi.html"
+    model = EtkinlikModel
+
+    def get_queryset(self):
+        return EtkinlikModel.objects.getir_gelecek_etkinlikler()
 
 
 def get_date(req_day):
@@ -58,39 +62,6 @@ def next_month(d):
     next_month = last + timedelta(days=1)
     month = "month=" + str(next_month.year) + "-" + str(next_month.month)
     return month
-
-
-# class CalendarView(LoginRequiredMixin, generic.ListView):
-#     login_url = "accounts:signin"
-#     model = RezervasyonModel
-#     template_name = "takvim.html"
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         d = get_date(self.request.GET.get("month", None))
-#         cal = Calendar(d.year, d.month)
-#         html_cal = cal.formatmonth(withyear=True)
-#         context["calendar"] = mark_safe(html_cal)
-#         context["prev_month"] = prev_month(d)
-#         context["next_month"] = next_month(d)
-#         return context
-
-
-# @login_required(login_url="signup")
-# def create_event(request):
-#     form = RezervasyonForm(request.POST or None)
-#     if request.POST and form.is_valid():
-#         item = form.save(commit=False)
-#         item.user = request.user
-#         return HttpResponseRedirect(reverse("calendarapp:ta"))
-#     print(form.errors)
-#     return render(request, "event.html", {"form": form})
-
-
-class EventEdit(generic.UpdateView):
-    model = EtkinlikModel
-    fields = ["Id", "title", "description", "start_time", "end_time"]
-    template_name = "event.html"
 
 
 @login_required(login_url="signup")
@@ -192,9 +163,12 @@ def etkinlik_kaydi_hata_mesaji(form):
 
 def ayni_saatte_etkinlik_var_mi(baslangic_tarih_saat, bitis_tarih_saat, id=None):
     result = EtkinlikModel.objects.filter(
-        Q(baslangic_tarih_saat__lt=baslangic_tarih_saat, bitis_tarih_saat__gt=baslangic_tarih_saat) | # başlangıç saati herhangi bir etkinliğin içinde olan
-        Q(baslangic_tarih_saat=baslangic_tarih_saat, bitis_tarih_saat=bitis_tarih_saat) | # başlangıç ve bitiş tarihi aynı olan
-        Q(baslangic_tarih_saat__lt=bitis_tarih_saat, bitis_tarih_saat__gt=bitis_tarih_saat) # bitiş tarihi herhangi bir etkinliğin içinde olan
+        Q(baslangic_tarih_saat__lt=baslangic_tarih_saat,
+          bitis_tarih_saat__gt=baslangic_tarih_saat) |  # başlangıç saati herhangi bir etkinliğin içinde olan
+        Q(baslangic_tarih_saat=baslangic_tarih_saat,
+          bitis_tarih_saat=bitis_tarih_saat) |  # başlangıç ve bitiş tarihi aynı olan
+        Q(baslangic_tarih_saat__lt=bitis_tarih_saat, bitis_tarih_saat__gt=bitis_tarih_saat)
+        # bitiş tarihi herhangi bir etkinliğin içinde olan
     ).exclude(id=id)
     return result.count() > 0
 

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from django.db import models
 from django.urls import reverse
 from accounts.models import User
@@ -21,10 +21,23 @@ class EtkinlikManager(models.Manager):
             # user=user,
             is_active=True,
             is_deleted=False,
+            baslangic_tarih_saat__day=datetime.now().day,
             bitis_tarih_saat__gte=datetime.now(),
-            bitis_tarih_saat__lt=(datetime.now() + timedelta(days=1)),
         ).order_by("baslangic_tarih_saat")
         return running_events
+
+    def getir_bugunun_etkinlikleri(self, user=None):
+        today = datetime.now().date()
+        tomorrow = today + timedelta(1)
+        today_start = datetime.combine(today, time())
+        today_end = datetime.combine(tomorrow, time())
+        events = EtkinlikModel.objects.filter(
+            # user=user,
+            is_active=True, is_deleted=False,
+            baslangic_tarih_saat__lte=today_end,
+            bitis_tarih_saat__gte=today_start,
+        ).order_by("baslangic_tarih_saat")
+        return events
 
     def getir_gelecek_etkinlikler(self, user=None):
         running_events = EtkinlikModel.objects.filter(
