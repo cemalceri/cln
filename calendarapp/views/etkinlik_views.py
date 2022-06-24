@@ -174,8 +174,10 @@ def ayni_saatte_etkinlik_var_mi(baslangic_tarih_saat, bitis_tarih_saat, id=None)
           bitis_tarih_saat__gt=baslangic_tarih_saat) |  # başlangıç saati herhangi bir etkinliğin içinde olan
         Q(baslangic_tarih_saat=baslangic_tarih_saat,
           bitis_tarih_saat=bitis_tarih_saat) |  # başlangıç ve bitiş tarihi aynı olan
-        Q(baslangic_tarih_saat__lt=bitis_tarih_saat, bitis_tarih_saat__gt=bitis_tarih_saat)
+        Q(baslangic_tarih_saat__lt=bitis_tarih_saat, bitis_tarih_saat__gt=bitis_tarih_saat) |
         # bitiş tarihi herhangi bir etkinliğin içinde olan
+        Q(baslangic_tarih_saat__gte=baslangic_tarih_saat, bitis_tarih_saat__lte=bitis_tarih_saat)
+        # balangıç ve bitiş saati bizim etkinliğin arasında olan
     ).exclude(id=id)
     return result.count() > 0
 
