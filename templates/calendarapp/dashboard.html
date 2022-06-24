@@ -83,6 +83,12 @@
                                                     <a class="btn btn-secondary btn-circle" title="Detayına Git"
                                                        href="#">
                                                         <i class="fa fas fa-sitemap" style="color: black"></i></a>
+                                                    <a href="{% url 'calendarapp:sil_etkinlik_by_id' etkinlik.id %}"
+                                                       class=" btn btn-danger btn-circle confirm-delete" title="Sil"
+                                                       data-toggle="modal"
+                                                       data-target="#confirmDeleteModal"
+                                                       id="delete_etkinlik_{{ etkinlik.id }}">
+                                                        <i class="fa fa-trash" style="color: black"></i></a>
                                                 </td>
                                             </tr>
                                         {% endfor %}

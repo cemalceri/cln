@@ -91,6 +91,13 @@ def sil_etkinlik_ajax(request):
     return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
 
 
+@login_required()
+def sil_etkinlik_ajax(request, id):
+    EtkinlikModel.objects.filter(pk=id).first().delete()
+    messages.success(request, "Etkinlik silindi.")
+    return redirect("dashboard")
+
+
 @login_required(login_url="signup")
 def sil_etkinlik_serisi_ajax(request):
     id = request.GET.get("id")
