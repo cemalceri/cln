@@ -128,9 +128,29 @@
                     document.getElementById("btnSeriyiSil").hidden = false;
                     openEditModal(arg.event);
                 },
-                eventDragStop: function (arg) {
-                    console.log("sürükle bitti");
+                eventDragStop: function (arg, event) {
+                    {#console.log("sürükle bitti");#}
                 },
+                eventDrop: function (info) {
+                    tarih = info.event.startStr.split('+')[0].split('T')[0];
+                    saat = info.event.startStr.split('+')[0].split('T')[1];
+                    if (!confirm(info.event.title + " etkinliği  " + tarih + " - " + saat + " tarih saate taşınsın mı?")) {
+                        info.revert();
+                    } else {
+                        if (info.event.startStr != "undefined" && info.event.endStr != "undefined") {
+                            id = info.event.id;
+                            start = info.event.startStr.split('+')[0];
+                            end = info.event.endStr.split('+')[0];
+                            let result = etkinlikTasi(id, start, end);
+                            console.log("return value:", result);
+                            debugger;
+                            if (!result) {
+                                info.revert();
+                            }
+                        }
+                    }
+                },
+
                 eventDragStart: function (arg) {
                     console.log("sürükle basladı")
                 },
@@ -269,6 +289,33 @@
             document.getElementById("btnSeriyiSil").hidden = true;
             const eventModal = document.getElementById('eventModal')
             eventModal.style.display = 'block';
+        }
+
+        function etkinlikTasi(id, start, end) {
+            let retVal = false;
+            $.ajax({
+                url: '{% url 'calendarapp:tasi_etkinlik_ajax' %}',
+                type: 'GET',
+                async: false,
+                data: {
+                    'id': id,
+                    'baslangic_tarih_saat': start,
+                    'bitis_tarih_saat': end
+                },
+                success: function (result) {
+                    if (result.durum == "ok") {
+                        retVal = true;
+                        popupMesajGoster(result.mesaj, 'success');
+                    } else {
+                        popupMesajGoster(result.mesaj, "error");
+                    }
+                },
+                error: function (result) {
+                    popupMesajGoster(result.message, "error");
+                },
+            });
+            console.log("return value function end: ", retVal);
+            return retVal;
         }
     </script>
 {% endblock extrascripts %}

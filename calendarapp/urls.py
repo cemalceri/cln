@@ -18,6 +18,7 @@ urlpatterns = [
     path("etkinlik/sil", etkinlik_views.sil_etkinlik_ajax, name="sil_etkinlik_by_id"),
     path("etkinlik/serisi_sil", etkinlik_views.sil_etkinlik_serisi_ajax, name="sil_etkinlik_serisi_by_id"),
     path("etkinlik/kaydet", etkinlik_views.kaydet_etkinlik_ajax, name="kaydet_etkinlik_ajax"),
+    path("etkinlik/tasi", etkinlik_views.tasi_etkinlik_ajax, name="tasi_etkinlik_ajax"),
 
     # Uye
     path("uye/index", uye_views.index_uye, name="index_uye"),

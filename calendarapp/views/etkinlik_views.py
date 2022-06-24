@@ -125,7 +125,8 @@ def sil_etkinlik_serisi_ajax(request):
     id = request.GET.get("id")
     etkinlik = EtkinlikModel.objects.filter(pk=id).first()
     etkinlik_list = EtkinlikModel.objects.filter(
-        Q(pk=id) | Q(pk=etkinlik.ilk_etkinlik_id) | Q(ilk_etkinlik_id=etkinlik.ilk_etkinlik_id, ilk_etkinlik_id__isnull=False) | Q(
+        Q(pk=id) | Q(pk=etkinlik.ilk_etkinlik_id) | Q(ilk_etkinlik_id=etkinlik.ilk_etkinlik_id,
+                                                      ilk_etkinlik_id__isnull=False) | Q(
             ilk_etkinlik_id=id, ilk_etkinlik_id__isnull=False))
     if etkinlik_list:
         etkinlik_list.delete()
@@ -137,7 +138,6 @@ def takvim_getir(request):
     form = EtkinlikForm()
     events = EtkinlikModel.objects.getir_butun_etkinlikler()
     bugunun_etkinlikleri = EtkinlikModel.objects.getir_devam_eden_etkinlikler()
-    print(bugunun_etkinlikleri)
     event_list = []
     # start: '2020-09-16T16:00:00'
     for event in events:
@@ -179,20 +179,25 @@ def kaydet_etkinlik_ajax(request):
 
 
 def etkinlik_kaydi_hata_mesaji(form):
+    mesaj = None
     if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
-        return JsonResponse(
-            data={"durum": "error", "mesaj": "Etkinlik başlangıç tarihi bitiş tarihinden sonra olamaz."})
-    elif ayni_saatte_etkinlik_var_mi(form):
-        return JsonResponse(data={"durum": "error", "mesaj": "Seçilen tarih saatlerde başka etkinlik kayıtlı."})
+        mesaj = "Etkinlik başlangıç tarihi bitiş tarihinden sonra olamaz."
+    elif ayni_saatte_etkinlik_var_mi(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
+                                     form.cleaned_data["pk"]):
+        mesaj = "Seçilen tarih saatlerde başka etkinlik kayıtlı."
+    if mesaj is not None:
+        return JsonResponse(data={"durum": "error", "mesaj": mesaj})
     return False
 
 
-def ayni_saatte_etkinlik_var_mi(form):
-    baslangic_saat = form.cleaned_data["baslangic_tarih_saat"]
-    bitis_saat = form.cleaned_data["bitis_tarih_saat"]
+def ayni_saatte_etkinlik_var_mi(baslangic_tarih_saat, bitis_tarih_saat, id=None):
+    print(baslangic_tarih_saat, bitis_tarih_saat, id)
     result = EtkinlikModel.objects.filter(
-        Q(baslangic_tarih_saat__lt=baslangic_saat, bitis_tarih_saat__gt=baslangic_saat) |
-        Q(baslangic_tarih_saat__lt=bitis_saat, bitis_tarih_saat__gt=bitis_saat)).exclude(id=form.cleaned_data["pk"])
+        Q(baslangic_tarih_saat__lt=baslangic_tarih_saat, bitis_tarih_saat__gt=baslangic_tarih_saat) | # başlangıç saati herhangi bir etkinliğin içinde olan
+        Q(baslangic_tarih_saat=baslangic_tarih_saat, bitis_tarih_saat=bitis_tarih_saat) | # başlangıç ve bitiş tarihi aynı olan
+        Q(baslangic_tarih_saat__lt=bitis_tarih_saat, bitis_tarih_saat__gt=bitis_tarih_saat) # bitiş tarihi herhangi bir etkinliğin içinde olan
+    ).exclude(id=id)
+    print(result)
     return result.count() > 0
 
 
@@ -203,8 +208,24 @@ def etkinlik_tekrar_sayisi_kadar_ekle(request, form, etkinlik_id):
     for i in range(tekrar_sayisi) if tekrar_sayisi and tekrar_sayisi > 0 else range(52):
         form.cleaned_data["baslangic_tarih_saat"] = baslangic_tarih_saat + timedelta(days=7 * (i + 1))
         form.cleaned_data["bitis_tarih_saat"] = bitis_tarih_saat + timedelta(days=7 * (i + 1))
-        if not ayni_saatte_etkinlik_var_mi(form):
+        if not ayni_saatte_etkinlik_var_mi(form.cleaned_data["baslangic_tarih_saat"],
+                                           form.cleaned_data["bitis_tarih_saat"], ):
             item = EtkinlikForm(data=form.cleaned_data).save(commit=False)
             item.user = request.user
             item.ilk_etkinlik_id = etkinlik_id
             item.save()
+
+
+@login_required
+def tasi_etkinlik_ajax(request):
+    id = request.GET.get("id")
+    baslangic_tarih_saat = request.GET.get("baslangic_tarih_saat")
+    bitis_tarih_saat = request.GET.get("bitis_tarih_saat")
+    etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+    print(etkinlik)
+    if ayni_saatte_etkinlik_var_mi(baslangic_tarih_saat, bitis_tarih_saat, id):
+        return JsonResponse(data={"durum": "error", "mesaj": "Seçilen tarih saatlerde başka etkinlik kayıtlı."})
+    etkinlik.baslangic_tarih_saat = baslangic_tarih_saat
+    etkinlik.bitis_tarih_saat = bitis_tarih_saat
+    etkinlik.save()
+    return JsonResponse(data={"durum": "ok", "mesaj": "Etkinlik taşındı."})

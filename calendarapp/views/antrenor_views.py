@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 @login_required
 def index_antrenor(request):
-    return render(request, "calendarapp/antranor/index.html")
+    return render(request, "calendarapp/antrenor/index.html")
 
 
 @login_required
