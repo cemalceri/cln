@@ -4,6 +4,7 @@ from django.urls import reverse
 from accounts.models import User
 from calendarapp.models.Enums import RenkEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
+from calendarapp.models.concrete.kort import KortModel
 from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel
 
 
@@ -16,13 +17,14 @@ class EtkinlikManager(models.Manager):
             is_active=True, is_deleted=False)
         return events
 
-    def getir_bugun_devam_eden_etkinlikler(self, user=None):
+    def getir_bugun_devam_eden_etkinlikler(self, kort_id=None, user=None):
         running_events = EtkinlikModel.objects.filter(
             # user=user,
             is_active=True,
             is_deleted=False,
             baslangic_tarih_saat__day=datetime.now().day,
             bitis_tarih_saat__gte=datetime.now(),
+            kort_id=kort_id,
         ).order_by("baslangic_tarih_saat")
         return running_events
 
@@ -55,6 +57,8 @@ class EtkinlikModel(BaseAbstract):
                              null=True, related_name="grup")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
+    kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=True,
+                             related_name="kort")
     renk = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray",
                             verbose_name="Renk")
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")

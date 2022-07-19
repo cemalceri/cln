@@ -66,8 +66,9 @@
                                             <th>#</th>
                                             <th>Başlık</th>
                                             <th>Grup</th>
-                                            <th>Başlangıç Tarih Saat</th>
-                                            <th>Bitiş Tarih Saat</th>
+                                            <th>Kort</th>
+                                            <th>Antrenör</th>
+                                            <th>Başlangıç - Bitiş </th>
                                             <th>İşlemler</th>
                                         </tr>
                                         </thead>
@@ -77,8 +78,10 @@
                                                 <td class="sorting_1">{{ forloop.counter }}</td>
                                                 <td>{{ etkinlik.baslik }}</td>
                                                 <td>{{ etkinlik.grup }}</td>
-                                                <td>{{ etkinlik.baslangic_tarih_saat |date:"l H:i" }}</td>
-                                                <td>{{ etkinlik.bitis_tarih_saat |date:"l H:i" }}</td>
+                                                <td>{{ etkinlik.kort }}</td>
+                                                <td>{{ etkinlik.kort }}</td>
+                                                <td>{{ etkinlik.baslangic_tarih_saat |date:"d-m-Y / H:i -" }}
+                                               {{ etkinlik.bitis_tarih_saat |date:"H:i (l)" }}</td>
                                                 <td>
                                                     <a class="btn btn-secondary btn-circle" title="Detayına Git"
                                                        href="#">

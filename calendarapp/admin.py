@@ -24,8 +24,10 @@ from django.contrib import admin
 #     list_display = ["id", "event", "user", "created_at", "updated_at"]
 #     list_filter = ["event"]
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
+from calendarapp.models.concrete.kort import KortModel
 from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel
 
 admin.site.register(EtkinlikModel)
 admin.site.register(UyeModel)
 admin.site.register(UyeGrupModel)
+admin.site.register(KortModel)

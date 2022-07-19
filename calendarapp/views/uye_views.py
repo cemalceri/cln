@@ -38,7 +38,6 @@ def detay_uye(request, id):
 
 @login_required
 def sil_uye(request, id):
-    print(id)
     UyeModel.objects.filter(pk=id).first().delete()
     messages.success(request, "Kayıt Silindi.")
     return redirect("calendarapp:index_uye")

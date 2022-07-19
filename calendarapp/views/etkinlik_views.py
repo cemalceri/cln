@@ -14,6 +14,7 @@ from django.views.generic import ListView
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from django.contrib import messages
 
+from calendarapp.models.concrete.kort import KortModel
 from calendarapp.utils import get_verbose_name, formErrorsToText
 
 
@@ -42,27 +43,27 @@ class GelecekEtkinliklerListView(ListView):
         return EtkinlikModel.objects.getir_gelecek_etkinlikler()
 
 
-def get_date(req_day):
-    if req_day:
-        year, month = (int(x) for x in req_day.split("-"))
-        return date(year, month, day=1)
-    return datetime.today()
-
-
-def prev_month(d):
-    first = d.replace(day=1)
-    prev_month = first - timedelta(days=1)
-    month = "month=" + str(prev_month.year) + "-" + str(prev_month.month)
-    return month
-
-
-def next_month(d):
-    days_in_month = calendar.monthrange(d.year, d.month)[1]
-    last = d.replace(day=days_in_month)
-    next_month = last + timedelta(days=1)
-    month = "month=" + str(next_month.year) + "-" + str(next_month.month)
-    return month
-
+# def get_date(req_day):
+#     if req_day:
+#         year, month = (int(x) for x in req_day.split("-"))
+#         return date(year, month, day=1)
+#     return datetime.today()
+#
+#
+# def prev_month(d):
+#     first = d.replace(day=1)
+#     prev_month = first - timedelta(days=1)
+#     month = "month=" + str(prev_month.year) + "-" + str(prev_month.month)
+#     return month
+#
+#
+# def next_month(d):
+#     days_in_month = calendar.monthrange(d.year, d.month)[1]
+#     last = d.replace(day=days_in_month)
+#     next_month = last + timedelta(days=1)
+#     month = "month=" + str(next_month.year) + "-" + str(next_month.month)
+#     return month
+#
 
 @login_required(login_url="signup")
 def getir_etkinlik_bilgisi_ajax(request):
@@ -110,10 +111,13 @@ def sil_etkinlik_serisi_ajax(request):
 
 
 @login_required
-def takvim_getir(request):
+def takvim_getir(request, kort_id=None):
+    kort = KortModel.objects.filter(pk=kort_id).first()
+    secili_kort = kort.adi if kort else "Kort Seçiniz"
     form = EtkinlikForm()
-    events = EtkinlikModel.objects.getir_butun_etkinlikler()
-    bugunun_etkinlikleri = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler()
+    kortlar = KortModel.objects.all().order_by("id")
+    events = EtkinlikModel.objects.filter(kort_id=kort_id)
+    bugunun_etkinlikleri = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler(kort_id=kort_id)
     event_list = []
     # start: '2020-09-16T16:00:00'
     for event in events:
@@ -127,7 +131,8 @@ def takvim_getir(request):
                 # "eventColor": event.renk,
             }
         )
-    context = {"form": form, "events": event_list,
+    context = {"form": form, "events": event_list, "kortlar": kortlar,
+               "secili_kort": secili_kort,
                "bugunun_etkinlikleri": bugunun_etkinlikleri}
     return render(request, 'calendarapp/etkinlik/takvim.html', context)
 

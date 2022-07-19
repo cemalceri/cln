@@ -8,16 +8,23 @@
 
 {% block breadcrumb %}
     <div>
-        <h1><i class="fa fa-calendar"></i> Calendar</h1>
-        <p>Event Calendar</p>
+        <h1><i class="fa fa-calendar"></i> Etkinlikler - {{ secili_kort }}</h1>
     </div>
     <ul class="app-breadcrumb breadcrumb">
         <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
-        <li class="breadcrumb-item"><a href="#">Calendar</a></li>
+        <li class="breadcrumb-item"><a href="#">Anaysayfa</a></li>
     </ul>
 {% endblock breadcrumb %}
 
 {% block content %}
+    <nav class="navbar navbar-light bg-dark">
+        <form>
+            {% for kort in kortlar %}
+                <a class="btn btn-primary m-1"
+                   href="{% url 'calendarapp:takvim-getir_by_kort_id' kort.id %}">{{ kort.adi }}</a>
+            {% endfor %}
+        </form>
+    </nav>
     <div class="row">
         <div class="col-md-12">
             <div class="tile row">
@@ -58,18 +65,20 @@
                             <form method="post" action="#" role="form" id="etkinlikForm">
                                 {% csrf_token %}
                                 <div class="modal-body">
-                                    {% for field in form %}
-                                        <div class="form-group row ">
-                                            {% if field.name != 'pk' %}
-                                                <label for="{{ field.name }}"
-                                                       class="col-md-3 form-control-label">{{ field.label_tag }}</label>
-                                            {% endif %}
-                                            <div class="col-md-9">
-                                                {{ field }}
-                                                <p style="color:darkred">{{ field.help_text }}</p>
+                                    <div class="row">
+                                        {% for field in form %}
+                                            <div class="form-group col-md-6 ">
+                                                {% if field.name != 'pk' %}
+                                                    <label for="{{ field.name }}"
+                                                           class="form-control-label">{{ field.label_tag }}</label>
+                                                {% endif %}
+                                                <div class="">
+                                                    {{ field }}
+                                                    <p style="color:darkred">{{ field.help_text }}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    {% endfor %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button id="modalClose2" type="button" class="btn btn-secondary">Kapat</button>
