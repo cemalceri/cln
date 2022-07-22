@@ -22,7 +22,7 @@ class EtkinlikForm(ModelForm):
             ),
         }
         help_texts = {
-            "tekrar": '*Boş bırakıldığında 52 haftalık abonelik oluşturur.',
+            "tekrar": '*Girilen sayı kadar sonraki haftalara kayıt oluşturulur.',
         }
 
     def __init__(self, *args, **kwargs):
