@@ -113,10 +113,9 @@ def sil_etkinlik_serisi_ajax(request):
 @login_required
 def takvim_getir(request, kort_id=None):
     kort = KortModel.objects.filter(pk=kort_id).first()
-    secili_kort = kort.adi if kort else "Kort Seçiniz"
     form = EtkinlikForm()
     kortlar = KortModel.objects.all().order_by("id")
-    events = EtkinlikModel.objects.filter(kort_id=kort_id)
+    events = EtkinlikModel.objects.filter(kort_id=kort_id) if kort_id else []
     bugunun_etkinlikleri = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler(kort_id=kort_id)
     event_list = []
     # start: '2020-09-16T16:00:00'
@@ -132,7 +131,7 @@ def takvim_getir(request, kort_id=None):
             }
         )
     context = {"form": form, "events": event_list, "kortlar": kortlar,
-               "secili_kort": secili_kort,
+               "secili_kort": kort,
                "bugunun_etkinlikleri": bugunun_etkinlikleri}
     return render(request, 'calendarapp/etkinlik/takvim.html', context)
 

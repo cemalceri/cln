@@ -27,24 +27,29 @@ urlpatterns = [
     # Uye
     path("uye/index", uye_views.index_uye, name="index_uye"),
     path("uye/kaydet", uye_views.kaydet_uye, name="kaydet_uye"),
-    path("uye/kaydet/<int:id>", uye_views.kaydet_uye, name="guncelle_uye"),
     path("uye/detay/<int:id>", uye_views.detay_uye, name="detay_uye"),
+    path("uye/guncelle/<int:id>", uye_views.kaydet_uye, name="guncelle_uye"),
     path("uye/sil/<int:id>", uye_views.sil_uye, name="sil_uye"),
 
     # Kort
     path("kort/index", kort_views.index_kort, name="index_kort"),
     path("kort/kaydet", kort_views.kaydet_kort, name="kaydet_kort"),
     path("kort/detay/<int:id>", kort_views.detay_kort, name="detay_kort"),
-    path("kort/kaydet/<int:id>", kort_views.kaydet_kort, name="guncelle_kort"),
+    path("kort/guncelle/<int:id>", kort_views.kaydet_kort, name="guncelle_kort"),
     path("kort/sil/<int:id>", kort_views.sil_kort, name="sil_kort"),
 
     # Antrenor
     path("antrenor/index", antrenor_views.index_antrenor, name="index_antrenor"),
     path("antrenor/kaydet", antrenor_views.kaydet_antrenor, name="kaydet_antrenor"),
     path("antrenor/detay/<int:id>", antrenor_views.detay_antrenor, name="detay_antrenor"),
+    path("antrenor/guncelle/<int:id>", antrenor_views.kaydet_antrenor, name="guncelle_antrenor"),
+    path("antrenor/sil/<int:id>", antrenor_views.sil_antrenor, name="sil_antrenor"),
 
     # Grup
     path("grup/index", grup_views.index_grup, name="index_grup"),
+    path("grup/kaydet", grup_views.kaydet_grup, name="kaydet_grup"),
     path("grup/detay/<int:id>", grup_views.detay_grup, name="detay_grup"),
+    path("grup/guncelle/<int:id>", grup_views.kaydet_grup, name="guncelle_grup"),
+    path("grup/sil/<int:id>", grup_views.sil_grup, name="sil_grup"),
 
 ]

@@ -8,7 +8,8 @@
 
 {% block breadcrumb %}
     <div>
-        <h1><i class="fa fa-calendar"></i> Etkinlikler - {{ secili_kort }}</h1>
+        <h1><i class="fa fa-calendar"></i> Etkinlikler
+            - {{ secili_kort |default_if_none:"<b style='color:darkred'>Kort Seçiniz.</b>" }}</h1>
     </div>
     <ul class="app-breadcrumb breadcrumb">
         <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
@@ -17,7 +18,7 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-    <nav class="navbar navbar-light bg-dark">
+    <nav class="navbar navbar-light bg-dark rounded mb-2">
         <form>
             {% for kort in kortlar %}
                 <a class="btn btn-primary m-1"
@@ -104,6 +105,9 @@
     <script>
         let _selectedEvent;
         document.addEventListener('DOMContentLoaded', function () {
+            debugger;
+            if ('{{ secili_kort }}' == 'None')
+                return;
             var calendarEl = document.getElementById('calendar');
             var today = new Date();
             var calendar = new FullCalendar.Calendar(calendarEl, {
