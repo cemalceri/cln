@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import post_save, post_delete
 
 from accounts.models import User
 from calendarapp.models.abstract.base_abstract import BaseAbstract
@@ -43,6 +44,10 @@ class UyeModel(BaseAbstract):
         verbose_name_plural = "Müşteriler"
         ordering = ["-id"]
 
+    def delete(self, *args, **kwargs):
+        UyeGrupModel.objects.filter(uye1=self, uye2__isnull=True, uye3__isnull=True, uye4__isnull=True).delete()
+        super(UyeModel, self).delete(*args, **kwargs)
+
 
 class UyeGrupModel(BaseAbstract):
     uye1 = models.ForeignKey(UyeModel, on_delete=models.SET_NULL, null=True, blank=True, related_name="uye1")
@@ -66,3 +71,19 @@ class UyeGrupModel(BaseAbstract):
         verbose_name = "Üye Grubu"
         verbose_name_plural = "Gruplar"
         ordering = ["-id"]
+
+
+def grup_kaydi_olustur(sender, instance, **kwargs):
+    if not UyeGrupModel.objects.filter(uye1=instance).exists():
+        UyeGrupModel.objects.create(uye1=instance)
+
+
+def grup_kaydi_sil(sender, instance, **kwargs):
+    uye = UyeGrupModel.objects.filter(uye1_id=instance.id)
+    print(instance.id)
+    print(uye)
+    if uye.exists():
+        uye.delete()
+
+
+post_save.connect(grup_kaydi_olustur, sender=UyeModel)
