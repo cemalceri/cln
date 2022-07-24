@@ -140,7 +140,7 @@ def takvim_getir(request, kort_id=None):
 def kaydet_etkinlik_ajax(request):
     form = EtkinlikForm(request.POST)
     if form.is_valid():
-        result = etkinlik_kaydi_validasyon_gecti_mi(form)
+        result = etkinlik_kaydi_hata_var_mi(form)
         if result:
             return result
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
@@ -158,7 +158,7 @@ def kaydet_etkinlik_ajax(request):
         return JsonResponse(data={"durum": "error", "mesaj": formErrorsToText(form.errors, EtkinlikModel)})
 
 
-def etkinlik_kaydi_validasyon_gecti_mi(form):
+def etkinlik_kaydi_hata_var_mi(form):
     mesaj = None
     if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
         mesaj = "Etkinlik başlangıç tarihi bitiş tarihinden sonra olamaz."
