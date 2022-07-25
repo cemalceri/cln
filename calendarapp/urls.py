@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import etkinlik_views
+from .views import etkinlik_views, rezervasyon_views
 from .views import uye_views
 from .views import kort_views
 from .views import antrenor_views
@@ -51,5 +51,12 @@ urlpatterns = [
     path("grup/detay/<int:id>", grup_views.detay_grup, name="detay_grup"),
     path("grup/guncelle/<int:id>", grup_views.kaydet_grup, name="guncelle_grup"),
     path("grup/sil/<int:id>", grup_views.sil_grup, name="sil_grup"),
+
+    # Rezervasyon
+    path("rezervasyon/index", rezervasyon_views.index, name="index_rezervasyon"),
+    path("rezervasyon/kaydet", rezervasyon_views.kaydet, name="kaydet_rezervasyon"),
+    path("rezervasyon/detay/<int:id>", rezervasyon_views.detay, name="detay_rezervasyon"),
+    path("rezervasyon/guncelle/<int:id>", rezervasyon_views.kaydet, name="guncelle_rezervasyon"),
+    path("rezervasyon/sil/<int:id>", rezervasyon_views.sil, name="sil_rezervasyon"),
 
 ]

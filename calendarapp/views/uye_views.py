@@ -16,12 +16,12 @@ def index_uye(request):
 @login_required
 def kaydet_uye(request, id=None):
     if request.method == 'POST':
-        uye = UyeModel.objects.filter(pk=id).first()
-        form = UyeKayitForm(request.POST, instance=uye)
+        entity = UyeModel.objects.filter(pk=id).first()
+        form = UyeKayitForm(request.POST, instance=entity)
         if form.is_valid():
-            uye = form.save(commit=False)
-            uye.user = request.user
-            uye.save()
+            entity = form.save(commit=False)
+            entity.user = request.user
+            entity.save()
             messages.success(request, "Üye kaydedildi.")
             return redirect("calendarapp:index_uye")
         else:

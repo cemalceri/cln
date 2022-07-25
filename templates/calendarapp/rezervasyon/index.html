@@ -1,0 +1,75 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Rezervasyon Listesi{% endblock title %}
+
+{% block breadcrumb %}
+    <div>
+        <h1><i class="fa fa-dashboard"></i> Rezervasyon Listesi</h1>
+        </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
+    </ul>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile">
+                <div class="row border-bottom mb-3 pb-3 ">
+                    <div class="col">
+                        <a class="btn btn-info float-right" href="{% url 'calendarapp:kaydet_rezervasyon' %}" id="actionBtn"><i
+                                class="fa fa-plus"></i> Ekle</a>
+                    </div>
+                </div>
+                <div class="tile-body">
+                    <div class="table-responsive">
+                        <div id="sampleTable_wrapper"
+                             class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table class="table table-bordered dataTable table-fixed">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Adı</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for item in list %}
+                                            <tr>
+                                                <td class="sorting_1">{{ forloop.counter }}</td>
+                                                <td>{{ item.adi }}</td>
+                                                <td>
+                                                    <a class="btn btn-primary btn-circle" title="Kaydı Düzenle"
+                                                       href="{% url 'calendarapp:guncelle_rezervasyon' item.id %}"><i
+                                                            class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-secondary btn-circle" title="Detayına Git"
+                                                       href="{% url 'calendarapp:detay_rezervasyon' item.id %}">
+                                                        <i class="fa fas fa-sitemap" style="color: black"></i></a>
+                                                    <a href="{% url 'calendarapp:sil_rezervasyon' item.id %}"
+                                                       class=" btn btn-danger btn-circle confirm-delete" title="Sil"
+                                                       data-toggle="modal"
+                                                       data-target="#confirmDeleteModal" id="delete_uye_{{ item.id }}">
+                                                        <i class="fa fa-trash" style="color: black"></i></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}
+
+{% block extrascripts %}
+
+{% endblock extrascripts %}
