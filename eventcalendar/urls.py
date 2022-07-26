@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
+from . import views
 from .views import DashboardView
 
 urlpatterns = [
     path("", DashboardView.as_view(), name="dashboard"),
+    path("baslangic-metodu", views.baslangic_metodu, name="baslangic_metodu"),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("", include("calendarapp.urls")),
