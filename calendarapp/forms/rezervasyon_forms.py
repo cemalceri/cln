@@ -7,9 +7,9 @@ from calendarapp.models.concrete.rezervasyon import RezervasyonModel
 
 class RezervasyonKayitForm(ModelForm):
     gunler = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=GunlerModel.objects.all(),
-                                            help_text="*Gün seçilmez ise bütün günler geçerlidir.")
+                                            help_text="*Gün seçilmez ise bütün günler geçerlidir.", required=False)
     saatler = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=SaatlerModel.objects.all(),
-                                             help_text="*Saat seçilmez ise bütün saatler geçerlidir.")
+                                             help_text="*Saat seçilmez ise bütün saatler geçerlidir." ,required=False)
 
     class Meta:
         model = RezervasyonModel
@@ -23,3 +23,4 @@ class RezervasyonKayitForm(ModelForm):
                 'class': '',
                 'autocomplete': 'nope'
             })
+

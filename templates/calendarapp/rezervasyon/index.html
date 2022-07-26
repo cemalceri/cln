@@ -34,6 +34,8 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Adı</th>
+                                            <th>Tercih Edilen Günler</th>
+                                            <th>Tercih Edilen Saatler</th>
                                             <th>İşlemler</th>
                                         </tr>
                                         </thead>
@@ -42,6 +44,8 @@
                                             <tr>
                                                 <td class="sorting_1">{{ forloop.counter }}</td>
                                                 <td>{{ item.adi }}</td>
+                                                <td>{{ item.tercih_edilen_gunler }}</td>
+                                                <td>{{ item.tercih_edilen_saatler }}</td>
                                                 <td>
                                                     <a class="btn btn-primary btn-circle" title="Kaydı Düzenle"
                                                        href="{% url 'calendarapp:guncelle_rezervasyon' item.id %}"><i

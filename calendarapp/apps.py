@@ -18,7 +18,7 @@ def saatler_yoksa_ekle():
         bitis_degeri = datetime(1970, 1, 1, 00, 30, 00)
         i = 0
         for i in range(0, 48):
-            SaatlerModel.objects.create(adi=str(baslangic_degeri.time()) + " - " + str(bitis_degeri.time()),
+            SaatlerModel.objects.create(adi=str(baslangic_degeri.time())[0:5] + " - " + str(bitis_degeri.time())[0:5],
                                         baslangic_degeri=baslangic_degeri, bitis_degeri=bitis_degeri)
             baslangic_degeri += timedelta(minutes=30)
             bitis_degeri += timedelta(minutes=30)

@@ -64,8 +64,8 @@ class EtkinlikModel(BaseAbstract):
                                  null=True, related_name="anternor")
     renk = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray",
                             verbose_name="Renk")
-    aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     tekrar = models.IntegerField(blank=True, null=True, verbose_name="Tekrar Sayısı")
+    aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik", null=True, blank=True,
                              verbose_name="Ekleyen")
