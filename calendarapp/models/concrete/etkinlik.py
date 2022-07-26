@@ -67,7 +67,7 @@ class EtkinlikModel(BaseAbstract):
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     tekrar = models.IntegerField(blank=True, null=True, verbose_name="Tekrar Sayısı")
     ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="events", null=True, blank=True,
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik", null=True, blank=True,
                              verbose_name="Ekleyen")
 
     objects = EtkinlikManager()

@@ -24,7 +24,7 @@ class RezervasyonModel(BaseAbstract):
     gunler = models.ManyToManyField(GunlerModel, verbose_name='Günler', blank=True, null=True)
     saatler= models.ManyToManyField(SaatlerModel, verbose_name='Saatler', blank=True, null=True)
     aciklama= models.TextField('Açıklama', null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="kort", null=True, blank=True,
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="rezervasyon", null=True, blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):
