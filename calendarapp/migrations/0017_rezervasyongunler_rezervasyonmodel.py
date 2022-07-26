@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('adi', models.CharField(max_length=250, verbose_name='Adı')),
                 ('saat_baslangic', models.TimeField(blank=True, null=True, verbose_name='Başlangıç Saati')),
                 ('saat_bitis', models.TimeField(blank=True, null=True, verbose_name='Bitiş Saati')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='kort', to=settings.AUTH_USER_MODEL, verbose_name='Ekleyen')),
+                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='rezervasyon', to=settings.AUTH_USER_MODEL, verbose_name='Ekleyen')),
             ],
             options={
                 'verbose_name': 'Rezervasyon',
