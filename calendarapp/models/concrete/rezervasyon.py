@@ -17,8 +17,10 @@ class RezervasyonManager(models.Manager):
 class RezervasyonModel(BaseAbstract):
     adi = models.CharField('Adı', max_length=250, null=False, blank=False)
     onem_derecesi = models.IntegerField('Önem Derecesi', null=False, blank=False, default=0)
-    gunler = models.ManyToManyField(GunlerModel, verbose_name='Günler', blank=True, null=True, related_name='gunler_rezervasyon_tablosu')
-    saatler = models.ManyToManyField(SaatlerModel, verbose_name='Saatler', blank=True, null=True, related_name='saatler_rezervasyon_tablosu')
+    gunler = models.ManyToManyField(GunlerModel, verbose_name='Günler', blank=True, null=True,
+                                    related_name='gunler_rezervasyon_tablosu')
+    saatler = models.ManyToManyField(SaatlerModel, verbose_name='Saatler', blank=True, null=True,
+                                     related_name='saatler_rezervasyon_tablosu')
     aciklama = models.TextField('Açıklama', null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="rezervasyon", null=True, blank=True,
                              verbose_name="Ekleyen")
