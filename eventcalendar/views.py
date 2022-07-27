@@ -32,13 +32,13 @@ def baslangic_metodu(request):
         saatler_yoksa_ekle()
         gunler_yoksa_ekle()
         messages.success(request, "Başarılı")
-        return redirect("calendarapp:dashboard")
+        return redirect("dashboard")
     except Exception as e:
         messages.error(request, "Hata oluştu" + e)
-        return redirect("calendarapp:dashboard")
+        return redirect("dashboard")
 
 
-def saatler_yoksa_ekle(request):
+def saatler_yoksa_ekle():
     from calendarapp.models.Enums import SaatlerModel
     if SaatlerModel.objects.count() == 0:
         from datetime import datetime
@@ -55,10 +55,10 @@ def saatler_yoksa_ekle(request):
 def gunler_yoksa_ekle():
     from calendarapp.models.Enums import GunlerModel
     if GunlerModel.objects.count() == 0:
-        GunlerModel.objects.create(adi="Pazartesi", haftanin_gunu=1, hafta_ici_mi=True)
-        GunlerModel.objects.create(adi="Salı", haftanin_gunu=2, hafta_ici_mi=True)
-        GunlerModel.objects.create(adi="Çarşamba", haftanin_gunu=3, hafta_ici_mi=True)
-        GunlerModel.objects.create(adi="Perşembe", haftanin_gunu=4, hafta_ici_mi=True)
-        GunlerModel.objects.create(adi="Cuma", haftanin_gunu=5, hafta_ici_mi=True)
-        GunlerModel.objects.create(adi="Cumartesi", haftanin_gunu=6, hafta_ici_mi=False)
-        GunlerModel.objects.create(adi="Pazar", haftanin_gunu=7, hafta_ici_mi=False)
+        GunlerModel.objects.create(adi="Pazartesi", haftanin_gunu=0, hafta_ici_mi=True)
+        GunlerModel.objects.create(adi="Salı", haftanin_gunu=1, hafta_ici_mi=True)
+        GunlerModel.objects.create(adi="Çarşamba", haftanin_gunu=2, hafta_ici_mi=True)
+        GunlerModel.objects.create(adi="Perşembe", haftanin_gunu=3, hafta_ici_mi=True)
+        GunlerModel.objects.create(adi="Cuma", haftanin_gunu=4, hafta_ici_mi=True)
+        GunlerModel.objects.create(adi="Cumartesi", haftanin_gunu=5, hafta_ici_mi=False)
+        GunlerModel.objects.create(adi="Pazar", haftanin_gunu=6, hafta_ici_mi=False)

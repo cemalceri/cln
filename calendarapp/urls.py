@@ -20,7 +20,7 @@ urlpatterns = [
     path("etkinlik/detay", etkinlik_views.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id"),
     path("etkinlik/sil", etkinlik_views.sil_etkinlik_ajax, name="sil_etkinlik_by_ajax"),
     path("etkinlik/sil/<int:id>", etkinlik_views.sil_etkinlik, name="sil_etkinlik_by_id"),
-    path("etkinlik/serisi_sil", etkinlik_views.sil_etkinlik_serisi_ajax, name="sil_etkinlik_serisi_by_id"),
+    path("etkinlik/serisi-sil", etkinlik_views.sil_etkinlik_serisi_ajax, name="sil_etkinlik_serisi_by_id"),
     path("etkinlik/kaydet", etkinlik_views.kaydet_etkinlik_ajax, name="kaydet_etkinlik_ajax"),
     path("etkinlik/tasi", etkinlik_views.saat_guncelle_etkinlik_ajax, name="saat_guncelle_etkinlik_ajax"),
 
@@ -58,5 +58,6 @@ urlpatterns = [
     path("rezervasyon/detay/<int:id>", rezervasyon_views.detay, name="detay_rezervasyon"),
     path("rezervasyon/guncelle/<int:id>", rezervasyon_views.kaydet, name="guncelle_rezervasyon"),
     path("rezervasyon/sil/<int:id>", rezervasyon_views.sil, name="sil_rezervasyon"),
+    path("rezervasyon/bekleyen-musteri", rezervasyon_views.bekleyen_musteri_getir_ajax, name="bekleyen_musteri_getir_ajax"),
 
 ]

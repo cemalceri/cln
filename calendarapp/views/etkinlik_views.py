@@ -68,6 +68,7 @@ class GelecekEtkinliklerListView(ListView):
 @login_required(login_url="signup")
 def getir_etkinlik_bilgisi_ajax(request):
     id = request.GET.get("id")
+    print(id)
     event = EtkinlikModel.objects.get(id=id)
     event_dict = to_dict(event)
     return JsonResponse(event_dict)
@@ -123,14 +124,14 @@ def takvim_getir(request, kort_id=None):
         event_list.append(
             {
                 "id": event.id,
-                "title": event.grup.__str__(),
+                "title": event.baslik,
                 "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                 "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                 "backgroundColor": event.renk,
                 # "eventColor": event.renk,
             }
         )
-    context = {"form": form, "events": event_list, "kortlar": kortlar,
+    context = {"form": form, "etkinlikler": event_list, "kortlar": kortlar,
                "secili_kort": kort,
                "bugunun_etkinlikleri": bugunun_etkinlikleri}
     return render(request, 'calendarapp/etkinlik/takvim.html', context)
@@ -154,7 +155,6 @@ def kaydet_etkinlik_ajax(request):
             etkinlik_tekrar_sayisi_kadar_ekle(request, form, item.id)
         return JsonResponse(data={"durum": "ok", "mesaj": "Etkinlik kaydedildi."})
     else:
-        # for error in form.errors:
         return JsonResponse(data={"durum": "error", "mesaj": formErrorsToText(form.errors, EtkinlikModel)})
 
 
