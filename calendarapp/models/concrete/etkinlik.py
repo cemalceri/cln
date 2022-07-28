@@ -67,6 +67,7 @@ class EtkinlikModel(BaseAbstract):
     tekrar = models.IntegerField(blank=True, null=True, verbose_name="Tekrar Sayısı")
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")
+    tamamlandi_mi = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik", null=True, blank=True,
                              verbose_name="Ekleyen")
 
@@ -87,3 +88,21 @@ class EtkinlikModel(BaseAbstract):
     def get_html_url(self):
         url = reverse("calendarapp:event-detail", args=(self.id,))
         return f'<a href="{url}"> {self.baslik} </a>'
+
+
+class EtkinlikKatilimModel(BaseAbstract):
+    etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
+                                 null=True, related_name="etkinlik")
+    uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=True,
+                            related_name="uye")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik_katilim", null=True, blank=True,
+                             verbose_name="Ekleyen")
+
+    class Meta:
+        verbose_name = "Etkinlik Katılım"
+        verbose_name_plural = "Etkinlik Katılımları"
+        ordering = ["-id"]
+
+    def __str__(self):
+        return f"{self.etkinlik.baslik} - {self.uye.adi}"
+

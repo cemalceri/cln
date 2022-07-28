@@ -11,7 +11,7 @@ import calendar
 from django.contrib.auth.decorators import login_required
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 from django.views.generic import ListView
-from calendarapp.models.concrete.etkinlik import EtkinlikModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
@@ -68,7 +68,6 @@ class GelecekEtkinliklerListView(ListView):
 @login_required(login_url="signup")
 def getir_etkinlik_bilgisi_ajax(request):
     id = request.GET.get("id")
-    print(id)
     event = EtkinlikModel.objects.get(id=id)
     event_dict = to_dict(event)
     return JsonResponse(event_dict)
@@ -212,3 +211,26 @@ def saat_guncelle_etkinlik_ajax(request):
     etkinlik.bitis_tarih_saat = bitis_tarih_saat
     etkinlik.save()
     return JsonResponse(data={"durum": "ok", "mesaj": "Etkinlik guncellendi."})
+
+
+@login_required
+def etkinlik_tamamlandi_ajax(request):
+    try:
+        id = request.GET.get("id")
+        etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+        if etkinlik.bitis_tarih_saat < datetime.now():
+            return JsonResponse(
+                data={"durum": "ok", "mesaj": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
+        etkinlik.tamamlandi_mi = True
+        etkinlik.save()
+        if etkinlik.grup.uye1:
+            EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye1, user=request.user)
+        if etkinlik.grup.uye2:
+            EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye2, user=request.user)
+        if etkinlik.grup.uye3:
+            EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye3, user=request.user)
+        if etkinlik.grup.uye4:
+            EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye4, user=request.user)
+        return JsonResponse(data={"durum": "ok", "mesaj": "İşlem Başarılı."})
+    except Exception as e:
+        return JsonResponse(data={"durum": "error", "mesaj": "Hata oluştu." + e.__str__()})

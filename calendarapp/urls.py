@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import etkinlik_views, rezervasyon_views
+from .views import etkinlik_views, rezervasyon_views, telafi_ders_views
 from .views import uye_views
 from .views import kort_views
 from .views import antrenor_views
@@ -9,7 +9,7 @@ from .views import grup_views
 app_name = "calendarapp"
 
 urlpatterns = [
-    # Etkinlik
+    # Takvim
     path("takvim/", etkinlik_views.takvim_getir, name="takvim-getir"),
     path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim-getir_by_kort_id"),
     path("etkinlik/", etkinlik_views.ButunEtkinliklerListView.as_view(), name="getir_butun_etkinlikler"),
@@ -17,12 +17,14 @@ urlpatterns = [
          name="getir_bugun_devam_eden_etkinlikler"),
     path("etkinlik/gelecek", etkinlik_views.GelecekEtkinliklerListView.as_view(), name="getir_gelecek_etkinlikler"),
 
+    # Etkinlik
     path("etkinlik/detay", etkinlik_views.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id"),
     path("etkinlik/sil", etkinlik_views.sil_etkinlik_ajax, name="sil_etkinlik_by_ajax"),
     path("etkinlik/sil/<int:id>", etkinlik_views.sil_etkinlik, name="sil_etkinlik_by_id"),
     path("etkinlik/serisi-sil", etkinlik_views.sil_etkinlik_serisi_ajax, name="sil_etkinlik_serisi_by_id"),
     path("etkinlik/kaydet", etkinlik_views.kaydet_etkinlik_ajax, name="kaydet_etkinlik_ajax"),
     path("etkinlik/tasi", etkinlik_views.saat_guncelle_etkinlik_ajax, name="saat_guncelle_etkinlik_ajax"),
+    path("etkinlik/tamamlandi", etkinlik_views.etkinlik_tamamlandi_ajax, name="etkinlik_tamamlandi_ajax"),
 
     # Uye
     path("uye/index", uye_views.index_uye, name="index_uye"),
@@ -59,5 +61,12 @@ urlpatterns = [
     path("rezervasyon/guncelle/<int:id>", rezervasyon_views.kaydet, name="guncelle_rezervasyon"),
     path("rezervasyon/sil/<int:id>", rezervasyon_views.sil, name="sil_rezervasyon"),
     path("rezervasyon/bekleyen-musteri", rezervasyon_views.bekleyen_musteri_getir_ajax, name="bekleyen_musteri_getir_ajax"),
+
+    # Telafi Ders
+    path("telafi-ders/index", telafi_ders_views.index, name="index_telafi_ders"),
+    path("telafi-ders/kaydet", telafi_ders_views.kaydet, name="kaydet_telafi_ders"),
+    path("telafi-ders/detay/<int:id>", telafi_ders_views.detay, name="detay_telafi_ders"),
+    path("telafi-ders/guncelle/<int:id>", telafi_ders_views.kaydet, name="guncelle_telafi_ders"),
+    path("telafi-ders/sil/<int:id>", telafi_ders_views.sil, name="sil_telafi_ders"),
 
 ]

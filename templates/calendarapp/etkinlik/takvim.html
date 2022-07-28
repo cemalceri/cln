@@ -52,80 +52,83 @@
                     <div id="calendar"></div>
                 </div>
 
-                <div class="modal fade show" id="eventModal" tabindex="-1" role="dialog"
-                     aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                    <div class=" modal-dialog-scrollable" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-info">
-                                <h5 class="modal-title text-white" id="exampleModalLongTitle">Etkinlik Kaydet</h5>
-                                <button id="modalClose1" type="button" class="close" data-dismiss="modal"
-                                        aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" action="#" role="form" id="etkinlikForm">
-                                    {% csrf_token %}
-                                    <div class="modal-body">
-                                        <div class="row p-2">
-                                            <div class="col-md-2 border p-md-2">
-                                                <div class="list-group">
-                                                    <a href="#"
-                                                       class="list-group-item list-group-item-action text-center active disabled">
-                                                        Bu Saat İçin Bekleyen Müşteriler
-                                                    </a>
-                                                    <a class="list-group-item list-group-item-action">
-                                                        Ahmet </a>
-                                                    <div id="bekleyenList"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1 "></div>
-                                            <div class="col-md-9 border p-md-2">
-                                                <div class="row">
-                                                    {% for field in form %}
-                                                        <div class="form-group col-md-6 ">
-                                                            {% if field.name != 'pk' %}
-                                                                <label for="{{ field.name }}"
-                                                                       class="form-control-label">
-                                                                    {{ field.label_tag }}
-                                                                    {% if field.help_text %}
-                                                                        <i class="fa fa-info-circle"
-                                                                           title="{{ field.help_text }}                                                                "></i>
-                                                                    {% endif %}
-                                                                </label>
-                                                            {% endif %}
-                                                            <div class="">
-                                                                {{ field }}
-                                                            </div>
-                                                        </div>
-                                                    {% endfor %}
-
-                                                </div>
-                                            </div>
-                                        </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade show" id="eventModal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class=" modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h5 class="modal-title text-white" id="exampleModalLongTitle">Etkinlik Kaydet</h5>
+                    <button id="modalClose1" type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="#" role="form" id="etkinlikForm">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="row p-2">
+                                <div class="col-md-2 border p-md-2">
+                                    <div class="list-group">
+                                        <a href="#"
+                                           class="list-group-item list-group-item-action text-center active disabled">
+                                            Bu Saat İçin Bekleyen Müşteriler
+                                        </a>
+                                        <a class="list-group-item list-group-item-action">
+                                            Ahmet </a>
+                                        <div id="bekleyenList"></div>
                                     </div>
-                                </form>
-
-                            </div>
-                            <div class="modal-footer">
-                                <button id="modalClose2" type="button" class="btn btn-secondary">Kapat</button>
-                                <button type="button" hidden id="btnYeniKayit" onclick="clearModalFields()"
-                                        class="btn btn-info">Yeni Kayıt
-                                </button>
-                                <button id="btnSil" onclick="EtkinlikSil()" type="button"
-                                        class="btn btn-danger">Temizle
-                                </button>
-                                <button id="btnSeriyiSil" hidden onclick="EtkinlikSerisiSil()" type="button"
-                                        class="btn btn-outline-danger">Seriyi Sil
-                                </button>
-                                <button type="button" id="kaydetBtn" class="btn btn-primary">Kaydet</button>
+                                </div>
+                                <div class="col-md-1 "></div>
+                                <div class="col-md-9 border p-md-2">
+                                    <div class="row">
+                                        {% for field in form %}
+                                            <div class="form-group col-md-6 ">
+                                                {% if field.name != 'pk' %}
+                                                    <label for="{{ field.name }}"
+                                                           class="form-control-label">
+                                                        {{ field.label_tag }}
+                                                        {% if field.help_text %}
+                                                            <i class="fa fa-info-circle"
+                                                               title="{{ field.help_text }}                                                                "></i>
+                                                        {% endif %}
+                                                    </label>
+                                                {% endif %}
+                                                <div class="">
+                                                    {{ field }}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="modalClose2" type="button" class="btn btn-secondary">Kapat</button>
+                    <button id="btnTamamlandi" hidden type="button" onclick="etkinlikTamamlandi()" class="btn btn-dark">
+                        Tamamlandı
+                    </button>
+                    <button type="button" hidden id="btnYeniKayit" onclick="clearModalFields()"
+                            class="btn btn-info">Yeni Kayıt
+                    </button>
+                    <button id="btnSil" onclick="EtkinlikSil()" type="button"
+                            class="btn btn-danger">Temizle
+                    </button>
+                    <button id="btnSeriyiSil" hidden onclick="EtkinlikSerisiSil()" type="button"
+                            class="btn btn-outline-danger">Seriyi Sil
+                    </button>
+                    <button type="button" id="kaydetBtn" class="btn btn-primary">Kaydet</button>
                 </div>
             </div>
         </div>
     </div>
+
 {% endblock content %}
 
 {% block extrascripts %}
@@ -260,10 +263,13 @@
                             if (element)
                                 element.value = data[item];
                         }
+                        debugger;
+                        if (item === 'tamamlandi_mi')
+                            document.getElementById("btnTamamlandi").hidden = data[item]
                     }
                 }
             });
-            bekleyen_musteri_getir(event.startStr.split('+')[0]);
+            bekleyenMusteriGetir(event.startStr.split('+')[0]);
         }
 
         function EtkinlikSil() {
@@ -335,8 +341,9 @@
             document.getElementById("btnSil").innerText = "Temizle";
             document.getElementById("btnSeriyiSil").hidden = true;
             document.getElementById("btnYeniKayit").hidden = true;
+            document.getElementById("btnTamamlandi").hidden = true;
             $('#id_kort option[value="' + seciliKort + '"]').prop('selected', true);
-            bekleyen_musteri_getir(tarih_saat);
+            bekleyenMusteriGetir(tarih_saat);
             document.getElementById('eventModal').style.display = 'block';
         }
 
@@ -366,7 +373,7 @@
             return retVal;
         }
 
-        function bekleyen_musteri_getir(tarih_saat) {
+        function bekleyenMusteriGetir(tarih_saat) {
             $.ajax({
                 url: '{% url 'calendarapp:bekleyen_musteri_getir_ajax' %}',
                 type: 'GET',
@@ -384,6 +391,30 @@
                 },
                 error: function () {
                     popupMesajGoster("Seçilen saat için bekleyen rezervasyonları çekerken hata oluştu", "error");
+                },
+            });
+
+        }
+
+        function etkinlikTamamlandi() {
+            debugger;
+            $.ajax({
+                url: '{% url 'calendarapp:etkinlik_tamamlandi_ajax' %}',
+                type: 'GET',
+                data: {
+                    'id': _selectedEvent.id,
+                },
+                success: function (result) {
+                    if (result.durum == "ok") {
+                        debugger;
+                        popupMesajGoster(result.mesaj, 'success');
+                        closeModal();
+                    } else {
+                        popupMesajGoster(result.mesaj, "error");
+                    }
+                },
+                error: function () {
+                    popupMesajGoster("Hata oluştu", "error");
                 },
             });
 
