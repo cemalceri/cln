@@ -152,9 +152,9 @@ def kaydet_etkinlik_ajax(request):
             item.user = request.user
             item.save()
             etkinlik_tekrar_sayisi_kadar_ekle(request, form, item.id)
-        return JsonResponse(data={"durum": "ok", "mesaj": "Etkinlik kaydedildi."})
+        return JsonResponse(data={"status": "success", "message": "Etkinlik kaydedildi."})
     else:
-        return JsonResponse(data={"durum": "error", "mesaj": formErrorsToText(form.errors, EtkinlikModel)})
+        return JsonResponse(data={"status": "error", "message": formErrorsToText(form.errors, EtkinlikModel)})
 
 
 def etkinlik_kaydi_hata_var_mi(form):
@@ -165,7 +165,7 @@ def etkinlik_kaydi_hata_var_mi(form):
                                        form.data["kort"], form.cleaned_data["pk"]):
         mesaj = "Seçilen tarih saate başka etkinlik eklenemez."
     if mesaj is not None:
-        return JsonResponse(data={"durum": "error", "mesaj": mesaj})
+        return JsonResponse(data={"status": "error", "message": mesaj})
     return False
 
 
@@ -206,11 +206,11 @@ def saat_guncelle_etkinlik_ajax(request):
     bitis_tarih_saat = request.GET.get("bitis_tarih_saat")
     etkinlik = EtkinlikModel.objects.filter(pk=id).first()
     if ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, etkinlik.kort_id, id):
-        return JsonResponse(data={"durum": "error", "mesaj": "Seçilen tarih saatlerde başka etkinlik kayıtlı."})
+        return JsonResponse(data={"status": "error", "message": "Seçilen tarih saatlerde başka etkinlik kayıtlı."})
     etkinlik.baslangic_tarih_saat = baslangic_tarih_saat
     etkinlik.bitis_tarih_saat = bitis_tarih_saat
     etkinlik.save()
-    return JsonResponse(data={"durum": "ok", "mesaj": "Etkinlik guncellendi."})
+    return JsonResponse(data={"status": "success", "message": "Etkinlik guncellendi."})
 
 
 @login_required
@@ -218,9 +218,9 @@ def etkinlik_tamamlandi_ajax(request):
     try:
         id = request.GET.get("id")
         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
-        if etkinlik.bitis_tarih_saat < datetime.now():
+        if etkinlik.bitis_tarih_saat > datetime.now():
             return JsonResponse(
-                data={"durum": "ok", "mesaj": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
+                data={"status": "error", "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
         etkinlik.tamamlandi_mi = True
         etkinlik.save()
         if etkinlik.grup.uye1:
@@ -231,6 +231,6 @@ def etkinlik_tamamlandi_ajax(request):
             EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye3, user=request.user)
         if etkinlik.grup.uye4:
             EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye4, user=request.user)
-        return JsonResponse(data={"durum": "ok", "mesaj": "İşlem Başarılı."})
+        return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
     except Exception as e:
-        return JsonResponse(data={"durum": "error", "mesaj": "Hata oluştu." + e.__str__()})
+        return JsonResponse(data={"status": "error", "message": "Hata oluştu." + e.__str__()})

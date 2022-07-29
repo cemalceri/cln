@@ -64,7 +64,7 @@ urlpatterns = [
 
     # Telafi Ders
     path("telafi-ders/index", telafi_ders_views.index, name="index_telafi_ders"),
-    path("telafi-ders/kaydet", telafi_ders_views.kaydet, name="kaydet_telafi_ders"),
+    path("telafi-ders/kaydet/<int:etkinlik_id>", telafi_ders_views.kaydet, name="kaydet_telafi_ders"),
     path("telafi-ders/detay/<int:id>", telafi_ders_views.detay, name="detay_telafi_ders"),
     path("telafi-ders/guncelle/<int:id>", telafi_ders_views.kaydet, name="guncelle_telafi_ders"),
     path("telafi-ders/sil/<int:id>", telafi_ders_views.sil, name="sil_telafi_ders"),

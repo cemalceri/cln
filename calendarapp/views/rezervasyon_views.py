@@ -62,4 +62,4 @@ def bekleyen_musteri_getir_ajax(request):
     for rezervasyon in rezervasyonlar:
         list.append({"id": rezervasyon.id, "adi": rezervasyon.adi, "aciklama": rezervasyon.aciklama})
     print(list)
-    return JsonResponse(data={"data": list, "durum": "ok", "mesaj": "Başarılı"}, safe=False)
+    return JsonResponse(data={"data": list, "status": "success", "message": "Başarılı"}, safe=False)
