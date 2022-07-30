@@ -6,7 +6,7 @@ from calendarapp.models.Enums import RenkEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.kort import KortModel
-from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel
+from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel, GrupModel
 
 
 class EtkinlikManager(models.Manager):
@@ -54,8 +54,8 @@ class EtkinlikManager(models.Manager):
 
 class EtkinlikModel(BaseAbstract):
     baslik = models.CharField(max_length=200, verbose_name="Başlık")
-    grup = models.ForeignKey(UyeGrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
-                             null=True, related_name="grup")
+    grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
+                             null=True, related_name="etkinlik_grup_relations")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=True,

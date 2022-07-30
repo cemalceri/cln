@@ -22,7 +22,7 @@
                         {% if form.instance.id %}
                       action="{% url 'calendarapp:guncelle_telafi_ders' form.instance.id %}">
                         {% else %}
-                            action="{% url 'calendarapp:kaydet_telafi_ders' %}">
+                            action="{% url 'calendarapp:kaydet_telafi_ders' etkinlik_id %}">
                         {% endif %}
                 {% csrf_token %}
                 <div class="row ">

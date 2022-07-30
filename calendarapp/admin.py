@@ -26,7 +26,7 @@ from django.contrib import admin
 from calendarapp.models.Enums import SaatlerModel, GunlerModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.kort import KortModel
-from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel
+from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel, GrupModel
 
 admin.site.register(EtkinlikModel)
 admin.site.register(UyeModel)
@@ -34,3 +34,4 @@ admin.site.register(UyeGrupModel)
 admin.site.register(KortModel)
 admin.site.register(GunlerModel)
 admin.site.register(SaatlerModel)
+admin.site.register(GrupModel)

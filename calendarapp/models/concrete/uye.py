@@ -24,66 +24,60 @@ class UyeModel(BaseAbstract):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="uye", null=True, blank=True,
                              verbose_name="Ekleyen")
 
-    # il = models.ForeignKey(SehirModel, on_delete=models.SET_NULL, null=True, blank=True,
-    #                        related_name='musterinin_sehri', verbose_name='Şehir')
-    # ilce = models.ForeignKey(IlceModel, on_delete=models.SET_NULL, null=True, blank=True,
-    #                          related_name='musterinin_ilcesi', verbose_name='İlçe')
-    # sube = models.ForeignKey(SubeModel, on_delete=models.SET_NULL, null=True, blank=True,
-    #                          related_name='musterinin_subesi', verbose_name='Şube')
-    # aktifMi = models.BooleanField('Aktif Mi', null=False, blank=False, default=True)
-    # tipi = models.ForeignKey(MusteriTipiModel, on_delete=models.SET_NULL, null=True, blank=True,
-    #                          related_name='musterinin_tipi', verbose_name='Müşteri Tipi')
-
     def __str__(self):
         return str(self.adi) + " " + str(self.soyadi)
 
     objects = UyeManager()
+
+    def delete(self, *args, **kwargs):
+        uye_grup = UyeGrupModel.objects.filter(uye_id=self.id)
+        GrupModel.objects.filter(pk=uye_grup.first().grup_id, tekil_mi=True).delete()
+        super(UyeModel, self).delete(*args, **kwargs)
 
     class Meta:
         verbose_name = "Müşteri"
         verbose_name_plural = "Müşteriler"
         ordering = ["-id"]
 
-    def delete(self, *args, **kwargs):
-        UyeGrupModel.objects.filter(uye1=self, uye2__isnull=True, uye3__isnull=True, uye4__isnull=True).delete()
-        super(UyeModel, self).delete(*args, **kwargs)
+
+class GrupModel(BaseAbstract):
+    adi = models.CharField('Adı', max_length=250, null=True, blank=False)
+    tekil_mi = models.BooleanField('Tekil Mi', default=False)
+
+    class Meta:
+        verbose_name = "Gruplar"
+        verbose_name_plural = "Gruplar"
+        ordering = ["-id"]
+
+    def __str__(self):
+        if self.tekil_mi is True:
+            return str(self.adi)
+        else:
+            string = ""
+            for item in UyeGrupModel.objects.filter(grup_id=self.id):
+                string += item.uye.adi + " " + item.uye.soyadi + " - "
+            return string
 
 
 class UyeGrupModel(BaseAbstract):
-    uye1 = models.ForeignKey(UyeModel, on_delete=models.SET_NULL, null=True, blank=True, related_name="uye1")
-    uye2 = models.ForeignKey(UyeModel, on_delete=models.SET_NULL, null=True, blank=True, related_name="uye2")
-    uye3 = models.ForeignKey(UyeModel, on_delete=models.SET_NULL, null=True, blank=True, related_name="uye3")
-    uye4 = models.ForeignKey(UyeModel, on_delete=models.SET_NULL, null=True, blank=True, related_name="uye4")
+    grup = models.ForeignKey(GrupModel, on_delete=models.CASCADE, related_name="grup_uyegrup_relations", null=False,
+                             blank=False)
+    uye = models.ForeignKey(UyeModel, on_delete=models.CASCADE, null=False, blank=False,
+                            related_name="uye_uyegrup_relations")
+    odeme_sekli = models.CharField('Ödeme Şekli', max_length=250, null=True, blank=True)
 
     def __str__(self):
-        value = ""
-        if self.uye1:
-            value += " 1-" + str(self.uye1)
-        if self.uye2:
-            value += " 2-" + str(self.uye2)
-        if self.uye3:
-            value += " 3-" + str(self.uye3)
-        if self.uye4:
-            value += " 4-" + str(self.uye4)
-        return value
+        return self.uye.adi + " " + self.uye.soyadi
 
     class Meta:
         verbose_name = "Üye Grubu"
-        verbose_name_plural = "Gruplar"
+        verbose_name_plural = "Üye Gruplar"
         ordering = ["-id"]
 
 
 def grup_kaydi_olustur(sender, instance, **kwargs):
-    if not UyeGrupModel.objects.filter(uye1=instance).exists():
-        UyeGrupModel.objects.create(uye1=instance)
-
-
-def grup_kaydi_sil(sender, instance, **kwargs):
-    uye = UyeGrupModel.objects.filter(uye1_id=instance.id)
-    print(instance.id)
-    print(uye)
-    if uye.exists():
-        uye.delete()
+    UyeGrupModel.objects.create(uye=instance, grup=GrupModel.objects.create(tekil_mi=True,
+                                                                            adi=instance.adi + " " + instance.soyadi))
 
 
 post_save.connect(grup_kaydi_olustur, sender=UyeModel)

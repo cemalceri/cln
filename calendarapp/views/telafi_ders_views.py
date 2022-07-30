@@ -5,14 +5,15 @@ from django.shortcuts import render, redirect
 from calendarapp.forms.antrenor_forms import AntrenorKayitForm
 from calendarapp.forms.telafi_ders_forms import TelafiDersKayitForm
 from calendarapp.models.concrete.antrenor import AntrenorModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.telafi_ders import TelafiDersModel
 from calendarapp.utils import formErrorsToText
 
 
 @login_required
 def index(request):
-    form = AntrenorModel.objects.all().order_by('id')
-    return render(request, "calendarapp/antrenor/index.html", {"list": form})
+    form = TelafiDersModel.objects.all().order_by('id')
+    return render(request, "calendarapp/telafi_ders/index.html", {"list": form})
 
 
 @login_required
@@ -29,8 +30,9 @@ def kaydet(request, etkinlik_id=None):
         else:
             messages.error(request, formErrorsToText(form.errors, TelafiDersModel))
             return render(request, "calendarapp/telafi_ders/kaydet.html", context={'form': form})
-    form = TelafiDersKayitForm(data={"etkinlik_id": etkinlik_id})
-    return render(request, "calendarapp/telafi_ders/kaydet.html", context={'form': form})
+    # form = TelafiDersKayitForm(data={"etkinlik_id": etkinlik_id})
+    form = TelafiDersKayitForm(initial={"telafi_etkinlik": etkinlik_id})
+    return render(request, "calendarapp/telafi_ders/kaydet.html", context={'form': form, 'etkinlik_id': etkinlik_id})
 
 
 @login_required
