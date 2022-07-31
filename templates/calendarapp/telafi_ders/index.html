@@ -30,6 +30,9 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Adı</th>
+                                            <th>Kaçırılan Etkinlik</th>
+                                            <th>Kullanılan Etkinlik</th>
+                                            <th>Açıklama</th>
                                             <th>İşlemler</th>
                                         </tr>
                                         </thead>
@@ -37,7 +40,10 @@
                                         {% for item in list %}
                                             <tr>
                                                 <td class="sorting_1">{{ forloop.counter }}</td>
-                                                <td>{{ item.adi }}</td>
+                                                <td>{{ item }}</td>
+                                                <td>{{ item.telafi_etkinlik }}</td>
+                                                <td>{{ item.kullanilan_etkinlik | default_if_none:""}}</td>
+                                                <td>{{ item.aciklama }}</td>
                                                 <td>
                                                     <a class="btn btn-primary btn-circle" title="Kaydı Düzenle"
                                                        href="{% url 'calendarapp:guncelle_telafi_ders' item.id %}"><i

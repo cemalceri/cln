@@ -1,0 +1,77 @@
+{% load static %}
+<div class="modal fade show" id="telafiDersModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class=" modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-white" id="exampleModalLongTitle">Etkinlik Kaydet</h5>
+                <button id="modalClose1" type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="#" role="form" id="etkinlikForm">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row p-2">
+                            <div class="col-md-2 border p-md-2">
+                                <div class="list-group">
+                                    <a href="#"
+                                       class="list-group-item list-group-item-action text-center active disabled">
+                                        Bu Saat İçin Bekleyen Müşteriler
+                                    </a>
+                                    <div id="bekleyenList"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-1 "></div>
+                            <div class="col-md-9 border p-md-2">
+                                <div class="row">
+                                    {% for field in form %}
+                                        <div class="form-group col-md-6 ">
+                                            {% if field.name != 'pk' %}
+                                                <label for="{{ field.name }}"
+                                                       class="form-control-label">
+                                                    {{ field.label_tag }}
+                                                    {% if field.help_text %}
+                                                        <i class="fa fa-info-circle"
+                                                           title="{{ field.help_text }}                                                                "></i>
+                                                    {% endif %}
+                                                </label>
+                                            {% endif %}
+                                            <div class="">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+{#            <div class="modal-footer">#}
+{#                <button id="btnTamamlandi" hidden type="button" onclick="etkinlikTamamlandi()" class="btn btn-dark">#}
+{#                    Tamamlandı#}
+{#                </button>#}
+{#                <a id="btnTelafiDers" type="button" hidden#}
+{#                   class="btn btn-success"> Telafi Ders#}
+{#                </a>#}
+                {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
+{#                <button type="button" hidden id="btnYeniKayit" onclick="clearModalFields()"#}
+{#                        class="btn btn-info">Yeni Kayıt#}
+{#                </button>#}
+                {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
+{#                <button id="btnSil" onclick="EtkinlikSil()" type="button"#}
+{#                        class="btn btn-danger">Temizle#}
+{#                </button>#}
+{#                <button id="btnSeriyiSil" hidden onclick="EtkinlikSerisiSil()" type="button"#}
+{#                        class="btn btn-outline-danger">Seriyi Sil#}
+{#                </button>#}
+                {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
+{#                <button id="modalClose2" type="button" class="btn btn-secondary">Kapat</button>#}
+{#                <button type="button" id="kaydetBtn" class="btn btn-primary">Kaydet</button>#}
+            </div>
+        </div>
+    </div>
+</div>

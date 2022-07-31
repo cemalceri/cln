@@ -15,10 +15,14 @@ class TelafiDersKayitForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TelafiDersKayitForm, self).__init__(*args, **kwargs)
-        etkinlik = EtkinlikModel.objects.filter(pk=self.initial["telafi_etkinlik"])
+        if self.instance:  # Guncelleme ise sadece o elemanları combolara doldur
+            etkinlik = EtkinlikModel.objects.filter(pk=self.instance.telafi_etkinlik_id)
+            self.fields["uye"].queryset = UyeModel.objects.filter(pk=self.instance.uye_id)
+        else:  # yeni kayıt ise uye combosu ilgili bütün uyeleri doldur.
+            etkinlik = EtkinlikModel.objects.filter(pk=self.data['etkinlik_id'])
+            self.fields["uye"].queryset = etkinlik.first().grup.grup_uyegrup_relations.all()
         self.fields["telafi_etkinlik"].queryset = etkinlik
-        self.fields["uye"].queryset = UyeModel.objects.filter(
-            Q(pk=etkinlik.first().grup.uye1.pk) | Q(pk=etkinlik.first().grup.uye2))
+
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',
