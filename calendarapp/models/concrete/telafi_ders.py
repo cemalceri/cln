@@ -12,7 +12,7 @@ class TelafiDersModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, on_delete=models.CASCADE, related_name="telafiDers", verbose_name="Üye",
                             null=False, blank=False)
     kullanilan_etkinlik = models.ForeignKey(EtkinlikModel, on_delete=models.CASCADE, related_name="kullanilanDers",
-                                            verbose_name="Kullanılan Etkinlik", null=True, blank=False)
+                                            verbose_name="Kullanılan Etkinlik", null=True, blank=True)
     aciklama = models.TextField('Açıklama', null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="telafiDers", null=True, blank=True,
                              verbose_name="Ekleyen")

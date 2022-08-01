@@ -11,18 +11,53 @@ class TelafiDersKayitForm(ModelForm):
     class Meta:
         model = TelafiDersModel
         fields = '__all__'
-        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'kullanilan_etkinlik']
+        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'kullanilan_etkinlik',
+                   'telafi_etkinlik']
 
     def __init__(self, *args, **kwargs):
         super(TelafiDersKayitForm, self).__init__(*args, **kwargs)
-        if self.instance:  # Guncelleme ise sadece o elemanları combolara doldur
-            etkinlik = EtkinlikModel.objects.filter(pk=self.instance.telafi_etkinlik_id)
-            self.fields["uye"].queryset = UyeModel.objects.filter(pk=self.instance.uye_id)
-        else:  # yeni kayıt ise uye combosu ilgili bütün uyeleri doldur.
-            etkinlik = EtkinlikModel.objects.filter(pk=self.data['etkinlik_id'])
-            self.fields["uye"].queryset = etkinlik.first().grup.grup_uyegrup_relations.all()
-        self.fields["telafi_etkinlik"].queryset = etkinlik
+        print(self.initial.get('uye'))
+        if self.initial.get('uye'):
+            self.fields['uye'].queryset = self.initial.get('uye')
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'nope'
+            })
 
+
+class TelafiDersGetirForm(ModelForm):
+    class Meta:
+        model = TelafiDersModel
+        fields = '__all__'
+        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'kullanilan_etkinlik',
+                   'telafi_etkinlik']
+
+    def __init__(self, *args, **kwargs):
+        super(TelafiDersGetirForm, self).__init__(*args, **kwargs)
+        etkinlik = EtkinlikModel.objects.filter(pk=self.data["etkinlik_id"])
+        self.fields["uye"] = forms.ModelChoiceField(widget=forms.Select,
+                                                    queryset=etkinlik.first().grup.grup_uyegrup_relations.all(),
+                                                    initial=0)
+        # print(etkinlik.first().grup.grup_uyegrup_relations.all())
+
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'nope'
+            })
+
+
+class TelafiDersGuncelleForm(ModelForm):
+    class Meta:
+        model = TelafiDersModel
+        fields = '__all__'
+        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'kullanilan_etkinlik',
+                   'telafi_etkinlik']
+
+    def __init__(self, *args, **kwargs):
+        super(TelafiDersGuncelleForm, self).__init__(*args, **kwargs)
+        # self.fields["uye"].queryset = etkinlik.first().grup.grup_uyegrup_relations.all()
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',

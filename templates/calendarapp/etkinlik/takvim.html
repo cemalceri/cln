@@ -111,9 +111,9 @@
                     <button id="btnTamamlandi" hidden type="button" onclick="etkinlikTamamlandi()" class="btn btn-dark">
                         Tamamlandı
                     </button>
-                    <button id="btnTelafiDers" type="button" hidden onclick="acEtkinlikTelafiModal()"
+                    <a id="btnTelafiDers" type="button" hidden target="_blank"
                             class="btn btn-success"> Telafi Ders
-                    </button>
+                    </a>
                     {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
                     <button type="button" hidden id="btnYeniKayit" onclick="clearModalFields()"
                             class="btn btn-info">Yeni Kayıt
@@ -423,29 +423,6 @@
                 },
             });
 
-        }
-
-        function acEtkinlikTelafiModal() {
-            let div = $("#telafiDersDiv");
-            div.empty();
-            debugger;
-            $.ajax({
-                url: '{% url 'calendarapp:getir_telafi_ders_grup_bilgisi_ajax' %}',
-                type: 'GET',
-                data: {
-                    'etkinlik_id': _selectedEvent.id,
-                },
-                success: function (result) {
-                    if (result.status == "success") {
-                        debugger;
-                        div.html(result.html);
-                        $('#telafiDersModal').modal('show');
-                    }
-                },
-                error: function () {
-                    popupMesajGoster("Hata oluştu", "error");
-                },
-            });
         }
 
     </script>
