@@ -30,7 +30,7 @@
         <div class="col-md-12">
             <div class="tile row">
                 <div class="col-md-2">
-                    <div id="external-events">
+                    <div id="external-events" style="overflow-y: scroll; max-height: 1000px">
                         <h4 class="mb-4 border-bottom">Bugün Aktif Etkinlikler</h4>
                         {% for etkinlik in bugunun_etkinlikleri %}
                             <div id="rzvListItem" value="{{ etkinlik.id }}" class="fc-event"
@@ -112,7 +112,7 @@
                         Tamamlandı
                     </button>
                     <a id="btnTelafiDers" type="button" hidden target="_blank"
-                            class="btn btn-success"> Telafi Ders
+                       class="btn btn-success"> Telafi Ders
                     </a>
                     {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
                     <button type="button" hidden id="btnYeniKayit" onclick="clearModalFields()"
@@ -422,8 +422,6 @@
                     popupMesajGoster("Hata oluştu", "error");
                 },
             });
-
         }
-
     </script>
 {% endblock extrascripts %}

@@ -21,6 +21,7 @@ class RezervasyonModel(BaseAbstract):
                                     related_name='gunler_rezervasyon_tablosu')
     saatler = models.ManyToManyField(SaatlerModel, verbose_name='Saatler', blank=True, null=True,
                                      related_name='saatler_rezervasyon_tablosu')
+    aktif_mi = models.BooleanField('Aktif Mi', default=True)
     aciklama = models.TextField('Açıklama', null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="rezervasyon", null=True, blank=True,
                              verbose_name="Ekleyen")

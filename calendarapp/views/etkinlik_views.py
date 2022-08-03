@@ -187,10 +187,12 @@ def etkinlik_tekrar_sayisi_kadar_ekle(request, form, etkinlik_id):
     tekrar_sayisi = form.cleaned_data["tekrar"]
     baslangic_tarih_saat = form.cleaned_data["baslangic_tarih_saat"]
     bitis_tarih_saat = form.cleaned_data["bitis_tarih_saat"]
+    baslik = form.cleaned_data["baslik"]
     if tekrar_sayisi and tekrar_sayisi > 0:
         for i in range(tekrar_sayisi):
             form.cleaned_data["baslangic_tarih_saat"] = baslangic_tarih_saat + timedelta(days=7 * (i + 1))
             form.cleaned_data["bitis_tarih_saat"] = bitis_tarih_saat + timedelta(days=7 * (i + 1))
+            form.cleaned_data["baslik"] = baslik + " - Tekrar " + str(i + 1) + ". Hafta"
             if not ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"],
                                                  form.cleaned_data["bitis_tarih_saat"], form.data["kort"]):
                 item = EtkinlikForm(data=form.cleaned_data).save(commit=False)

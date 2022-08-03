@@ -57,9 +57,11 @@ def bekleyen_musteri_getir_ajax(request):
     gun = GunlerModel.objects.filter(haftanin_gunu=haftanini_gunu).first()
     saat = SaatlerModel.objects.filter(baslangic_degeri=gunun_saati).first()
     rezervasyonlar = RezervasyonModel.objects.filter(
-        Q(gunler=gun, saatler=saat) | Q(gunler__isnull=True, saatler__isnull=True))
+        Q(gunler=gun, saatler=saat) |
+        Q(gunler=gun, saatler__isnull=True) |
+        Q(gunler__isnull=True, saatler=saat) |
+        Q(gunler__isnull=True, saatler__isnull=True))
     list = []
     for rezervasyon in rezervasyonlar:
         list.append({"id": rezervasyon.id, "adi": rezervasyon.adi, "aciklama": rezervasyon.aciklama})
-    print(list)
     return JsonResponse(data={"data": list, "status": "success", "message": "Başarılı"}, safe=False)
