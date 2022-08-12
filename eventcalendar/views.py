@@ -6,7 +6,13 @@ from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 
-from calendarapp.models.concrete.etkinlik import EtkinlikModel
+from accounts.models import User
+from calendarapp.models.concrete.antrenor import AntrenorModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
+from calendarapp.models.concrete.kort import KortModel
+from calendarapp.models.concrete.rezervasyon import RezervasyonModel
+from calendarapp.models.concrete.telafi_ders import TelafiDersModel
+from calendarapp.models.concrete.uye import UyeModel, GrupModel, UyeGrupModel
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -31,6 +37,7 @@ def baslangic_metodu(request):
     try:
         saatler_yoksa_ekle()
         gunler_yoksa_ekle()
+        ilk_kayitlari_ekle()
         messages.success(request, "Başarılı")
         return redirect("dashboard")
     except Exception as e:
@@ -62,3 +69,27 @@ def gunler_yoksa_ekle():
         GunlerModel.objects.create(adi="Cuma", haftanin_gunu=4, hafta_ici_mi=True)
         GunlerModel.objects.create(adi="Cumartesi", haftanin_gunu=5, hafta_ici_mi=False)
         GunlerModel.objects.create(adi="Pazar", haftanin_gunu=6, hafta_ici_mi=False)
+
+
+def ilk_kayitlari_ekle():
+    if UyeModel.objects.count() == 0:
+        UyeModel.objects.create(id=1, adi="İlk Üye", soyadi="Kayit")
+    if GrupModel.objects.count() == 0:
+        GrupModel.objects.create(id=1, adi="İlk Grup", tekil_mi=True)
+    if UyeGrupModel.objects.count() == 0:
+        UyeGrupModel.objects.create(id=1, grup_id=1, uye_id=1)
+    if KortModel.objects.count() == 0:
+        KortModel.objects.create(id=1, adi="Kort 1")
+    if AntrenorModel.objects.count() == 0:
+        AntrenorModel.objects.create(id=1, adi="Antrenör 1")
+    if EtkinlikModel.objects.count() == 0:
+        EtkinlikModel.objects.create(id=1, baslik="İlk Etkinlik", grup_id=1,
+                                     baslangic_tarih_saat=datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                     bitis_tarih_saat=datetime.now().strftime("%Y-%m-%d %H:%M"), kort_id=1,
+                                     antrenor_id=1)
+    if EtkinlikKatilimModel.objects.count() == 0:
+        EtkinlikKatilimModel.objects.create(id=1, etkinlik_id=1, uye_id=1)
+    if RezervasyonModel.objects.count() == 0:
+        RezervasyonModel.objects.create(id=1, uye_id=1)
+    if TelafiDersModel.objects.count() == 0:
+        TelafiDersModel.objects.create(id=1, telafi_etkinlik_id=1, uye_id=1)

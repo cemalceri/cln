@@ -63,5 +63,5 @@ def bekleyen_musteri_getir_ajax(request):
         Q(gunler__isnull=True, saatler__isnull=True))
     list = []
     for rezervasyon in rezervasyonlar:
-        list.append({"id": rezervasyon.id, "adi": rezervasyon.adi, "aciklama": rezervasyon.aciklama})
+        list.append({"id": rezervasyon.id, "adi": rezervasyon.uye.__str__(), "aciklama": rezervasyon.aciklama})
     return JsonResponse(data={"data": list, "status": "success", "message": "Başarılı"}, safe=False)

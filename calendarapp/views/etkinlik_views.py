@@ -143,6 +143,7 @@ def kaydet_etkinlik_ajax(request):
         result = etkinlik_kaydi_hata_var_mi(form)
         if result:
             return result
+        print(form.cleaned_data["baslangic_tarih_saat"])
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
             form = EtkinlikForm(data=request.POST,
                                 instance=EtkinlikModel.objects.get(id=form.cleaned_data["pk"]))

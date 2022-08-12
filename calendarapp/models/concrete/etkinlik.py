@@ -55,10 +55,10 @@ class EtkinlikManager(models.Manager):
 class EtkinlikModel(BaseAbstract):
     baslik = models.CharField(max_length=200, verbose_name="Başlık")
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
-                             null=True, related_name="etkinlik_grup_relations")
+                             null=False, related_name="etkinlik_grup_relations")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
-    kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=True,
+    kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False,
                              related_name="kort")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name="anternor")
@@ -93,7 +93,7 @@ class EtkinlikModel(BaseAbstract):
 class EtkinlikKatilimModel(BaseAbstract):
     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
                                  null=True, related_name="etkinlik")
-    uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=True,
+    uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False,
                             related_name="uye")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik_katilim", null=True, blank=True,
                              verbose_name="Ekleyen")

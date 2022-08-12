@@ -34,7 +34,7 @@
                                         <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Adı</th>
+                                            <th>Rezerv Eden</th>
                                             <th>Önem Derecesi</th>
                                             <th>Tercih Edilen Günler</th>
                                             <th>Tercih Edilen Saatler</th>
@@ -47,11 +47,11 @@
                                             {% if item.aktif_mi %}
                                                 <tr>
                                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                                    <td>{{ item.adi }}</td>
+                                                    <td>{{ item.uye }}</td>
                                                     <td>{{ item.onem_derecesi }}</td>
                                                     <td>{{ item.tercih_edilen_gunler }}</td>
                                                     <td>{{ item.tercih_edilen_saatler }}</td>
-                                                    <td>{{ item.aciklama }}</td>
+                                                    <td>{{ item.aciklama| default_if_none:"" }}</td>
                                                     <td>
                                                         <a class="btn btn-primary btn-circle" title="Kaydı Düzenle"
                                                            href="{% url 'calendarapp:guncelle_rezervasyon' item.id %}"><i
@@ -98,7 +98,7 @@
                                         <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Adı</th>
+                                            <th>Rezerv Eden</th>
                                             <th>Önem Derecesi</th>
                                             <th>Tercih Edilen Günler</th>
                                             <th>Tercih Edilen Saatler</th>
@@ -111,11 +111,11 @@
                                             {% if not item.aktif_mi %}
                                                 <tr>
                                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                                    <td>{{ item.adi }}</td>
+                                                    <td>{{ item.uye }}</td>
                                                     <td>{{ item.onem_derecesi }}</td>
                                                     <td>{{ item.tercih_edilen_gunler }}</td>
                                                     <td>{{ item.tercih_edilen_saatler }}</td>
-                                                    <td>{{ item.aciklama }}</td>
+                                                    <td>{{ item.aciklama |default_if_none:"" }}</td>
                                                     <td>
                                                         <a class="btn btn-primary btn-circle" title="Kaydı Düzenle"
                                                            href="{% url 'calendarapp:guncelle_rezervasyon' item.id %}"><i
