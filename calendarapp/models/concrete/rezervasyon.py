@@ -3,6 +3,7 @@ from django.db import models
 from accounts.models import User
 from calendarapp.models.Enums import GunlerModel, SaatlerModel
 from calendarapp.models.abstract.base_abstract import BaseAbstract
+from calendarapp.models.concrete.uye import UyeModel
 
 
 class RezervasyonManager(models.Manager):
@@ -15,7 +16,7 @@ class RezervasyonManager(models.Manager):
 
 
 class RezervasyonModel(BaseAbstract):
-    adi = models.CharField('Adı', max_length=250, null=False, blank=False)
+    uye = models.ForeignKey(UyeModel, on_delete=models.CASCADE, related_name="rezervasyonlar", )
     onem_derecesi = models.IntegerField('Önem Derecesi', null=False, blank=False, default=0)
     gunler = models.ManyToManyField(GunlerModel, verbose_name='Günler', blank=True, null=True,
                                     related_name='gunler_rezervasyon_tablosu')
@@ -27,7 +28,7 @@ class RezervasyonModel(BaseAbstract):
                              verbose_name="Ekleyen")
 
     def __str__(self):
-        return self.adi
+        return self.uye
 
     objects = RezervasyonManager()
 

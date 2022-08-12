@@ -27,11 +27,12 @@ urlpatterns = [
     path("etkinlik/tamamlandi", etkinlik_views.etkinlik_tamamlandi_ajax, name="etkinlik_tamamlandi_ajax"),
 
     # Uye
-    path("uye/index", uye_views.index_uye, name="index_uye"),
-    path("uye/kaydet", uye_views.kaydet_uye, name="kaydet_uye"),
+    path("uye/index", uye_views.index, name="index_uye"),
+    path("uye/kaydet", uye_views.kaydet, name="kaydet_uye"),
     path("uye/detay/<int:id>", uye_views.detay_uye, name="detay_uye"),
-    path("uye/guncelle/<int:id>", uye_views.kaydet_uye, name="guncelle_uye"),
-    path("uye/sil/<int:id>", uye_views.sil_uye, name="sil_uye"),
+    path("uye/guncelle/<int:id>", uye_views.kaydet, name="guncelle_uye"),
+    path("uye/sil/<int:id>", uye_views.sil, name="sil_uye"),
+    path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),
 
     # Kort
     path("kort/index", kort_views.index_kort, name="index_kort"),

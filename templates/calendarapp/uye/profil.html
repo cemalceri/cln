@@ -1,0 +1,558 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}
+    Profil
+{% endblock %}
+{% block extracss %}
+    <link rel="stylesheet" href="{% static 'template/classic/base/assets/examples/css/pages/profile.css' %}">
+    {% include 'base/remark_css.html' %}
+{% endblock extracss %}
+
+{% block extrascripts %}
+    {% include 'base/remark_js.html' %}
+    <script src="{% static 'template/classic/global/js/Plugin/responsive-tabs.js' %}"></script>
+    <script src="{% static 'template/classic/global/js/Plugin/tabs.js' %}"></script>
+    <script>
+        (function (document, window, $) {
+            'use strict';
+            var Site = window.Site;
+            $(document).ready(function () {
+                Site.run();
+            });
+        })(document, window, jQuery);
+    </script>
+{% endblock extrascripts %}
+{% block content %}
+    <div class="page-content container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <!-- Page Widget -->
+                <div class="card card-shadow text-center">
+                    <div class="card-block">
+                        <a class="avatar avatar-lg" href="javascript:void(0)">
+                            <img src="{% static 'template/classic/global/portraits/5.jpg' %}" alt="...">
+                        </a>
+                        <h4 class="profile-user">Sporcu Hakan</h4>
+                        <p class="profile-job">Sporcu</p>
+                        <p>Hi! I'm Adrian the Senior UI Designer at AmazingSurge. We hope
+                            you enjoy the design and quality of Social.</p>
+                        <div class="profile-social">
+                            <a class="icon bd-twitter" href="javascript:void(0)"></a>
+                            <a class="icon bd-facebook" href="javascript:void(0)"></a>
+                            <a class="icon bd-dribbble" href="javascript:void(0)"></a>
+                            <a class="icon bd-github" href="javascript:void(0)"></a>
+                        </div>
+                        <button type="button" class="btn btn-primary">Follow</button>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row no-space">
+                            <div class="col-4">
+                                <strong class="profile-stat-count">260</strong>
+                                <span>Follower</span>
+                            </div>
+                            <div class="col-4">
+                                <strong class="profile-stat-count">180</strong>
+                                <span>Following</span>
+                            </div>
+                            <div class="col-4">
+                                <strong class="profile-stat-count">2000</strong>
+                                <span>Tweets</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Page Widget -->
+            </div>
+
+            <div class="col-lg-9">
+                <!-- Panel -->
+                <div class="panel">
+                    <div class="panel-body nav-tabs-animate nav-tabs-horizontal" data-plugin="tabs">
+                        <ul class="nav nav-tabs nav-tabs-line" role="tablist">
+                            <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
+                                                                        href="#dersler" aria-controls="dersler"
+                                                                        role="tab" aria-selected="false">Dersler</a>
+                            <li class="nav-item" role="presentation"><a class="nav-link active" data-toggle="tab"
+                                                                        href="#bilgiler" aria-controls="bilgiler"
+                                                                        role="tab" aria-selected="true">Kişisel
+                                Bilgiler </a></li>
+                            </li>
+                            <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
+                                                                        href="#bakiye" aria-controls="bakiye"
+                                                                        role="tab" aria-selected="false">Bakiye</a>
+                            </li>
+                            <li class="nav-item dropdown" style="display: none;">
+                                <a class="dropdown-toggle nav-link" data-toggle="dropdown" href="#"
+                                   aria-expanded="false">Menu </a>
+                                <div class="dropdown-menu" role="menu">
+                                    <a class="dropdown-item" data-toggle="tab" href="#bilgiler"
+                                       aria-controls="bilgiler" role="tab">Bilgiler <span
+                                            class="badge badge-pill badge-danger">5</span></a>
+                                    <a class="dropdown-item" data-toggle="tab" href="#dersler" aria-controls="dersler"
+                                       role="tab">Dersler</a>
+                                    <a class="dropdown-item" data-toggle="tab" href="#bakiye" aria-controls="bakiye"
+                                       role="tab">Bakiye</a>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane animation-slide-left active" id="dersler" role="tabpanel">
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            Yapılacak
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <ul class="list-group list-group-dividered list-group-full h-300 scrollable is-enabled scrollable-vertical"
+                                            data-plugin="scrollable" style="position: relative;">
+                                            <div data-role="container" class="scrollable-container"
+                                                 style="height: 300px; width: 278px;">
+                                                <div data-role="content" class="scrollable-content"
+                                                     style="width: 261px;">
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-info float-right">Tamamlandı</small>
+                                                        <p>
+                                                            <span>TTT kişisi - Z kortu - tarih: 01.01.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+
+                                                </div>
+                                            </div>
+                                            <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide"
+                                                 draggable="false">
+                                                <div class="scrollable-bar-handle"
+                                                     style="height: 136.661px; transform: translate3d(0px, 45.5608px, 0px);"></div>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            Geçmiş
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <ul class="list-group list-group-dividered list-group-full h-300 scrollable is-enabled scrollable-vertical"
+                                            data-plugin="scrollable" style="position: relative;">
+                                            <div data-role="container" class="scrollable-container"
+                                                 style="height: 300px; width: 278px;">
+                                                <div data-role="content" class="scrollable-content"
+                                                     style="width: 261px;">
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-info float-right">Tamamlandı</small>
+                                                        <p>
+                                                            <span>TTT kişisi - Z kortu - tarih: 01.01.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+
+                                                </div>
+                                            </div>
+                                            <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide"
+                                                 draggable="false">
+                                                <div class="scrollable-bar-handle"
+                                                     style="height: 136.661px; transform: translate3d(0px, 45.5608px, 0px);"></div>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            İptal Edilmiş
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <ul class="list-group list-group-dividered list-group-full h-300 scrollable is-enabled scrollable-vertical"
+                                            data-plugin="scrollable" style="position: relative;">
+                                            <div data-role="container" class="scrollable-container"
+                                                 style="height: 300px; width: 278px;">
+                                                <div data-role="content" class="scrollable-content"
+                                                     style="width: 261px;">
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-info float-right">Tamamlandı</small>
+                                                        <p>
+                                                            <span>TTT kişisi - Z kortu - tarih: 01.01.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+                                                    <li class="list-group-item justify-content-between">
+                                                        <small class="badge badge-round badge-warning float-right">Bekliyor</small>
+                                                        <a href=""> <small
+                                                                class="badge badge-round badge-danger float-right">İptalEt</small></a>
+                                                        <p>
+                                                            <span>XXX kişisi - Y kortu - tarih: 05.05.2022 - saat: 14:00</span>
+                                                        </p>
+                                                        <small>Kayıt eden:
+                                                            <a class="hightlight"
+                                                               href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                <span>Ahmet Yılmaz</span>
+                                                            </a>
+                                                            <time datetime="2018-07-01T08:55">15 saat önce</time>
+
+
+                                                        </small>
+                                                    </li>
+
+                                                </div>
+                                            </div>
+                                            <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide"
+                                                 draggable="false">
+                                                <div class="scrollable-bar-handle"
+                                                     style="height: 136.661px; transform: translate3d(0px, 45.5608px, 0px);"></div>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane animation-slide-left " id="bilgiler" role="tabpanel">
+                                kişisel bilgiler buraya
+                            </div>
+                            <div class="tab-pane animation-slide-left" id="bakiye" role="tabpanel">
+                                Bakiye ve paket bilgileri hareketleri buraya
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Panel -->
+            </div>
+        </div>
+    </div>
+{% endblock content %}

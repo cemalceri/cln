@@ -8,13 +8,13 @@ from calendarapp.utils import formErrorsToText
 
 
 @login_required
-def index_uye(request):
+def index(request):
     form = UyeModel.objects.all().order_by('-id')
     return render(request, "calendarapp/uye/index.html", {"uye_list": form})
 
 
 @login_required
-def kaydet_uye(request, id=None):
+def kaydet(request, id=None):
     if request.method == 'POST':
         entity = UyeModel.objects.filter(pk=id).first()
         form = UyeKayitForm(request.POST, instance=entity)
@@ -37,7 +37,13 @@ def detay_uye(request, id):
 
 
 @login_required
-def sil_uye(request, id):
+def sil(request, id):
     UyeModel.objects.filter(pk=id).first().delete()
     messages.success(request, "Kayıt Silindi.")
     return redirect("calendarapp:index_uye")
+
+@login_required
+def profil(request, id):
+    UyeModel.objects.filter(pk=id).first()
+    return render(request, "calendarapp/uye/profil.html")
+

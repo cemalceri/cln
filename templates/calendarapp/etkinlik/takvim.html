@@ -141,10 +141,12 @@
     <script>
         let _selectedEvent;
         let seciliKort;
+        debugger;
         if (seciliKort = 'undefined') {
             seciliKort = {{secili_kort.id}};
         }
         document.addEventListener('DOMContentLoaded', function () {
+            debugger;
             var calendarEl = document.getElementById('calendar');
             var today = new Date();
             var calendar = new FullCalendar.Calendar(calendarEl, {
