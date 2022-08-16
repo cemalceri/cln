@@ -24,7 +24,7 @@ class UyeGrupKayitForm(ModelForm):
     class Meta:
         model = UyeGrupModel
         fields = '__all__'
-        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
+        exclude = ['uye_no', 'created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
 
     def __init__(self, *args, **kwargs):
         super(UyeGrupKayitForm, self).__init__(*args, **kwargs)

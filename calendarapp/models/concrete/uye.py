@@ -14,13 +14,26 @@ class UyeManager(models.Manager):
         return events
 
 
+def uye_no_uret():
+    try:
+        last = UyeModel.objects.all().order_by('uye_no').last()
+        if not last:
+            return 100
+        return last.uye_no + 1
+    except:
+        return 100
+
+
 class UyeModel(BaseAbstract):
     adi = models.CharField('Adı', max_length=250, null=False, blank=False)
     soyadi = models.CharField('Soyadı', max_length=250, null=False, blank=False)
+    dogum_tarihi = models.DateField('Doğum Tarihi', null=True, blank=True)
+    uye_no = models.IntegerField('Üye No', default=uye_no_uret, null=False, blank=False)
     kimlikNo = models.CharField("KimlikNo", max_length=11, blank=True, null=True)
     telefon = models.CharField('Telefon', max_length=11, null=True, blank=True)
     email = models.EmailField('E-Mail', max_length=250, null=True, blank=True)
     adres = models.TextField('Adres', max_length=250, null=True, blank=True)
+    onaylandi_mi = models.BooleanField('Onaylandı mı', default=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="uye", null=True, blank=True,
                              verbose_name="Ekleyen")
 

@@ -3,6 +3,7 @@ from django.db import models
 from accounts.models import User
 from calendarapp.models.Enums import GunlerModel, SaatlerModel
 from calendarapp.models.abstract.base_abstract import BaseAbstract
+from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.uye import UyeModel
 
 
@@ -22,6 +23,8 @@ class RezervasyonModel(BaseAbstract):
                                     related_name='gunler_rezervasyon_tablosu')
     saatler = models.ManyToManyField(SaatlerModel, verbose_name='Saatler', blank=True, null=True,
                                      related_name='saatler_rezervasyon_tablosu')
+    antrenor = models.ForeignKey(AntrenorModel, on_delete=models.SET_NULL, related_name="antrenor", null=True,
+                                 blank=True)
     aktif_mi = models.BooleanField('Aktif Mi', default=True)
     aciklama = models.TextField('Açıklama', null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="rezervasyon", null=True, blank=True,
