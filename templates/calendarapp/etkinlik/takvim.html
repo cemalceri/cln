@@ -26,35 +26,35 @@
             {% endfor %}
         </form>
     </nav>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="tile row">
-                <div class="col-md-2">
-                    <div id="external-events" style="overflow-y: scroll; max-height: 1000px">
-                        <h4 class="mb-4 border-bottom">Bugün Aktif Etkinlikler</h4>
-                        {% for etkinlik in bugunun_etkinlikleri %}
-                            <div id="rzvListItem" value="{{ etkinlik.id }}" class="fc-event"
-                                 style="background-color: {{ etkinlik.renk }}">
-                                <ul class="list-group">
-                                    <li>Başlık: {{ etkinlik.baslik }}</li>
-                                    <li>Saat: {{ etkinlik.baslangic_tarih_saat | date:"H:i" }}
-                                        - {{ etkinlik.bitis_tarih_saat | date:"H:i" }}</li>
-                                    <li>Açıklama: {{ etkinlik.aciklama |default_if_none:"" }}</li>
-                                    <li>Grup: {{ etkinlik.grup }}</li>
-                                </ul>
-                            </div>
-                        {% empty %}
-                            <p>Aktif Etkinlik Bulunamadı</p>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-md-10">
-                    <div id="calendar"></div>
-                </div>
+    {#    <div class="row">#}
+    {#        <div class="col-md-12">#}
+    {#            <div class="tile row">#}
+    {#                <div class="col-md-2">#}
+    {#                    <div id="external-events" style="overflow-y: scroll; max-height: 1000px">#}
+    {#                        <h4 class="mb-4 border-bottom">Bugün Aktif Etkinlikler</h4>#}
+    {#                        {% for etkinlik in bugunun_etkinlikleri %}#}
+    {#                            <div id="rzvListItem" value="{{ etkinlik.id }}" class="fc-event"#}
+    {#                                 style="background-color: {{ etkinlik.renk }}">#}
+    {#                                <ul class="list-group">#}
+    {#                                    <li>Başlık: {{ etkinlik.baslik }}</li>#}
+    {#                                    <li>Saat: {{ etkinlik.baslangic_tarih_saat | date:"H:i" }}#}
+    {#                                        - {{ etkinlik.bitis_tarih_saat | date:"H:i" }}</li>#}
+    {#                                    <li>Açıklama: {{ etkinlik.aciklama |default_if_none:"" }}</li>#}
+    {#                                    <li>Grup: {{ etkinlik.grup }}</li>#}
+    {#                                </ul>#}
+    {#                            </div>#}
+    {#                        {% empty %}#}
+    {#                            <p>Aktif Etkinlik Bulunamadı</p>#}
+    {#                        {% endfor %}#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#                <div class="col-md-10">#}
+    <div id="calendar"></div>
+    {#                </div>#}
 
-            </div>
-        </div>
-    </div>
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
     <div class="modal fade show" id="eventModal" tabindex="-1" role="dialog"
          aria-labelledby="exampleModalLongTitle" aria-hidden="true">
         <div class=" modal-dialog-scrollable" role="document">
@@ -146,7 +146,6 @@
             seciliKort = {{secili_kort.id}};
         }
         document.addEventListener('DOMContentLoaded', function () {
-            debugger;
             var calendarEl = document.getElementById('calendar');
             var today = new Date();
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -159,6 +158,9 @@
                 navLinks: true, // can click day/week names to navigate views
                 selectable: true,
                 selectMirror: true,
+                slotDuration: '00:30:00', //seçilen zaman aralığı
+                slotMinTime: '09:00:00', //takvim başlangıç saati
+                slotMaxTime: '24:00:00', // takvim bitiş saati
                 select: function (arg) {
                     clearModalFields();
                     baslangic_saat = arg.startStr.split('+')[0];
@@ -218,7 +220,6 @@
                     // Takvim üzerindeki etkinlik renklerinin gösterilmesi için
                     arg.el.style.backgroundColor = arg.event.backgroundColor
                 },
-
             });
             calendar.render();
         });

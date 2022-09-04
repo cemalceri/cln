@@ -54,6 +54,7 @@ urlpatterns = [
     path("grup/detay/<int:id>", grup_views.detay_grup, name="detay_grup"),
     path("grup/guncelle/<int:id>", grup_views.kaydet_grup, name="guncelle_grup"),
     path("grup/sil/<int:id>", grup_views.sil_grup, name="sil_grup"),
+    path("grup/sil", grup_views.sil_grup_uyesi, name="sil_grup_uyesi"),
 
     # Rezervasyon
     path("rezervasyon/index", rezervasyon_views.index, name="index_rezervasyon"),

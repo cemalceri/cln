@@ -18,48 +18,99 @@
     <div class="page-content">
         <div class="panel">
             <div class="panel-body">
-                <form autocomplete="nope" method="post"
-                        {% if form.instance.id %}
-                      action="{% url 'calendarapp:guncelle_grup' form.instance.id %}">
-                        {% else %}
-                            action="{% url 'calendarapp:kaydet_grup' %}">
-                        {% endif %}
-                {% csrf_token %}
-                <div class="row ">
-                    {% for field in form %}
-                        <div class="col-md-4 offset-md-4">
-                            <div class="form-group row">
-                                <div class="col-md-2">
-                                    {{ field.label_tag }}
-                                </div>
-                                <div class="col-md-10">
-                                    {{ field }}
-                                    {% if field.errors %}
-                                        {% for error in field.errors %}
-                                            <span class="text-help">{{ error }}</span>
-                                        {% endfor %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
                 <div class="row">
-                    <div class="col-md-4 offset-md-4">
-                        <button type="submit" class="btn btn-primary float-right">Kaydet</button>
-                        <a href="{% url 'calendarapp:index_grup' %}"
-                           class="btn btn-secondary float-right mr-2">Geri</a>
+                    <div class="col-md-3">
+                        <select id="seciliUye" class="form-control">
+                            {% for uye in uyeler %}
+                                <option value="{{ uye.id }}"> {{ uye }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="seciliOdemeSekli" class="form-control">
+                            {% for key,value in odemeler_tipleri %}
+                                <option value="{{ key }}"> {{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" id="ekleBtn" class="btn btn-block btn-success">Ekle >></button>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="uyeList" class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action active">
+                                Grup Üyeleri
+                            </a>
+                            {% for uye_grup in uye_grup_listesi %}
+                                <a href="#" id="uye_{{ uye_grup.uye_id }}"
+                                   onclick="seciliUyeCikar({{ uye_grup.uye_id }})"
+                                   class="list-group-item list-group-item-action"> {{ uye_grup.uye }}
+                                    - {{ uye_grup.get_odeme_sekli_display }}</a>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-                </form>
+                <br>
+                <br>
+                <a href="{% url 'calendarapp:index_grup' %}" class="btn btn-secondary">Geri </a>
             </div>
         </div>
     </div>
+    <script>
+        {% if grup_id %}
+            let grup_id = {{ grup_id }};
+        {% else %}
+            let grup_id = 0;
+        {% endif %}
+        $('#ekleBtn').click(function () {
+            debugger;
+            $.ajax({
+                url: "{% url 'calendarapp:kaydet_grup' %}",
+                data: {
+                    'uye_id': $("#seciliUye").val(),
+                    'odeme_sekli': $("#seciliOdemeSekli").val(),
+                    'grup_id': grup_id,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                type: "post",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == "success") {
+                        popupMesajGoster(data.message, data.status);
+                        grup_id = data.grup_id;
+                        let uye = $("#seciliUye").val();
+                        $('#uyeList').append('<a href="#" id="uye_' + uye + '" onclick="seciliUyeCikar(' + uye + ')" class="list-group-item list-group-item-action">' + $("#seciliUye option:selected").text() + ' - ' + $("#seciliOdemeSekli option:selected").text() + '</a>');
+                    } else {
+                        popupMesajGoster(data.message, data.status);
+                    }
+                }
+            });
+        });
 
-{% if form.errors %}
-    <div class="alert alert-danger">
-        {{ form.errors }}
-    </div>
-{% endif %}
-
+        function seciliUyeCikar(uye_id) {
+            if (!confirm("Seçilen üye gruptan çıkartılsın mı?"))
+                return;
+            else {
+                $.ajax({
+                    url: "{% url 'calendarapp:sil_grup_uyesi' %}",
+                    data: {
+                        'uye_id': uye_id,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'grup_id': grup_id,
+                    },
+                    type: "post",
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == "success") {
+                            popupMesajGoster(data.message, data.status);
+                            grup_id = data.grup_id;
+                            $('#uye_' + uye_id).remove()
+                        } else {
+                            popupMesajGoster(data.message, data.status);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
 {% endblock content %}

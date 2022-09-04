@@ -1,7 +1,9 @@
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save, post_delete
 
 from accounts.models import User
+from calendarapp.enums import GrupOdemeSekliEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 
 
@@ -43,8 +45,13 @@ class UyeModel(BaseAbstract):
     objects = UyeManager()
 
     def delete(self, *args, **kwargs):
-        uye_grup = UyeGrupModel.objects.filter(uye_id=self.id)
-        GrupModel.objects.filter(pk=uye_grup.first().grup_id, tekil_mi=True).delete()
+        # ilk kayıtta kendi için oluşturulan grubun silinmesi
+        grup_ids = UyeGrupModel.objects.filter(uye_id=self.id).values_list('grup_id', flat=True)
+        GrupModel.objects.filter(id__in=grup_ids, tekil_mi=True).delete()
+        # Grupta son kalan kişiyse grup silinir
+        for id in grup_ids:
+            if UyeGrupModel.objects.filter(grup_id=id).count() == 1:
+                GrupModel.objects.filter(id=id).delete()
         super(UyeModel, self).delete(*args, **kwargs)
 
     class Meta:
@@ -54,7 +61,7 @@ class UyeModel(BaseAbstract):
 
 
 class GrupModel(BaseAbstract):
-    adi = models.CharField('Adı', max_length=250, null=True, blank=False)
+    adi = models.CharField('Adı', max_length=250, null=True, blank=True)
     tekil_mi = models.BooleanField('Tekil Mi', default=False)
 
     class Meta:
@@ -64,11 +71,11 @@ class GrupModel(BaseAbstract):
 
     def __str__(self):
         if self.tekil_mi is True:
-            return str(self.adi)
+            return  str(self.adi)
         else:
             string = ""
             for item in UyeGrupModel.objects.filter(grup_id=self.id):
-                string += item.uye.adi + " " + item.uye.soyadi + " - "
+                string += str(item.uye.uye_no) + "-" + item.uye.adi + " " + item.uye.soyadi + " / "
             return string
 
 
@@ -77,7 +84,7 @@ class UyeGrupModel(BaseAbstract):
                              blank=False)
     uye = models.ForeignKey(UyeModel, on_delete=models.CASCADE, null=False, blank=False,
                             related_name="uye_uyegrup_relations")
-    odeme_sekli = models.CharField('Ödeme Şekli', max_length=250, null=True, blank=True)
+    odeme_sekli = models.SmallIntegerField('Ödeme Şekli', choices=GrupOdemeSekliEnum.choices(), null=True, blank=True)
 
     def __str__(self):
         return self.uye.adi + " " + self.uye.soyadi
@@ -87,10 +94,20 @@ class UyeGrupModel(BaseAbstract):
         verbose_name_plural = "Üye Gruplar"
         ordering = ["-id"]
 
+    def delete(self, *args, **kwargs):
+        # grupta son kalan kişi ise grup silinir
+        print(UyeGrupModel.objects.filter(grup_id=self.grup.id).count())
+        if UyeGrupModel.objects.filter(grup_id=self.grup.id).count() == 1:
+            GrupModel.objects.filter(pk=self.grup.id).delete()
+        super(UyeGrupModel, self).delete(*args, **kwargs)
+
 
 def grup_kaydi_olustur(sender, instance, **kwargs):
-    UyeGrupModel.objects.create(uye=instance, grup=GrupModel.objects.create(tekil_mi=True,
-                                                                            adi=instance.adi + " " + instance.soyadi))
+    # Daha önce UyeGrup tablosunda kendisi için kayıt oluşturulmadıysa
+    if not UyeGrupModel.objects.filter(uye=instance, grup__tekil_mi=True):
+        grup = GrupModel.objects.create(tekil_mi=True,
+                                        adi=str(instance.uye_no) + " - " + instance.adi + " " + instance.soyadi)
+        UyeGrupModel.objects.create(uye=instance, grup=grup)
 
 
 post_save.connect(grup_kaydi_olustur, sender=UyeModel)
