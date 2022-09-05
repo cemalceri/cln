@@ -6,7 +6,7 @@ from calendarapp.models.Enums import RenkEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.kort import KortModel
-from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel, GrupModel
+from calendarapp.models.concrete.uye import UyeModel, GrupModel
 
 
 class EtkinlikManager(models.Manager):
@@ -62,8 +62,6 @@ class EtkinlikModel(BaseAbstract):
                              related_name="kort")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name="anternor")
-    renk = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray",
-                            verbose_name="Renk")
     tekrar = models.IntegerField(blank=True, null=True, verbose_name="Tekrar Sayısı")
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")

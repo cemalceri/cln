@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from calendarapp.forms.uye_forms import UyeKayitForm
+from calendarapp.models.concrete.abonelik import AbonelikModel
 from calendarapp.models.concrete.uye import UyeModel
 from calendarapp.utils import formErrorsToText
 
@@ -42,8 +43,9 @@ def sil(request, id):
     messages.success(request, "Kayıt Silindi.")
     return redirect("calendarapp:index_uye")
 
+
 @login_required
 def profil(request, id):
-    UyeModel.objects.filter(pk=id).first()
-    return render(request, "calendarapp/uye/profil.html")
-
+    uye = UyeModel.objects.filter(pk=id).first()
+    abonelikler = AbonelikModel.objects.filter(uye_id=id)
+    return render(request, "calendarapp/uye/profil.html", {"uye": uye, "abonelikler": abonelikler})

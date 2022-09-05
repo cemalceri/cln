@@ -15,6 +15,16 @@ class RenkEnum(Enum):
         return [(key.value, key.name) for key in cls]
 
 
+class SeviyeRenkEnum(Enum):
+    Kırmızı = "red"
+    Mavi = "blue"
+    Yeşil = "green"
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
+
+
 class GunlerModel(models.Model):
     adi = models.CharField(max_length=250, null=False, blank=False)
     haftanin_gunu = models.IntegerField(verbose_name="Haftanın Kaçıncı Günü", null=False, blank=False)
@@ -41,3 +51,25 @@ class SaatlerModel(models.Model):
         verbose_name = "Saatler"
         verbose_name_plural = "Saatler"
         ordering = ["id"]
+
+
+class AbonelikTipikEnum(Enum):
+    Paket = 1
+    Uyelik = 2
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
+
+
+class GrupOdemeSekliEnum(Enum):
+    Ortak_Odeme = 1
+    Bireysel_Odeme = 2
+    __labels__ = {
+        Ortak_Odeme: "Ortak Ödeme",
+        Bireysel_Odeme: "Bireysel Ödeme",
+    }
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]

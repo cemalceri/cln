@@ -13,13 +13,13 @@
     <script src="{% static 'template/classic/global/js/Plugin/responsive-tabs.js' %}"></script>
     <script src="{% static 'template/classic/global/js/Plugin/tabs.js' %}"></script>
     <script>
-        (function (document, window, $) {
-            'use strict';
-            var Site = window.Site;
-            $(document).ready(function () {
-                Site.run();
-            });
-        })(document, window, jQuery);
+        {#(function (document, window, $) {#}
+        {#    'use strict';#}
+        {#    var Site = window.Site;#}
+        {#    $(document).ready(function () {#}
+        {#        Site.run();#}
+        {#    });#}
+        {#})(document, window, jQuery);#}
     </script>
 {% endblock extrascripts %}
 {% block content %}
@@ -546,7 +546,18 @@
                                 kişisel bilgiler buraya
                             </div>
                             <div class="tab-pane animation-slide-left" id="bakiye" role="tabpanel">
-                                Bakiye ve paket bilgileri hareketleri buraya
+                                <ul class="list-group list-group-full">
+                                    {% for abonelik in abonelikler %}
+                                        <a href="{% url 'calendarapp:guncelle_abonelik' abonelik.id %}">
+                                            <li class="list-group-item">
+                                                <span class="badge badge-pill badge-success">{{ abonelik.kalan_adet }}</span>
+                                                {{ abonelik }}
+                                            </li>
+                                        </a>
+                                    {% endfor %}
+                                </ul>
+                                <a href="{% url 'calendarapp:kaydet_abonelik' uye.id %}"
+                                   class="btn btn-success btn-block">Paket / Üyelik Ekle</a>
                             </div>
                         </div>
                     </div>

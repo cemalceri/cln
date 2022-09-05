@@ -56,7 +56,7 @@ def formErrorsToText(Errors, instance):
     errorText = ""
     for field in Errors.get_json_data():
         if Errors.get_json_data()[field][0]["code"] == "required":
-            errorText += get_verbose_name(instance, field) + ": Bu alan boş bırakılamaz.<br>"
+            errorText += get_verbose_name(instance, field) + " alanı boş bırakılamaz.<br>"
         else:
             errorText += get_verbose_name(instance, field) + ": " + Errors.get_json_data()[field][0][
                 "message"] + "<br>"

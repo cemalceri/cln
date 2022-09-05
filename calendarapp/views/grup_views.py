@@ -4,10 +4,8 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-from calendarapp.enums import GrupOdemeSekliEnum
-from calendarapp.forms.uye_forms import UyeGrupKayitForm
+from calendarapp.models.Enums import GrupOdemeSekliEnum
 from calendarapp.models.concrete.uye import UyeGrupModel, GrupModel, UyeModel
-from calendarapp.utils import formErrorsToText
 
 
 @login_required

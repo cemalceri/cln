@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import etkinlik_views, rezervasyon_views, telafi_ders_views
+from .views import etkinlik_views, rezervasyon_views, telafi_ders_views, abonelik_views
 from .views import uye_views
 from .views import kort_views
 from .views import antrenor_views
@@ -70,5 +70,10 @@ urlpatterns = [
     path("telafi-ders/detay/<int:id>", telafi_ders_views.detay, name="detay_telafi_ders"),
     path("telafi-ders/guncelle/<int:id>", telafi_ders_views.guncelle, name="guncelle_telafi_ders"),
     path("telafi-ders/sil/<int:id>", telafi_ders_views.sil, name="sil_telafi_ders"),
+
+    # Abonelik
+    path("abonelik/kaydet-abonelik/<int:uye_id>", abonelik_views.kaydet_abonelik, name="kaydet_abonelik"),
+    path("abonelik/guncelle-abonelik/<int:id>", abonelik_views.guncelle_abonelik, name="guncelle_abonelik"),
+    path("abonelik/sil-abonelik/<int:id>", abonelik_views.sil_abonelik, name="sil_abonelik"),
 
 ]

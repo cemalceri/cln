@@ -126,7 +126,7 @@ def takvim_getir(request, kort_id=None):
                 "title": event.baslik,
                 "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                 "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                "backgroundColor": event.renk,
+                "backgroundColor": event.antrenor.renk if event.antrenor else "gray",
                 # "eventColor": event.renk,
             }
         )
