@@ -7,7 +7,6 @@ class AbonelikKayitForm(ModelForm):
         model = AbonelikModel
         fields = '__all__'
         exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
-
         widgets = {
             "baslangic_tarihi": DateInput(
                 attrs={"type": "date", "class": "form-control"},

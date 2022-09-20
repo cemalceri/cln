@@ -1,10 +1,14 @@
+from datetime import datetime
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from calendarapp.forms.uye_forms import UyeKayitForm
+from calendarapp.models.Enums import KatilimDurumuEnum
 from calendarapp.models.concrete.abonelik import AbonelikModel
-from calendarapp.models.concrete.uye import UyeModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
+from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel
 from calendarapp.utils import formErrorsToText
 
 
@@ -48,4 +52,14 @@ def sil(request, id):
 def profil(request, id):
     uye = UyeModel.objects.filter(pk=id).first()
     abonelikler = AbonelikModel.objects.filter(uye_id=id)
-    return render(request, "calendarapp/uye/profil.html", {"uye": uye, "abonelikler": abonelikler})
+    gruplar = UyeGrupModel.objects.filter(uye_id=id).values_list('grup_id', flat=True)
+    yapilacak_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, baslangic_tarih_saat__gt=datetime.now(
+    )).order_by('baslangic_tarih_saat')
+    yapilan_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, bitis_tarih_saat__lt=datetime.now(
+    )).order_by('-baslangic_tarih_saat')
+    iptal_etkinlik_katilim_idler = EtkinlikKatilimModel.objects.filter(uye_id=uye.id,
+                                                                       katilim_durumu=KatilimDurumuEnum.İptal.value).values('etkinlik')
+    iptal_etkinlikler = EtkinlikModel.objects.filter(id__in=iptal_etkinlik_katilim_idler)
+    return render(request, "calendarapp/uye/profil.html",
+                  {"uye": uye, "abonelikler": abonelikler, "yapilacak_etkinlikler": yapilacak_etkinlikler,
+                   "yapilan_etkinlikler": yapilan_etkinlikler, "iptal_etkinlikler": iptal_etkinlikler})

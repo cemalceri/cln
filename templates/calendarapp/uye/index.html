@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Etkinlik Listesi{% endblock title %}
+{% block title %}Üye Listesi{% endblock title %}
 
 {% block breadcrumb %}
     <div>
@@ -19,7 +19,7 @@
             <div class="tile">
                 <div class="row border-bottom mb-3 pb-3 ">
                     <div class="col">
-                        <h3 class="tile-title">Üye Listesi</h3>
+                        <h3 class="tile-title">Aktif Üye Listesi</h3>
                         <a class="btn btn-info float-right" href="{% url 'calendarapp:kaydet_uye' %}" id="actionBtn"><i
                                 class="fa fa-plus"></i> Ekle</a>
                     </div>
@@ -43,7 +43,71 @@
                                         </thead>
                                         <tbody>
                                         {% for uye in uye_list %}
-                                            {% if uye.onaylandi_mi %}
+                                            {% if uye.onaylandi_mi and uye.aktif_mi%}
+                                                <tr>
+                                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                                    <td>{{ uye.adi }}</td>
+                                                    <td>{{ uye.soyadi }}</td>
+                                                    <td>{{ uye.telefon | default_if_none:"" }}</td>
+                                                    <td>{{ uye.email| default_if_none:"" }}</td>
+                                                    <td>
+                                                        <a class="btn btn-primary btn-circle" title="Kaydı Düzenle"
+                                                           href="{% url 'calendarapp:guncelle_uye' uye.id %}"><i
+                                                                class="fa fa-edit"></i></a>
+                                                        <a class="btn btn-info btn-circle" title="Detayına Git"
+                                                           href="{% url 'calendarapp:profil_uye' uye.id %}">
+                                                            <i class="fa fas fa-sitemap" style="color: black"></i></a>
+                                                        <a href="{% url 'calendarapp:sil_uye' uye.id %}"
+                                                           class=" btn btn-danger btn-circle confirm-delete" title="Sil"
+                                                           data-toggle="modal"
+                                                           data-target="#confirmDeleteModal"
+                                                           id="delete_uye_{{ uye.id }}">
+                                                            <i class="fa fa-trash" style="color: black"></i></a>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile">
+                <div class="row border-bottom mb-3 pb-3 ">
+                    <div class="col">
+                        <h3 class="tile-title">Pasif Üye Listesi</h3>
+                        <a class="btn btn-info float-right" href="{% url 'calendarapp:kaydet_uye' %}" id="actionBtn"><i
+                                class="fa fa-plus"></i> Ekle</a>
+                    </div>
+                </div>
+                <div class="tile-body">
+                    <div class="table-responsive">
+                        <div id="sampleTable_wrapper"
+                             class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table class="table table-bordered dataTable table-fixed">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Adı</th>
+                                            <th>Soyadı</th>
+                                            <th>Telefon</th>
+                                            <th>Mail</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for uye in uye_list %}
+                                            {% if not uye.aktif_mi %}
                                                 <tr>
                                                     <td class="sorting_1">{{ forloop.counter }}</td>
                                                     <td>{{ uye.adi }}</td>

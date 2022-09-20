@@ -11,6 +11,8 @@ import calendar
 from django.contrib.auth.decorators import login_required
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 from django.views.generic import ListView
+
+from calendarapp.models.Enums import KatilimDurumuEnum
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from django.contrib import messages
 
@@ -225,14 +227,70 @@ def etkinlik_tamamlandi_ajax(request):
                 data={"status": "error", "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
         etkinlik.tamamlandi_mi = True
         etkinlik.save()
-        if etkinlik.grup.uye1:
-            EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye1, user=request.user)
-        if etkinlik.grup.uye2:
-            EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye2, user=request.user)
-        if etkinlik.grup.uye3:
-            EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye3, user=request.user)
-        if etkinlik.grup.uye4:
-            EtkinlikKatilimModel.objects.create(etkinlik_id=etkinlik.id, uye=etkinlik.grup.uye4, user=request.user)
+        for uye_grubu in etkinlik.grup.grup_uyegrup_relations.all():
+            if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye=uye_grubu.uye).exists():
+                EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye=uye_grubu.uye,
+                                                    katilim_durumu=KatilimDurumuEnum.Katıldı.value, user=request.user)
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
     except Exception as e:
         return JsonResponse(data={"status": "error", "message": "Hata oluştu." + e.__str__()})
+
+
+@login_required
+def katilim_ekle(request, id, uye_id):
+    try:
+        etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+        if etkinlik.bitis_tarih_saat > datetime.now():
+            messages.error(request, "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez.")
+            return redirect("calendarapp:profil_uye", uye_id)
+        if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye_id=uye_id).exists():
+            EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye_id=uye_id,
+                                                katilim_durumu=KatilimDurumuEnum.Katıldı.value, user=request.user)
+            # Bütün herkes katılım listesinde varsa etkinlik tamamlandı işaretle
+            herkes_katildi_mi = True
+            for uye_grubu in etkinlik.grup.grup_uyegrup_relations.all():
+                if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye=uye_grubu.uye).exists():
+                    herkes_katildi_mi = False
+                    break
+            if herkes_katildi_mi:
+                etkinlik.tamamlandi_mi = True
+                etkinlik.save()
+            messages.success(request, "İşlem Başarılı.")
+            return redirect("calendarapp:profil_uye", uye_id)
+    except Exception as e:
+        messages.error(request, "Hata oluştu." + e.__str__())
+        return redirect("calendarapp:profil_uye", uye_id)
+
+
+@login_required
+def iptal_et(request, id, uye_id):
+    try:
+        etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+        if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye_id=uye_id).exists():
+            EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye_id=uye_id,
+                                                katilim_durumu=KatilimDurumuEnum.İptal.value, user=request.user)
+        messages.success(request, "İşlem Başarılı.")
+        return redirect("calendarapp:profil_uye", uye_id)
+    except Exception as e:
+        messages.error(request, "Hata oluştu." + e.__str__())
+        return redirect("calendarapp:profil_uye", uye_id)
+
+
+@login_required
+def iptal_geri_al(request, id, uye_id):
+    try:
+        print(id)
+        print(uye_id)
+        etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+        iptal_edilen = EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye_id=uye_id,
+                                                           katilim_durumu=KatilimDurumuEnum.İptal.value)
+        print(etkinlik.id)
+        print(uye_id)
+        print(KatilimDurumuEnum.İptal.value)
+        if iptal_edilen.exists():
+            iptal_edilen.delete()
+        messages.success(request, "İşlem Başarılı.")
+        return redirect("calendarapp:profil_uye", uye_id)
+    except Exception as e:
+        messages.error(request, "Hata oluştu." + e.__str__())
+        return redirect("calendarapp:profil_uye", uye_id)

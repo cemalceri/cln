@@ -36,8 +36,10 @@ class UyeModel(BaseAbstract):
     email = models.EmailField('E-Mail', max_length=250, null=True, blank=True)
     adres = models.TextField('Adres', max_length=250, null=True, blank=True)
     seviye_rengi = models.CharField(max_length=20, choices=SeviyeRenkEnum.choices(), default="gray",
-                            verbose_name="Seviye Rengi")
-    onaylandi_mi = models.BooleanField('Onaylandı mı', default=False)
+                                    verbose_name="Seviye Rengi")
+    okul = models.ForeignKey('OkulModel', on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
+    onaylandi_mi = models.BooleanField('Onay Durumu', default=False)
+    aktif_mi = models.BooleanField('Aktif mi', default=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="uye", null=True, blank=True,
                              verbose_name="Ekleyen")
 
@@ -73,10 +75,12 @@ class GrupModel(BaseAbstract):
 
     def __str__(self):
         if self.tekil_mi is True:
-            return  str(self.adi)
+            return str(self.adi)
         else:
             string = ""
-            for item in UyeGrupModel.objects.filter(grup_id=self.id):
+            grup = UyeGrupModel.objects.filter(grup_id=self.id)
+            string += "( " + str(grup.count()) + " Üyeli Grup) "
+            for item in grup:
                 string += str(item.uye.uye_no) + "-" + item.uye.adi + " " + item.uye.soyadi + " / "
             return string
 

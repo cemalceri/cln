@@ -25,6 +25,12 @@ urlpatterns = [
     path("etkinlik/kaydet", etkinlik_views.kaydet_etkinlik_ajax, name="kaydet_etkinlik_ajax"),
     path("etkinlik/tasi", etkinlik_views.saat_guncelle_etkinlik_ajax, name="saat_guncelle_etkinlik_ajax"),
     path("etkinlik/tamamlandi", etkinlik_views.etkinlik_tamamlandi_ajax, name="etkinlik_tamamlandi_ajax"),
+    path("etkinlik/katilim-ekle/<int:id>/<int:uye_id>", etkinlik_views.katilim_ekle,
+         name="katilim_ekle_etkinlik"),
+    path("etkinlik/iptal-et/<int:id>/<int:uye_id>", etkinlik_views.iptal_et,
+         name="iptal_et_etkinlik"),
+    path("etkinlik/iptal-geri-al/<int:id>/<int:uye_id>", etkinlik_views.iptal_geri_al,
+         name="iptal_geri_al_etkinlik"),
 
     # Uye
     path("uye/index", uye_views.index, name="index_uye"),
@@ -62,7 +68,8 @@ urlpatterns = [
     path("rezervasyon/detay/<int:id>", rezervasyon_views.detay, name="detay_rezervasyon"),
     path("rezervasyon/guncelle/<int:id>", rezervasyon_views.kaydet, name="guncelle_rezervasyon"),
     path("rezervasyon/sil/<int:id>", rezervasyon_views.sil, name="sil_rezervasyon"),
-    path("rezervasyon/bekleyen-musteri", rezervasyon_views.bekleyen_musteri_getir_ajax, name="bekleyen_musteri_getir_ajax"),
+    path("rezervasyon/bekleyen-musteri", rezervasyon_views.bekleyen_musteri_getir_ajax,
+         name="bekleyen_musteri_getir_ajax"),
 
     # Telafi Ders
     path("telafi-ders/index", telafi_ders_views.index, name="index_telafi_ders"),

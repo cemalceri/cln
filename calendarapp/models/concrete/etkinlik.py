@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, time
 from django.db import models
 from django.urls import reverse
 from accounts.models import User
-from calendarapp.models.Enums import RenkEnum
+from calendarapp.models.Enums import RenkEnum, KatilimDurumuEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.kort import KortModel
@@ -93,6 +93,8 @@ class EtkinlikKatilimModel(BaseAbstract):
                                  null=True, related_name="etkinlik")
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False,
                             related_name="uye")
+    katilim_durumu = models.SmallIntegerField('Katılım Durumu', choices=KatilimDurumuEnum.choices(), null=False,
+                                              blank=False, default=KatilimDurumuEnum.Katıldı.value)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik_katilim", null=True, blank=True,
                              verbose_name="Ekleyen")
 
@@ -103,4 +105,3 @@ class EtkinlikKatilimModel(BaseAbstract):
 
     def __str__(self):
         return f"{self.etkinlik.baslik} - {self.uye.adi}"
-

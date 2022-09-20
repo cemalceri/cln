@@ -17,8 +17,9 @@ class RenkEnum(Enum):
 
 class SeviyeRenkEnum(Enum):
     Kırmızı = "red"
-    Mavi = "blue"
+    Turuncu = "orange"
     Yeşil = "green"
+    Sarı = "yellow"
 
     @classmethod
     def choices(cls):
@@ -68,6 +69,21 @@ class GrupOdemeSekliEnum(Enum):
     __labels__ = {
         Ortak_Odeme: "Ortak Ödeme",
         Bireysel_Odeme: "Bireysel Ödeme",
+    }
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
+
+
+class KatilimDurumuEnum(Enum):
+    Katıldı = 1
+    Katılmadı = 2
+    İptal = 3
+    __labels__ = {
+        Katıldı: "Katıldı",
+        Katılmadı: "Katılmadı",
+        İptal: "İptal",
     }
 
     @classmethod

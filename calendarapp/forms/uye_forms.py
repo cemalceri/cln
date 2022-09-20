@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, DateInput
 
 from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel
 
@@ -7,7 +7,13 @@ class UyeKayitForm(ModelForm):
     class Meta:
         model = UyeModel
         fields = '__all__'
-        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
+        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'uye_no']
+        widgets = {
+            "dogum_tarihi": DateInput(
+                attrs={"type": "date", "class": "form-control"},
+                format="%Y-%m-%d",
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
         super(UyeKayitForm, self).__init__(*args, **kwargs)

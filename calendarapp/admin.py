@@ -25,6 +25,7 @@ from django.contrib import admin
 #     list_filter = ["event"]
 from calendarapp.models.Enums import SaatlerModel, GunlerModel
 from calendarapp.models.concrete.abonelik import PaketModel, AbonelikModel
+from calendarapp.models.concrete.commons import OkulModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.kort import KortModel
 from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel, GrupModel
@@ -38,3 +39,4 @@ admin.site.register(SaatlerModel)
 admin.site.register(GrupModel)
 admin.site.register(PaketModel)
 admin.site.register(AbonelikModel)
+admin.site.register(OkulModel)
