@@ -72,8 +72,13 @@
                                 Bilgiler </a></li>
                             </li>
                             <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
-                                                                        href="#bakiye" aria-controls="bakiye"
-                                                                        role="tab" aria-selected="false">Bakiye</a>
+                                                                        href="#paket" aria-controls="paket"
+                                                                        role="tab"
+                                                                        aria-selected="false">Paket/Üyelik</a>
+                            </li>
+                            <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
+                                                                        href="#odeme" aria-controls="paket"
+                                                                        role="tab" aria-selected="false">Ödemeler</a>
                             </li>
                             <li class="nav-item dropdown" style="display: none;">
                                 <a class="dropdown-toggle nav-link" data-toggle="dropdown" href="#"
@@ -84,8 +89,10 @@
                                             class="badge badge-pill badge-danger">5</span></a>
                                     <a class="dropdown-item" data-toggle="tab" href="#dersler" aria-controls="dersler"
                                        role="tab">Dersler</a>
-                                    <a class="dropdown-item" data-toggle="tab" href="#bakiye" aria-controls="bakiye"
-                                       role="tab">Bakiye</a>
+                                    <a class="dropdown-item" data-toggle="tab" href="#paket" aria-controls="paket"
+                                       role="tab">Paket/Üyelik</a>
+                                    <a class="dropdown-item" data-toggle="tab" href="#odeme" aria-controls="odeme"
+                                       role="tab">Ödemeler</a>
                                 </div>
                             </li>
                         </ul>
@@ -328,7 +335,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane animation-slide-left" id="bakiye" role="tabpanel">
+                            <div class="tab-pane animation-slide-left" id="paket" role="tabpanel">
                                 <ul class="list-group list-group-full">
                                     {% for abonelik in abonelikler %}
                                         <a href="{% url 'calendarapp:guncelle_abonelik' abonelik.id %}">
@@ -342,6 +349,100 @@
                                 <a href="{% url 'calendarapp:kaydet_abonelik' uye.id %}"
                                    class="btn btn-success btn-block">Paket / Üyelik Ekle</a>
                             </div>
+                            <div class="tab-pane animation-slide-left" id="odeme" role="tabpanel">
+                                <ul class="list-group list-group-full">
+                                    <div class="tile-body">
+                                        <div class="table-responsive">
+                                            <div id="sampleTable_wrapper"
+                                                 class="container-fluid">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <table class="table table-bordered dataTable table-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Hareket Türü</th>
+                                                                <th>Tutar</th>
+                                                                <th>Paket/Üyelik</th>
+                                                                <th>Açıklama</th>
+                                                                <th>İşlemler</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for odeme in odemeler %}
+                                                                <tr>
+                                                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                                                    <td>{{ odeme.get_hareket_turu_display }}</td>
+                                                                    <td>{{ odeme.tutar }}</td>
+                                                                    <td>{{ odeme.paket | default_if_none:"" }}</td>
+                                                                    <td>{{ odeme.aciklama| default_if_none:"" }}</td>
+                                                                    <td>
+                                                                        <a class="btn btn-primary btn-circle"
+                                                                           title="Kaydı Düzenle"
+                                                                           href="{% url 'calendarapp:guncelle_uye' uye.id %}"><i
+                                                                                class="fa fa-edit"></i></a>
+                                                                        <a class="btn btn-info btn-circle"
+                                                                           title="Detayına Git"
+                                                                           href="{% url 'calendarapp:profil_uye' uye.id %}">
+                                                                            <i class="fa fas fa-sitemap"
+                                                                               style="color: black"></i></a>
+                                                                        <a href="{% url 'calendarapp:sil_uye' uye.id %}"
+                                                                           class=" btn btn-danger btn-circle confirm-delete"
+                                                                           title="Sil"
+                                                                           data-toggle="modal"
+                                                                           data-target="#confirmDeleteModal"
+                                                                           id="delete_uye_{{ uye.id }}">
+                                                                            <i class="fa fa-trash"
+                                                                               style="color: black"></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ul>
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Ödeme Girişi</h3>
+                                    </div>
+                                    <div class="panel-body container-fluid">
+                                        <form autocomplete="off" id="odemeForm">
+                                            {% csrf_token %}
+                                            <div class="form-group form-material floating row"
+                                                 data-plugin="formMaterial">
+                                                <div class="col-md-3">
+                                                    <select class="form-control" id="id_paket" name="paket">
+                                                        <option>&nbsp;</option>
+                                                        {% for abonelik in abonelikler %}
+                                                            <option value="{{ abonelik.id }}">{{ abonelik }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <label class="floating-label">Paket / Üyelik</label>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="text" class="form-control empty" id="id_tutar"
+                                                           name="tutar">
+                                                    <label class="floating-label">Tutar</label>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <input type="text" class="form-control empty" id="id_aciklama"
+                                                           name="aciklama">
+                                                    <label class="floating-label">Açıklama</label>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <a id="odemeKaydetBtn" class="btn btn-outline btn-success"
+                                                       type="button">Ekle</a>
+                                                </div>
+
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -349,4 +450,29 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $('#odemeKaydetBtn').click(function () {
+            debugger;
+            let form = $('#odemeForm');
+            form.append('<input type="hidden" name="uye" value="{{ uye.id }}">');
+            let datas = form.serialize();
+            $.ajax({
+                url: "{% url 'calendarapp:kaydet_uye_odemesi_ajax' %}",
+                data: datas,
+                type: "post",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == "success") {
+                        popupMesajGoster(data.message, data.status);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        popupMesajGoster(data.message, data.status);
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock content %}

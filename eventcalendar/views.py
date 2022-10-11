@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 
 from accounts.models import User
+from calendarapp.models.concrete.abonelik import PaketModel
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from calendarapp.models.concrete.kort import KortModel
@@ -93,3 +94,5 @@ def ilk_kayitlari_ekle():
         RezervasyonModel.objects.create(id=1, uye_id=1)
     if TelafiDersModel.objects.count() == 0:
         TelafiDersModel.objects.create(id=1, telafi_etkinlik_id=1, uye_id=1)
+    if PaketModel.objects.count() == 0:
+        PaketModel.objects.create(id=1, adi="İlk Paket", tipi=1)

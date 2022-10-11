@@ -5,6 +5,7 @@ from .views import uye_views
 from .views import kort_views
 from .views import antrenor_views
 from .views import grup_views
+from .views import muhasebe_views
 
 app_name = "calendarapp"
 
@@ -82,5 +83,13 @@ urlpatterns = [
     path("abonelik/kaydet-abonelik/<int:uye_id>", abonelik_views.kaydet_abonelik, name="kaydet_abonelik"),
     path("abonelik/guncelle-abonelik/<int:id>", abonelik_views.guncelle_abonelik, name="guncelle_abonelik"),
     path("abonelik/sil-abonelik/<int:id>", abonelik_views.sil_abonelik, name="sil_abonelik"),
+
+    # Muhasebe
+    path("muhasebe/index", muhasebe_views.index, name="index_muhasebe"),
+    path("muhasebe/kaydet-uye-odemesi", muhasebe_views.kaydet_uye_odemesi_ajax, name="kaydet_uye_odemesi_ajax"),
+    # path("uye/detay/<int:id>", uye_views.detay_uye, name="detay_uye"),
+    # path("uye/guncelle/<int:id>", uye_views.kaydet, name="guncelle_uye"),
+    path("muhasebe/sil/<int:id>", muhasebe_views.sil_uye_odemesi, name="sil_uye_odemesi"),
+    # path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),
 
 ]
