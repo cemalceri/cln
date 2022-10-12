@@ -87,9 +87,10 @@ urlpatterns = [
     # Muhasebe
     path("muhasebe/index", muhasebe_views.index, name="index_muhasebe"),
     path("muhasebe/kaydet-uye-odemesi", muhasebe_views.kaydet_uye_odemesi_ajax, name="kaydet_uye_odemesi_ajax"),
+    path("muhasebe/getir-odeme-by-id", muhasebe_views.getir_odeme_by_id_ajax, name="getir_odeme_by_id_ajax"),
     # path("uye/detay/<int:id>", uye_views.detay_uye, name="detay_uye"),
     # path("uye/guncelle/<int:id>", uye_views.kaydet, name="guncelle_uye"),
-    path("muhasebe/sil/<int:id>", muhasebe_views.sil_uye_odemesi, name="sil_uye_odemesi"),
+    path("muhasebe/sil-uye-odemesi/<int:id>", muhasebe_views.sil_uye_odemesi, name="sil_uye_odemesi"),
     # path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),
 
 ]

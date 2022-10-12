@@ -279,14 +279,9 @@ def iptal_et(request, id, uye_id):
 @login_required
 def iptal_geri_al(request, id, uye_id):
     try:
-        print(id)
-        print(uye_id)
         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
         iptal_edilen = EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye_id=uye_id,
                                                            katilim_durumu=KatilimDurumuEnum.İptal.value)
-        print(etkinlik.id)
-        print(uye_id)
-        print(KatilimDurumuEnum.İptal.value)
         if iptal_edilen.exists():
             iptal_edilen.delete()
         messages.success(request, "İşlem Başarılı.")

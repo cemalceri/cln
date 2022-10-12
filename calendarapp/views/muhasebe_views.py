@@ -1,14 +1,11 @@
+from itertools import chain
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-
-from calendarapp.forms.antrenor_forms import AntrenorKayitForm
-from calendarapp.forms.muhasebe_forms import ParaHareketiKayitForm
 from calendarapp.models.Enums import ParaHareketTuruEnum
-from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel
-from calendarapp.utils import formErrorsToText
 
 
 @login_required
@@ -19,22 +16,29 @@ def index(request):
 
 @login_required
 def kaydet_uye_odemesi_ajax(request):
-    form = ParaHareketiKayitForm(request.POST)
-    # form.hareket_turu = ParaHareketTuruEnum.Giris
-    print(str(ParaHareketTuruEnum.Giris.value()))
-    print(form.hareket_turu)
-    if form.is_valid():
-        if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
-            form = ParaHareketiKayitForm(data=request.POST,
-                                         instance=ParaHareketiModel.objects.get(id=form.cleaned_data["pk"]))
-            form.save()
-        else:
-            item = form.save(commit=False)
-            item.user = request.user
-            item.save()
+    if request.method == 'POST':
+        aciklama = request.POST.get('aciklama')
+        tarih = request.POST.get('tarih')
+        tutar = request.POST.get('tutar')
+        uye = request.POST.get('uye')
+        paket = request.POST.get('paket')
+        if tutar is None or tutar == '':
+            return JsonResponse({'status': 'error', 'message': 'Tutar boş olamaz.'})
+        if tarih is None or tarih == '':
+            return JsonResponse({'status': 'error', 'message': 'Tarih boş olamaz.'})
+        ParaHareketiModel.objects.create(paket_id=paket, aciklama=aciklama, tarih=tarih, tutar=tutar, uye_id=uye,
+                                         hareket_turu=ParaHareketTuruEnum.Giris.value)
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
-    else:
-        return JsonResponse(data={"status": "error", "message": formErrorsToText(form.errors, ParaHareketiModel)})
+
+
+@login_required
+def getir_odeme_by_id_ajax(request):
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        print(id)
+        odeme = ParaHareketiModel.objects.filter(pk=id).first()
+        print(to_dict(odeme))
+        return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "data": to_dict(odeme)})
 
 
 @login_required
@@ -44,6 +48,18 @@ def detay_antrenor(request, id):
 
 @login_required
 def sil_uye_odemesi(request, id):
-    ParaHareketiModel.objects.filter(pk=id).first().delete()
+    odeme = ParaHareketiModel.objects.filter(pk=id).first()
+    uye_id = odeme.uye_id
+    odeme.delete()
     messages.success(request, "Kayıt Silindi.")
-    return redirect("calendarapp:index_muhasebe")
+    return redirect("calendarapp:profil_uye", id=uye_id)
+
+
+def to_dict(instance):
+    opts = instance._meta
+    data = {}
+    for f in chain(opts.concrete_fields, opts.private_fields):
+        data[f.name] = f.value_from_object(instance)
+    for f in opts.many_to_many:
+        data[f.name] = [i.id for i in f.value_from_object(instance)]
+    return data

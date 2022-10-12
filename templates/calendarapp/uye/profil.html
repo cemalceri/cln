@@ -77,7 +77,8 @@
                                                                         aria-selected="false">Paket/Üyelik</a>
                             </li>
                             <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
-                                                                        href="#odeme" aria-controls="paket"
+                                                                        href="#odeme"
+                                                                        aria-controls="paket"
                                                                         role="tab" aria-selected="false">Ödemeler</a>
                             </li>
                             <li class="nav-item dropdown" style="display: none;">
@@ -350,11 +351,58 @@
                                    class="btn btn-success btn-block">Paket / Üyelik Ekle</a>
                             </div>
                             <div class="tab-pane animation-slide-left" id="odeme" role="tabpanel">
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Ödeme Girişi</h3>
+                                    </div>
+                                    <div class="panel-body container-fluid">
+                                        <form autocomplete="off" id="odemeForm">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="form-group col-md-2">
+                                                    <label class="form-control-label" for="paket">Paket /
+                                                        Üyelik </label>
+                                                    <select class="form-control" id="id_paket" name="paket">
+                                                        <option>&nbsp;</option>
+                                                        {% for abonelik in abonelikler %}
+                                                            <option value="{{ abonelik.id }}">{{ abonelik }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-2">
+                                                    <label class="form-control-label" for="id_tutar">Tutar</label>
+                                                    <input type="number" class="form-control" id="id_tutar"
+                                                           name="tutar" placeholder="Tutar"
+                                                           autocomplete="off">
+                                                </div>
+                                                <div class="form-group col-md-2">
+                                                    <label class="form-control-label" for="id_tarih">Tarih</label>
+                                                    <input type="date" class="form-control" id="id_tutar"
+                                                           name="tarih" placeholder="Tarih"
+                                                           autocomplete="off">
+                                                </div>
+                                                <div class="form-group col-md-5">
+                                                    <label class="form-control-label" for="id_aciklama">
+                                                        Açıklama</label>
+                                                    <input type="text" class="form-control" id="id_aciklama"
+                                                           name="aciklama" placeholder="Açıklama"
+                                                           autocomplete="off">
+                                                </div>
+                                                <div class="form-group col-md-1 ">
+                                                    <label class="form-control-label" for="id_aciklama">İşlem</label>
+                                                    <a id="odemeKaydetBtn" class="btn btn-outline btn-success">Ekle</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                                 <ul class="list-group list-group-full">
+                                    <h3 class="panel-title">Ödeme Listesi</h3>
+                                    <br>
                                     <div class="tile-body">
                                         <div class="table-responsive">
                                             <div id="sampleTable_wrapper"
-                                                 class="container-fluid">
+                                                 class="container-fluid ">
                                                 <div class="row">
                                                     <div class="col-sm-12">
                                                         <table class="table table-bordered dataTable table-fixed">
@@ -378,15 +426,10 @@
                                                                     <td>{{ odeme.aciklama| default_if_none:"" }}</td>
                                                                     <td>
                                                                         <a class="btn btn-primary btn-circle"
-                                                                           title="Kaydı Düzenle"
-                                                                           href="{% url 'calendarapp:guncelle_uye' uye.id %}"><i
+                                                                           onclick="odemeDuzenleBtn('{{ odeme.id }}')"
+                                                                           title="Kaydı Düzenle"><i
                                                                                 class="fa fa-edit"></i></a>
-                                                                        <a class="btn btn-info btn-circle"
-                                                                           title="Detayına Git"
-                                                                           href="{% url 'calendarapp:profil_uye' uye.id %}">
-                                                                            <i class="fa fas fa-sitemap"
-                                                                               style="color: black"></i></a>
-                                                                        <a href="{% url 'calendarapp:sil_uye' uye.id %}"
+                                                                        <a href="{% url 'calendarapp:sil_uye_odemesi' odeme.id %}"
                                                                            class=" btn btn-danger btn-circle confirm-delete"
                                                                            title="Sil"
                                                                            data-toggle="modal"
@@ -405,43 +448,6 @@
                                         </div>
                                     </div>
                                 </ul>
-                                <div class="panel">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">Ödeme Girişi</h3>
-                                    </div>
-                                    <div class="panel-body container-fluid">
-                                        <form autocomplete="off" id="odemeForm">
-                                            {% csrf_token %}
-                                            <div class="form-group form-material floating row"
-                                                 data-plugin="formMaterial">
-                                                <div class="col-md-3">
-                                                    <select class="form-control" id="id_paket" name="paket">
-                                                        <option>&nbsp;</option>
-                                                        {% for abonelik in abonelikler %}
-                                                            <option value="{{ abonelik.id }}">{{ abonelik }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <label class="floating-label">Paket / Üyelik</label>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="text" class="form-control empty" id="id_tutar"
-                                                           name="tutar">
-                                                    <label class="floating-label">Tutar</label>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <input type="text" class="form-control empty" id="id_aciklama"
-                                                           name="aciklama">
-                                                    <label class="floating-label">Açıklama</label>
-                                                </div>
-                                                <div class="col-md-1">
-                                                    <a id="odemeKaydetBtn" class="btn btn-outline btn-success"
-                                                       type="button">Ekle</a>
-                                                </div>
-
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -474,5 +480,30 @@
                 }
             });
         });
+
+        function odemeDuzenleBtn(id) {
+            debugger;
+            $.ajax({
+                url: "{% url 'calendarapp:getir_odeme_by_id_ajax' %}",
+                data: {id: id},
+                type: "get",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == "success") {
+                        debugger;
+                        for (let item in data) {
+                            if (data[item] != "null" || data[item] != "undefined" || data[item] != "") {
+                                let key = item == 'id' ? 'pk' : item
+                                let element = document.getElementById("id_" + key);
+                                if (element)
+                                    element.value = data[item];
+                            }
+                        }
+                    } else {
+                        popupMesajGoster(data.message, data.status);
+                    }
+                }
+            });
+        }
     </script>
 {% endblock content %}

@@ -45,7 +45,7 @@ class PaketModel(BaseAbstract):
                              verbose_name="Ekleyen")
 
     def __str__(self):
-        return "Paket/Abonelik Adı:" + self.adi
+        return self.adi
 
     class Meta:
         verbose_name = "Paket ve Abonelik Çeşitleri"
