@@ -336,15 +336,55 @@
                             </div>
                             <div class="tab-pane animation-slide-left" id="paket" role="tabpanel">
                                 <div class="border p-10">
-                                    <ul class="list-group list-group-full">
-                                        {% for abonelik in abonelikler %}
-                                            <a href="{% url 'calendarapp:guncelle_abonelik' abonelik.id %}">
-                                                <li class="list-group-item">
-                                                    <span class="badge badge-pill badge-success">{{ abonelik.kalan_adet }}</span>
-                                                    {{ abonelik }}
-                                                </li>
-                                            </a>
-                                        {% endfor %}
+                                    <div class="tile-body">
+                                        <div class="table-responsive">
+                                            <div id="sampleTable_wrapper"
+                                                 class="container-fluid ">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <table class="table table-bordered dataTable table-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Paket / Abonelik</th>
+                                                                <th>Başlangıç Tarihi</th>
+                                                                <th>Bitiş Tarihi</th>
+                                                                <th>Kalan Adet</th>
+                                                                <th>Açıklama</th>
+                                                                <th>İşlemler</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for abonelik in abonelikler %}
+                                                                <tr>
+                                                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                                                    <td>{{ abonelik }}</td>
+                                                                    <td>{{ abonelik.baslangic_tarihi }}</td>
+                                                                    <td>{{ abonelik.bitis_tarihi | default_if_none:"" }}</td>
+                                                                    <td>{{ abonelik.kalan_adet }}</td>
+                                                                    <td>{{ abonelik.aciklama }}</td>
+                                                                    <td>
+                                                                        <a class="btn btn-primary btn-circle"
+                                                                           href="{% url 'calendarapp:guncelle_abonelik' abonelik.id %}"
+                                                                           title="Kaydı Düzenle"><i
+                                                                                class="fa fa-edit black"></i></a>
+                                                                        <a href="{% url 'calendarapp:sil_abonelik' abonelik.id %}"
+                                                                           class="btn btn-danger btn-circle confirm-delete"
+                                                                           title="Sil"
+                                                                           data-toggle="modal"
+                                                                           data-target="#confirmDeleteModal"
+                                                                           id="delete_uye_{{ abonelik.id }}">
+                                                                            <i class="fa fa-trash black"></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     </ul>
                                     <a href="{% url 'calendarapp:kaydet_abonelik' uye.id %}"
                                        class="btn btn-success btn-block">Paket / Üyelik Ekle</a>
@@ -439,7 +479,7 @@
                                                                            title="Sil"
                                                                            data-toggle="modal"
                                                                            data-target="#confirmDeleteModal"
-                                                                           id="delete_uye_{{ uye.id }}">
+                                                                           id="delete_uye_{{ odeme.id }}">
                                                                             <i class="fa fa-trash black"></i></a>
                                                                     </td>
                                                                 </tr>
