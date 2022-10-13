@@ -26,9 +26,7 @@ def kaydet_uye_odemesi_ajax(request):
             return JsonResponse({'status': 'error', 'message': 'Tutar boş olamaz.'})
         if tarih is None or tarih == '':
             return JsonResponse({'status': 'error', 'message': 'Tarih boş olamaz.'})
-        print(request.POST.get('id'))
         if request.POST.get('id'):
-            print("güncellendi")
             item = ParaHareketiModel.objects.get(id=request.POST.get('id'))
             item.aciklama = aciklama
             item.tarih = tarih
@@ -43,6 +41,32 @@ def kaydet_uye_odemesi_ajax(request):
 
 
 @login_required
+def kaydet_antrenor_odemesi_ajax(request):
+    if request.method == 'POST':
+        aciklama = request.POST.get('aciklama')
+        tarih = request.POST.get('tarih')
+        tutar = request.POST.get('tutar')
+        anternor = request.POST.get('antrenor')
+        odeme_turu = request.POST.get('odeme_turu')
+        if tutar is None or tutar == '':
+            return JsonResponse({'status': 'error', 'message': 'Tutar boş olamaz.'})
+        if tarih is None or tarih == '':
+            return JsonResponse({'status': 'error', 'message': 'Tarih boş olamaz.'})
+        if request.POST.get('id'):
+            item = ParaHareketiModel.objects.get(id=request.POST.get('id'))
+            item.aciklama = aciklama
+            item.tarih = tarih
+            item.odeme_turu = odeme_turu
+            item.tutar = tutar
+            item.antrenor_id = anternor
+            item.save()
+        else:
+            ParaHareketiModel.objects.create(odeme_turu=odeme_turu, aciklama=aciklama, tarih=tarih, tutar=tutar,
+                                             antrenor_id=anternor, hareket_turu=ParaHareketTuruEnum.Cikis.value)
+        return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
+
+
+@login_required
 def getir_odeme_by_id_ajax(request):
     if request.method == 'GET':
         id = request.GET.get('id')
@@ -51,12 +75,7 @@ def getir_odeme_by_id_ajax(request):
 
 
 @login_required
-def detay_antrenor(request, id):
-    pass
-
-
-@login_required
-def sil_uye_odemesi(request, id):
+def sil_odeme(request, id):
     odeme = ParaHareketiModel.objects.filter(pk=id).first()
     uye_id = odeme.uye_id
     odeme.delete()

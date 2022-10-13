@@ -38,11 +38,6 @@ def kaydet(request, id=None):
 
 
 @login_required
-def detay_uye(request, id):
-    pass
-
-
-@login_required
 def sil(request, id):
     UyeModel.objects.filter(pk=id).first().delete()
     messages.success(request, "Kayıt Silindi.")

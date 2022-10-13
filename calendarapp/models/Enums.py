@@ -72,6 +72,17 @@ class ParaHareketTuruEnum(Enum):
         return [(key.value, key.name) for key in cls]
 
 
+class OdemeTuruEnum(Enum):
+    Maaş = 1
+    Yol = 2
+    Yemek = 3
+    Diğer = 4
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
+
+
 class GrupOdemeSekliEnum(Enum):
     Ortak_Odeme = 1
     Bireysel_Odeme = 2

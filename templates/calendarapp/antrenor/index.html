@@ -44,12 +44,12 @@
                                                        href="{% url 'calendarapp:guncelle_antrenor' item.id %}"><i
                                                             class="fa fa-edit"></i></a>
                                                     <a class="btn btn-secondary btn-circle" title="Detayına Git"
-                                                       href="{% url 'calendarapp:detay_antrenor' item.id %}">
+                                                       href="{% url 'calendarapp:profil_antrenor' item.id %}">
                                                         <i class="fa fas fa-sitemap" style="color: black"></i></a>
                                                     <a href="{% url 'calendarapp:sil_antrenor' item.id %}"
                                                        class=" btn btn-danger btn-circle confirm-delete" title="Sil"
                                                        data-toggle="modal"
-                                                       data-target="#confirmDeleteModal" id="delete_uye_{{ item.id }}">
+                                                       data-target="#confirmDeleteModal" id="delete_antrenor_{{ item.id }}">
                                                         <i class="fa fa-trash" style="color: black"></i></a>
                                                 </td>
                                             </tr>

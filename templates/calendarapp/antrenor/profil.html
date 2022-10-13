@@ -27,7 +27,7 @@
                             <img src="{% static 'template/classic/global/portraits/5.jpg' %}" alt="...">
                         </a>
                         <h4 class="profile-user">{{ uye.adi }} {{ uye.soyadi }}</h4>
-                        <p class="profile-job">Sporcu</p>
+                        <p class="profile-job">Antrenör</p>
                         <p>Hi! I'm Adrian the Senior UI Designer at AmazingSurge. We hope
                             you enjoy the design and quality of Social.</p>
                         <div class="profile-social">
@@ -71,11 +71,6 @@
                                                                         role="tab" aria-selected="true">Kişisel
                                 Bilgiler </a></li>
                             <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
-                                                                        href="#paket" aria-controls="paket"
-                                                                        role="tab"
-                                                                        aria-selected="false">Paket/Üyelik</a>
-                            </li>
-                            <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
                                                                         href="#odeme"
                                                                         aria-controls="paket"
                                                                         role="tab" aria-selected="false">Ödemeler</a>
@@ -89,8 +84,6 @@
                                             class="badge badge-pill badge-danger">5</span></a>
                                     <a class="dropdown-item" data-toggle="tab" href="#dersler" aria-controls="dersler"
                                        role="tab">Dersler</a>
-                                    <a class="dropdown-item" data-toggle="tab" href="#paket" aria-controls="paket"
-                                       role="tab">Paket/Üyelik</a>
                                     <a class="dropdown-item" data-toggle="tab" href="#odeme" aria-controls="odeme"
                                        role="tab">Ödemeler</a>
                                 </div>
@@ -153,10 +146,10 @@
                                                     {% for etkinlik in yapilan_etkinlikler %}
                                                         <li class="list-group-item justify-content-between">
                                                             {% if not etkinlik.tamamlandi_mi %}
-                                                                <a href="{% url 'calendarapp:katilim_ekle_etkinlik' id=etkinlik.id uye_id=uye.id %}">
-                                                                    <small class="badge badge-round badge-info float-right">Tamamlandı
-                                                                        yap</small>
-                                                                </a>
+                                                                {#                                                                <a href="{% url 'calendarapp:katilim_ekle_etkinlik' id=etkinlik.id uye_id=uye.id %}">#}
+                                                                {#                                                                    <small class="badge badge-round badge-info float-right">Tamamlandı#}
+                                                                {#                                                                        yap</small>#}
+                                                                {#                                                                </a>#}
                                                             {% endif %}
                                                             <p>
                                                                 <span> Kort: {{ etkinlik.kort }} - Antrenör: {{ etkinlik.antrenor |default_if_none:"" }} Tarih: {{ etkinlik.baslangic_tarih_saat }}</span>
@@ -238,155 +231,19 @@
                                                 Adı Soyadı:
                                             </td>
                                             <td>
-                                                {{ uye.adi }} {{ uye.soyadi }}
+                                                {{ antrenor.adi }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                Doğum Tarihi:
+                                                Antrenör Rengi:
                                             </td>
                                             <td>
-                                                {{ uye.dogum_tarihi | default_if_none:"" }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Üye No:
-                                            </td>
-                                            <td>
-                                                {{ uye.uye_no }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Kimlik No:
-                                            </td>
-                                            <td>
-                                                {{ uye.kimlik_no |default_if_none:"" }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Telefon:
-                                            </td>
-                                            <td>
-                                                {{ uye.telefon |default_if_none:"" }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                E-posta:
-                                            </td>
-                                            <td>
-                                                {{ uye.email |default_if_none:"" }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Adres:
-                                            </td>
-                                            <td>
-                                                {{ uye.adres |default_if_none:"" }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Seviye Rengi:
-                                            </td>
-                                            <td>
-                                                {{ uye.get_seviye_rengi_display }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Onay Durumu:
-                                            </td>
-                                            <td>
-                                                {{ uye.onaylandi_mi|yesno:"Onaylandı,Onaylanmadı" }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Aktif Durumu:
-                                            </td>
-                                            <td>
-                                                {{ uye.aktif_mi | yesno:"Aktif, Pasif" }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Ekleme Tarihi:
-                                            </td>
-                                            <td>
-                                                {{ uye.created_at }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                Ekleyen:
-                                            </td>
-                                            <td>
-                                                {{ uye.user }}
+                                                {{ antrenor.get_renk_display }}
                                             </td>
                                         </tr>
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
-                            <div class="tab-pane animation-slide-left" id="paket" role="tabpanel">
-                                <a href="{% url 'calendarapp:kaydet_abonelik' uye.id %}"
-                                   class="btn btn-success mb-10 float-right"><i class="fa fa-plus "></i>Paket / Üyelik Ekle</a>
-                                <div class="border p-10">
-                                    <div class="tile-body">
-                                        <div class="table-responsive">
-                                            <div id="sampleTable_wrapper"
-                                                 class="container-fluid ">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <table class="table table-bordered dataTable table-fixed">
-                                                            <thead>
-                                                            <tr>
-                                                                <th>#</th>
-                                                                <th>Paket / Abonelik</th>
-                                                                <th>Başlangıç Tarihi</th>
-                                                                <th>Bitiş Tarihi</th>
-                                                                <th>Kalan Adet</th>
-                                                                <th>Açıklama</th>
-                                                                <th>İşlemler</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            {% for abonelik in abonelikler %}
-                                                                <tr>
-                                                                    <td class="sorting_1">{{ forloop.counter }}</td>
-                                                                    <td>{{ abonelik }}</td>
-                                                                    <td>{{ abonelik.baslangic_tarihi }}</td>
-                                                                    <td>{{ abonelik.bitis_tarihi | default_if_none:"" }}</td>
-                                                                    <td>{{ abonelik.kalan_adet }}</td>
-                                                                    <td>{{ abonelik.aciklama }}</td>
-                                                                    <td>
-                                                                        <a class="btn btn-primary btn-circle"
-                                                                           href="{% url 'calendarapp:guncelle_abonelik' abonelik.id %}"
-                                                                           title="Kaydı Düzenle"><i
-                                                                                class="fa fa-edit black"></i></a>
-                                                                        <a href="{% url 'calendarapp:sil_abonelik' abonelik.id %}"
-                                                                           class="btn btn-danger btn-circle confirm-delete"
-                                                                           title="Sil"
-                                                                           data-toggle="modal"
-                                                                           data-target="#confirmDeleteModal"
-                                                                           id="delete_uye_{{ abonelik.id }}">
-                                                                            <i class="fa fa-trash black"></i></a>
-                                                                    </td>
-                                                                </tr>
-                                                            {% endfor %}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                 </div>
                             </div>
                             <div class="tab-pane animation-slide-left" id="odeme" role="tabpanel">
@@ -399,13 +256,11 @@
                                             {% csrf_token %}
                                             <div class="row">
                                                 <div class="form-group col-md-2">
-                                                    <label class="form-control-label" for="paket">Paket /
-                                                        Üyelik </label>
-                                                    <select class="form-control" id="id_paket" name="paket">
-                                                        <option>&nbsp;</option>
-                                                        {% for abonelik in abonelikler %}
-                                                            <option value="{{ abonelik.id }}">{{ abonelik }}</option>
-                                                        {% endfor %}
+                                                    <label class="form-control-label" for="id_odeme_turu">Ödeme Türü</label>
+                                                    <select class="form-control" id="id_odeme_turu" name="odeme_turu">
+                                                        <option value="Maaş">Maaş</option>
+                                                        <option value="Yol/Yemek">Yol/Yemek</option>
+                                                        <option value="Diğer">Diğer</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group col-md-2">
@@ -457,9 +312,9 @@
                                                             <thead>
                                                             <tr>
                                                                 <th>#</th>
-                                                                <th>Tarih</th>
+                                                                <th>Ödeme Türü</th>
                                                                 <th>Tutar</th>
-                                                                <th>Paket/Üyelik</th>
+                                                                <th>Tarih</th>
                                                                 <th>Açıklama</th>
                                                                 <th>İşlemler</th>
                                                             </tr>
@@ -468,9 +323,9 @@
                                                             {% for odeme in odemeler %}
                                                                 <tr>
                                                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                                                    <td>{{ odeme.tarih }}</td>
+                                                                    <td>{{ odeme.odeme_turu | default_if_none:"" }}</td>
                                                                     <td>{{ odeme.tutar }}</td>
-                                                                    <td>{{ odeme.paket | default_if_none:"" }}</td>
+                                                                    <td>{{ odeme.tarih }}</td>
                                                                     <td>{{ odeme.aciklama| default_if_none:"" }}</td>
                                                                     <td>
                                                                         <a class="btn btn-primary btn-circle"
@@ -506,10 +361,10 @@
     <script>
         $('#odemeKaydetBtn').click(function () {
             let form = $('#odemeForm');
-            form.append('<input type="hidden" name="uye" value="{{ uye.id }}">');
+            form.append('<input type="hidden" name="antrenor" value="{{ antrenor.id }}">');
             let datas = form.serialize();
             $.ajax({
-                url: "{% url 'calendarapp:kaydet_uye_odemesi_ajax' %}",
+                url: "{% url 'calendarapp:kaydet_antrenor_odemesi_ajax' %}",
                 data: datas,
                 type: "post",
                 dataType: 'json',
@@ -536,7 +391,7 @@
                     if (result.status == "success") {
                         for (let item in result.data) {
                             $('#odemeForm').append('<input type="hidden" class="form-control" name="id" value="' + result.data.id + '">');
-                            $('#odemeForm').append('<input type="hidden" name="uye" value="{{ uye.id }}">');
+                            $('#odemeForm').append('<input type="hidden" name="uye" value="{{ antrenor.id }}">');
                             if (result.data[item] != "null" || result.data[item] != "undefined" || result.data[item] != "") {
                                 let key = item == 'id' ? 'pk' : item
                                 let element = document.getElementById("id_" + key);

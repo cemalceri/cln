@@ -36,7 +36,6 @@ urlpatterns = [
     # Uye
     path("uye/index", uye_views.index, name="index_uye"),
     path("uye/kaydet", uye_views.kaydet, name="kaydet_uye"),
-    path("uye/detay/<int:id>", uye_views.detay_uye, name="detay_uye"),
     path("uye/guncelle/<int:id>", uye_views.kaydet, name="guncelle_uye"),
     path("uye/sil/<int:id>", uye_views.sil, name="sil_uye"),
     path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),
@@ -49,11 +48,11 @@ urlpatterns = [
     path("kort/sil/<int:id>", kort_views.sil_kort, name="sil_kort"),
 
     # Antrenor
-    path("antrenor/index", antrenor_views.index_antrenor, name="index_antrenor"),
-    path("antrenor/kaydet", antrenor_views.kaydet_antrenor, name="kaydet_antrenor"),
-    path("antrenor/detay/<int:id>", antrenor_views.detay_antrenor, name="detay_antrenor"),
-    path("antrenor/guncelle/<int:id>", antrenor_views.kaydet_antrenor, name="guncelle_antrenor"),
-    path("antrenor/sil/<int:id>", antrenor_views.sil_antrenor, name="sil_antrenor"),
+    path("antrenor/index", antrenor_views.index, name="index_antrenor"),
+    path("antrenor/kaydet", antrenor_views.kaydet, name="kaydet_antrenor"),
+    path("antrenor/profil/<int:id>", antrenor_views.profil, name="profil_antrenor"),
+    path("antrenor/guncelle/<int:id>", antrenor_views.kaydet, name="guncelle_antrenor"),
+    path("antrenor/sil/<int:id>", antrenor_views.sil, name="sil_antrenor"),
 
     # Grup
     path("grup/index", grup_views.index_grup, name="index_grup"),
@@ -88,9 +87,7 @@ urlpatterns = [
     path("muhasebe/index", muhasebe_views.index, name="index_muhasebe"),
     path("muhasebe/kaydet-uye-odemesi", muhasebe_views.kaydet_uye_odemesi_ajax, name="kaydet_uye_odemesi_ajax"),
     path("muhasebe/getir-odeme-by-id", muhasebe_views.getir_odeme_by_id_ajax, name="getir_odeme_by_id_ajax"),
-    # path("uye/detay/<int:id>", uye_views.detay_uye, name="detay_uye"),
-    # path("uye/guncelle/<int:id>", uye_views.kaydet, name="guncelle_uye"),
-    path("muhasebe/sil-uye-odemesi/<int:id>", muhasebe_views.sil_uye_odemesi, name="sil_uye_odemesi"),
-    # path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),
+    path("muhasebe/kaydet-antrenor-odemesi", muhasebe_views.kaydet_antrenor_odemesi_ajax, name="kaydet_antrenor_odemesi_ajax"),
+    path("muhasebe/sil-odeme/<int:id>", muhasebe_views.sil_odeme, name="sil_odeme"),
 
 ]
