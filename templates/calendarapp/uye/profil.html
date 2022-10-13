@@ -60,17 +60,17 @@
 
             <div class="col-lg-9">
                 <!-- Panel -->
-                <div class="panel">
+                <div class="panel border">
                     <div class="panel-body nav-tabs-animate nav-tabs-horizontal" data-plugin="tabs">
-                        <ul class="nav nav-tabs nav-tabs-line" role="tablist">
+                        <ul class="nav nav-tabs nav-tabs-line mb-2" role="tablist">
                             <li class="nav-item" role="presentation"><a class="nav-link active" data-toggle="tab"
                                                                         href="#dersler" aria-controls="dersler"
                                                                         role="tab" aria-selected="false">Dersler</a>
+                            </li>
                             <li class="nav-item" role="presentation"><a class="nav-link " data-toggle="tab"
                                                                         href="#bilgiler" aria-controls="bilgiler"
                                                                         role="tab" aria-selected="true">Kişisel
                                 Bilgiler </a></li>
-                            </li>
                             <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
                                                                         href="#paket" aria-controls="paket"
                                                                         role="tab"
@@ -99,7 +99,7 @@
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane animation-slide-left active" id="dersler" role="tabpanel">
-                                <div class="panel">
+                                <div class="panel border">
                                     <div class="panel-heading">
                                         <h3 class="panel-title">
                                             Yaklaşan Dersler
@@ -129,9 +129,7 @@
                                                                 <time datetime="2018-07-01T08:55">{{ etkinlik.created_at }}</time>
                                                             </small>
                                                         </li>
-
                                                     {% endfor %}
-
                                                 </div>
                                             </div>
                                             <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide"
@@ -142,7 +140,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="panel">
+                                <div class="panel border">
                                     <div class="panel-heading">
                                         <h3 class="panel-title">
                                             Yapılan Dersler
@@ -187,7 +185,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="panel">
+                                <div class="panel border">
                                     <div class="panel-heading">
                                         <h3 class="panel-title">
                                             İptal Edilen Dersler
@@ -249,7 +247,7 @@
                                                 Doğum Tarihi:
                                             </td>
                                             <td>
-                                                {{ uye.dogum_tarihi }}
+                                                {{ uye.dogum_tarihi | default_if_none:"" }}
                                             </td>
                                         </tr>
                                         <tr>
@@ -337,21 +335,23 @@
                                 </div>
                             </div>
                             <div class="tab-pane animation-slide-left" id="paket" role="tabpanel">
-                                <ul class="list-group list-group-full">
-                                    {% for abonelik in abonelikler %}
-                                        <a href="{% url 'calendarapp:guncelle_abonelik' abonelik.id %}">
-                                            <li class="list-group-item">
-                                                <span class="badge badge-pill badge-success">{{ abonelik.kalan_adet }}</span>
-                                                {{ abonelik }}
-                                            </li>
-                                        </a>
-                                    {% endfor %}
-                                </ul>
-                                <a href="{% url 'calendarapp:kaydet_abonelik' uye.id %}"
-                                   class="btn btn-success btn-block">Paket / Üyelik Ekle</a>
+                                <div class="border p-10">
+                                    <ul class="list-group list-group-full">
+                                        {% for abonelik in abonelikler %}
+                                            <a href="{% url 'calendarapp:guncelle_abonelik' abonelik.id %}">
+                                                <li class="list-group-item">
+                                                    <span class="badge badge-pill badge-success">{{ abonelik.kalan_adet }}</span>
+                                                    {{ abonelik }}
+                                                </li>
+                                            </a>
+                                        {% endfor %}
+                                    </ul>
+                                    <a href="{% url 'calendarapp:kaydet_abonelik' uye.id %}"
+                                       class="btn btn-success btn-block">Paket / Üyelik Ekle</a>
+                                </div>
                             </div>
                             <div class="tab-pane animation-slide-left" id="odeme" role="tabpanel">
-                                <div class="panel">
+                                <div class="panel border">
                                     <div class="panel-heading">
                                         <h3 class="panel-title">Ödeme Girişi</h3>
                                     </div>
@@ -377,26 +377,31 @@
                                                 </div>
                                                 <div class="form-group col-md-2">
                                                     <label class="form-control-label" for="id_tarih">Tarih</label>
-                                                    <input type="date" class="form-control" id="id_tutar"
+                                                    <input type="date" class="form-control" id="id_tarih"
                                                            name="tarih" placeholder="Tarih"
                                                            autocomplete="off">
                                                 </div>
-                                                <div class="form-group col-md-5">
+                                                <div class="form-group col-md-4">
                                                     <label class="form-control-label" for="id_aciklama">
                                                         Açıklama</label>
                                                     <input type="text" class="form-control" id="id_aciklama"
                                                            name="aciklama" placeholder="Açıklama"
                                                            autocomplete="off">
                                                 </div>
-                                                <div class="form-group col-md-1 ">
-                                                    <label class="form-control-label" for="id_aciklama">İşlem</label>
-                                                    <a id="odemeKaydetBtn" class="btn btn-outline btn-success">Ekle</a>
+                                                <div class="form-group col-md-2">
+                                                    <label class="form-control-label" for="id_aciklama">İşlemler</label>
+                                                    <div class="row">
+                                                        <a id="odemeKaydetBtn"
+                                                           class="btn btn-outline btn-success mr-2">Kaydet</a>
+                                                        <a id="odemeTemizleBtn" onclick="formTemizle()"
+                                                           class="btn btn-outline btn-primary">Temizle</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
-                                <ul class="list-group list-group-full">
+                                <ul class="list-group list-group-full border">
                                     <h3 class="panel-title">Ödeme Listesi</h3>
                                     <br>
                                     <div class="tile-body">
@@ -409,7 +414,7 @@
                                                             <thead>
                                                             <tr>
                                                                 <th>#</th>
-                                                                <th>Hareket Türü</th>
+                                                                <th>Tarih</th>
                                                                 <th>Tutar</th>
                                                                 <th>Paket/Üyelik</th>
                                                                 <th>Açıklama</th>
@@ -420,23 +425,22 @@
                                                             {% for odeme in odemeler %}
                                                                 <tr>
                                                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                                                    <td>{{ odeme.get_hareket_turu_display }}</td>
+                                                                    <td>{{ odeme.tarih }}</td>
                                                                     <td>{{ odeme.tutar }}</td>
                                                                     <td>{{ odeme.paket | default_if_none:"" }}</td>
                                                                     <td>{{ odeme.aciklama| default_if_none:"" }}</td>
                                                                     <td>
                                                                         <a class="btn btn-primary btn-circle"
-                                                                           onclick="odemeDuzenleBtn('{{ odeme.id }}')"
+                                                                           onclick="odemeDuzenle('{{ odeme.id }}')"
                                                                            title="Kaydı Düzenle"><i
-                                                                                class="fa fa-edit"></i></a>
+                                                                                class="fa fa-edit black"></i></a>
                                                                         <a href="{% url 'calendarapp:sil_uye_odemesi' odeme.id %}"
-                                                                           class=" btn btn-danger btn-circle confirm-delete"
+                                                                           class="btn btn-danger btn-circle confirm-delete"
                                                                            title="Sil"
                                                                            data-toggle="modal"
                                                                            data-target="#confirmDeleteModal"
                                                                            id="delete_uye_{{ uye.id }}">
-                                                                            <i class="fa fa-trash"
-                                                                               style="color: black"></i></a>
+                                                                            <i class="fa fa-trash black"></i></a>
                                                                     </td>
                                                                 </tr>
                                                             {% endfor %}
@@ -456,7 +460,6 @@
             </div>
         </div>
     </div>
-
     <script>
         $('#odemeKaydetBtn').click(function () {
             debugger;
@@ -481,22 +484,22 @@
             });
         });
 
-        function odemeDuzenleBtn(id) {
-            debugger;
+        function odemeDuzenle(id) {
             $.ajax({
                 url: "{% url 'calendarapp:getir_odeme_by_id_ajax' %}",
                 data: {id: id},
                 type: "get",
                 dataType: 'json',
-                success: function (data) {
-                    if (data.status == "success") {
-                        debugger;
-                        for (let item in data) {
-                            if (data[item] != "null" || data[item] != "undefined" || data[item] != "") {
+                success: function (result) {
+                    if (result.status == "success") {
+                        for (let item in result.data) {
+                            $('#odemeForm').append('<input type="hidden" class="form-control" name="id" value="' + result.data.id + '">');
+                            $('#odemeForm').append('<input type="hidden" name="uye" value="{{ uye.id }}">');
+                            if (result.data[item] != "null" || result.data[item] != "undefined" || result.data[item] != "") {
                                 let key = item == 'id' ? 'pk' : item
                                 let element = document.getElementById("id_" + key);
                                 if (element)
-                                    element.value = data[item];
+                                    element.value = result.data[item];
                             }
                         }
                     } else {
@@ -504,6 +507,13 @@
                     }
                 }
             });
+        }
+
+        function formTemizle() {
+            let elements = document.getElementsByClassName("form-control");
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].value = "";
+            }
         }
     </script>
 {% endblock content %}

@@ -26,8 +26,19 @@ def kaydet_uye_odemesi_ajax(request):
             return JsonResponse({'status': 'error', 'message': 'Tutar boş olamaz.'})
         if tarih is None or tarih == '':
             return JsonResponse({'status': 'error', 'message': 'Tarih boş olamaz.'})
-        ParaHareketiModel.objects.create(paket_id=paket, aciklama=aciklama, tarih=tarih, tutar=tutar, uye_id=uye,
-                                         hareket_turu=ParaHareketTuruEnum.Giris.value)
+        print(request.POST.get('id'))
+        if request.POST.get('id'):
+            print("güncellendi")
+            item = ParaHareketiModel.objects.get(id=request.POST.get('id'))
+            item.aciklama = aciklama
+            item.tarih = tarih
+            item.tutar = tutar
+            item.uye_id = uye
+            item.paket_id = paket
+            item.save()
+        else:
+            ParaHareketiModel.objects.create(paket_id=paket, aciklama=aciklama, tarih=tarih, tutar=tutar, uye_id=uye,
+                                             hareket_turu=ParaHareketTuruEnum.Giris.value)
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
 
 
@@ -35,9 +46,7 @@ def kaydet_uye_odemesi_ajax(request):
 def getir_odeme_by_id_ajax(request):
     if request.method == 'GET':
         id = request.GET.get('id')
-        print(id)
         odeme = ParaHareketiModel.objects.filter(pk=id).first()
-        print(to_dict(odeme))
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "data": to_dict(odeme)})
 
 
