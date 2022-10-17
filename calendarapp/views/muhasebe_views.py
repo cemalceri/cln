@@ -2,6 +2,7 @@ from itertools import chain
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from calendarapp.models.Enums import ParaHareketTuruEnum
@@ -10,8 +11,57 @@ from calendarapp.models.concrete.muhasebe import ParaHareketiModel
 
 @login_required
 def index(request):
-    form = ParaHareketiModel.objects.all().order_by('id')
-    return render(request, "calendarapp/muhasebe/index.html", {"list": form})
+    if request.method == "POST":
+        baslangic_tarihi = request.POST.get("baslangic_tarihi" or None)
+        bitis_tarihi = request.POST.get("bitis_tarihi" or None)
+        tutar_max = request.POST.get("tutar_max" or None)
+        tutar_min = request.POST.get("tutar_min" or None)
+        para_girisleri = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value)
+        para_cikislari = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Cikis.value)
+        filtre_metni = ""
+        if baslangic_tarihi:
+            filtre_metni += "Başlangıç Tarihi: " + baslangic_tarihi + " tarihinden büyük, "
+            para_girisleri = para_girisleri.filter(tarih__gte=baslangic_tarihi)
+            para_cikislari = para_cikislari.filter(tarih__gte=baslangic_tarihi)
+        if bitis_tarihi:
+            filtre_metni += "Bitiş Tarihi: " + bitis_tarihi + " tarihinden küçük, "
+            para_girisleri = para_girisleri.filter(tarih__lte=bitis_tarihi)
+            para_cikislari = para_cikislari.filter(tarih__lte=bitis_tarihi)
+        if tutar_max:
+            filtre_metni += "Tutar: " + tutar_max + " tutarından küçük, "
+            para_girisleri = para_girisleri.filter(tutar__lte=tutar_max)
+            para_cikislari = para_cikislari.filter(tutar__lte=tutar_max)
+        if tutar_min:
+            filtre_metni += "Tutar: " + tutar_min + " tutarından büyük,  "
+            para_girisleri = para_girisleri.filter(tutar__gte=tutar_min)
+            para_cikislari = para_cikislari.filter(tutar__gte=tutar_min)
+        toplam_giris = para_girisleri.aggregate(models.Sum('tutar'))['tutar__sum']
+        toplam_cikis = para_cikislari.aggregate(models.Sum('tutar'))['tutar__sum']
+        if filtre_metni:
+            filtre_metni += " verileri gösteriliyor."
+        context = {
+            "para_girisleri": para_girisleri,
+            "para_cikislari": para_cikislari,
+            "toplam_giris": toplam_giris,
+            "toplam_cikis": toplam_cikis,
+            "filtreMetni": filtre_metni
+        }
+        messages.success(request, "İşlem başarılı!")
+        return render(request, "calendarapp/muhasebe/index.html", context)
+    else:
+        para_girisleri = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value).order_by(
+            '-tarih')[0:100]
+        para_cikislari = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Cikis.value).order_by(
+            '-tarih')[0:100]
+        toplam_giris = para_girisleri.aggregate(models.Sum('tutar'))['tutar__sum']
+        toplam_cikis = para_cikislari.aggregate(models.Sum('tutar'))['tutar__sum']
+        context = {
+            "para_girisleri": para_girisleri,
+            "para_cikislari": para_cikislari,
+            "toplam_giris": toplam_giris,
+            "toplam_cikis": toplam_cikis,
+        }
+        return render(request, "calendarapp/muhasebe/index.html", context)
 
 
 @login_required
@@ -35,6 +85,11 @@ def kaydet_uye_odemesi_ajax(request):
             item.paket_id = paket
             item.save()
         else:
+            print(paket)
+            print(aciklama)
+            print(tarih)
+            print(tutar)
+            print(uye)
             ParaHareketiModel.objects.create(paket_id=paket, aciklama=aciklama, tarih=tarih, tutar=tutar, uye_id=uye,
                                              hareket_turu=ParaHareketTuruEnum.Giris.value)
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
