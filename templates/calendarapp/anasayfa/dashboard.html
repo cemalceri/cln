@@ -97,19 +97,16 @@
                                            autocomplete="off">
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <a id="temizleBtn" onclick="formTemizle()"
-                                       class="btn btn-outline btn-sm btn-primary m-10 float-right">Temizle</a>
-                                    <a id="filtreBtn" onclick="filtreleGetir()"
-                                       class="btn btn-outline btn-sm btn-success m-10 float-right">Filtre</a>
-                                </div>
-                            </div>
                         </form>
                     </div>
                     <div class="panel-footer">
                         <div class="row">
-                            <p class="red-900">{{ filtreMetni |default_if_none:"" }}</p>
+                            <div class="col">
+                                <a id="temizleBtn" onclick="formTemizle()"
+                                   class="btn btn-outline btn-sm btn-primary m-10 float-right">Temizle</a>
+                                <a id="filtreBtn" onclick="filtreleGetir()"
+                                   class="btn btn-outline btn-sm btn-success m-10 float-right">Filtre</a>
+                            </div>
                         </div>
                     </div>
                 </div>

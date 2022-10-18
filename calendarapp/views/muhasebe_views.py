@@ -20,25 +20,27 @@ def index(request):
         para_cikislari = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Cikis.value)
         filtre_metni = ""
         if baslangic_tarihi:
-            filtre_metni += "Başlangıç Tarihi: " + baslangic_tarihi + " tarihinden büyük, "
+            filtre_metni += "Başlangıç tarihi " + baslangic_tarihi + " tarihinden büyük, "
             para_girisleri = para_girisleri.filter(tarih__gte=baslangic_tarihi)
             para_cikislari = para_cikislari.filter(tarih__gte=baslangic_tarihi)
         if bitis_tarihi:
-            filtre_metni += "Bitiş Tarihi: " + bitis_tarihi + " tarihinden küçük, "
+            filtre_metni += "Bitiş tarihi " + bitis_tarihi + " tarihinden küçük, "
             para_girisleri = para_girisleri.filter(tarih__lte=bitis_tarihi)
             para_cikislari = para_cikislari.filter(tarih__lte=bitis_tarihi)
-        if tutar_max:
-            filtre_metni += "Tutar: " + tutar_max + " tutarından küçük, "
-            para_girisleri = para_girisleri.filter(tutar__lte=tutar_max)
-            para_cikislari = para_cikislari.filter(tutar__lte=tutar_max)
         if tutar_min:
-            filtre_metni += "Tutar: " + tutar_min + " tutarından büyük,  "
+            filtre_metni += "Tutarı " + tutar_min + " TL'den büyük,  "
             para_girisleri = para_girisleri.filter(tutar__gte=tutar_min)
             para_cikislari = para_cikislari.filter(tutar__gte=tutar_min)
+        if tutar_max:
+            filtre_metni += "Tutarı " + tutar_max + " TL'den küçük, "
+            para_girisleri = para_girisleri.filter(tutar__lte=tutar_max)
+            para_cikislari = para_cikislari.filter(tutar__lte=tutar_max)
         toplam_giris = para_girisleri.aggregate(models.Sum('tutar'))['tutar__sum']
         toplam_cikis = para_cikislari.aggregate(models.Sum('tutar'))['tutar__sum']
-        if filtre_metni:
-            filtre_metni += " verileri gösteriliyor."
+        if filtre_metni == "":
+            filtre_metni = "*Filtre uygulanmadan  tüm kayıtlar gösteriliyor."
+        else:
+            filtre_metni = "*" + filtre_metni + " kayıtları gösteriliyor."
         context = {
             "para_girisleri": para_girisleri,
             "para_cikislari": para_cikislari,

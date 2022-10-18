@@ -46,11 +46,8 @@ class DashboardView(LoginRequiredMixin, View):
 def etkinlik_listesi_tablosu_getir_ajax(request):
     kort_id = request.GET.get('kort')
     antrenor_id = request.GET.get('antrenor')
-    print(antrenor_id)
     baslangic_tarih = request.GET.get('baslangic_tarihi')
-    print(baslangic_tarih)
     bitis_tarih = request.GET.get('bitis_tarihi')
-    print(kort_id)
     etkinlikler = EtkinlikModel.objects.all()
     if kort_id:
         etkinlikler = etkinlikler.filter(kort_id=kort_id)
@@ -59,11 +56,11 @@ def etkinlik_listesi_tablosu_getir_ajax(request):
     if bitis_tarih:
         etkinlikler = etkinlikler.filter(bitis_tarih_saat__lte=bitis_tarih)
     if antrenor_id:
-        print("antrenor id var")
         etkinlikler = etkinlikler.filter(antrenor_id=antrenor_id)
     html = render_to_string('calendarapp/anasayfa/_etkinlik_listesi_tablosu.html',
                             {'etkinlikler': etkinlikler})
-    return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
+    return JsonResponse(
+        data={"status": "success", "messages": "İşlem başarılı", "html": html})
 
 
 @login_required

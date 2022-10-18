@@ -8,14 +8,14 @@
 {% endblock extracss %}
 {% block extrascripts %}
     {% block breadcrumb %}
-    <div>
-        <h1><i class="fa fa-dashboard"></i> Muhasebe</h1>
+        <div>
+            <h1><i class="fa fa-dashboard"></i> Muhasebe</h1>
         </div>
-    <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
-        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
-    </ul>
-{% endblock breadcrumb %}
+        <ul class="app-breadcrumb breadcrumb">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+            <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
+        </ul>
+    {% endblock breadcrumb %}
 {% endblock extrascripts %}
 {% block content %}
     <div class="page-content">
@@ -56,27 +56,22 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group col-md-2">
-                                <label class="form-control-label" for="id_aciklama">İşlemler</label>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <a id="filtreBtn" onclick="filtreleGetir()"
-                                           class="btn btn-outline btn-sm btn-success mr-2">Filtre</a>
-                                    </div>
-                                    <div class="col-xs-6">
-                                        <a id="temizleBtn" onclick="formTemizle()"
-                                           class="btn btn-outline btn-sm btn-primary">Temizle</a>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </form>
                 </div>
-                 <div class="panel-footer">
-                        <div class="row">
-                           <p class="red-900">{{ filtreMetni |default_if_none:"" }}</p>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col">
+                            <a id="temizleBtn" onclick="formTemizle()"
+                               class="btn btn-outline btn-sm btn-primary m-10 float-right">Temizle</a>
+                            <a id="filtreBtn" onclick="filtreleGetir()"
+                               class="btn btn-outline btn-sm btn-success m-10 float-right">Filtre</a>
                         </div>
                     </div>
+                    <div class="row">
+                        <p class="red-900">{{ filtreMetni |default_if_none:"" }}</p>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -184,6 +179,7 @@
                 elements[i].value = "";
             }
         }
+
         function filtreleGetir() {
             document.getElementById("filtreForm").submit();
         }
