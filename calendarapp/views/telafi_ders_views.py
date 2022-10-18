@@ -5,7 +5,8 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
 from calendarapp.forms.antrenor_forms import AntrenorKayitForm
-from calendarapp.forms.telafi_ders_forms import TelafiDersKayitForm, TelafiDersGetirForm, TelafiDersGuncelleForm
+from calendarapp.forms.telafi_ders_forms import TelafiDersKayitForm, TelafiDersGetirForm, TelafiDersGuncelleForm, \
+    YapilanTelafiDersForm
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.telafi_ders import TelafiDersModel
@@ -22,7 +23,6 @@ def index(request):
 @login_required
 def kaydet(request, etkinlik_id):
     if request.method == 'POST':
-        print(request.POST)
         form = TelafiDersKayitForm(request.POST)
         if form.is_valid():
             if telafi_ders_kaydi_hata_var_mi(request, form, etkinlik_id):
@@ -83,3 +83,24 @@ def telafi_ders_kaydi_hata_var_mi(request, form, etkinlik_id, telafi_ders_id=Non
             pk=telafi_ders_id).exists():
         messages.error(request, "Bu üyenin telafi dersi zaten kayıtlı.")
         return True
+
+
+@login_required
+def kaydet_yapilan_telafi_ders(request, telafi_id):
+    if request.method == 'POST':
+        print("POST")
+        form = YapilanTelafiDersForm(request.POST, instance=TelafiDersModel.objects.get(pk=telafi_id))
+        print(form)
+        if form.is_valid():
+            entity = form.save(commit=False)
+            entity.user = request.user
+            entity.save()
+            messages.success(request, "Kaydedildi.")
+            return redirect("calendarapp:index_telafi_ders")
+        else:
+            messages.error(request, formErrorsToText(form.errors, TelafiDersModel))
+            return render(request, "calendarapp/telafi_ders/kaydet_yapilan_telafi.html",
+                          {'form': form, 'telafi_id': telafi_id})
+    telafi = TelafiDersModel.objects.filter(id=telafi_id).first()
+    form = YapilanTelafiDersForm(instance=telafi)
+    return render(request, "calendarapp/telafi_ders/kaydet_yapilan_telafi.html", {'form': form, 'telafi_id': telafi_id})
