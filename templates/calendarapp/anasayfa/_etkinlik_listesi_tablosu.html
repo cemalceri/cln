@@ -1,0 +1,50 @@
+ {% include 'base/js.html' %}
+{% if etkinlikler %}
+    <div class="panel border">
+        <div class="panel-heading">
+            <h4 class="panel-title">Etkinlikler</h4>
+        </div>
+        <div class="panel-body container-fluid">
+            <div class="table-responsive">
+                <table class="table table-bordered dataTable table-fixed">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Başlık</th>
+                        <th>Grup</th>
+                        <th>Kort</th>
+                        <th>Antrenör</th>
+                        <th>Başlangıç - Bitiş</th>
+                        <th>İşlemler</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for etkinlik in etkinlikler %}
+                        <tr>
+                            <td class="sorting_1">{{ forloop.counter }}</td>
+                            <td>{{ etkinlik.baslik }}</td>
+                            <td>{{ etkinlik.grup }}</td>
+                            <td>{{ etkinlik.kort }}</td>
+                            <td>{{ etkinlik.antrenor |default_if_none:"" }}</td>
+                            <td>{{ etkinlik.baslangic_tarih_saat |date:"d-m-Y / H:i -" }}
+                                {{ etkinlik.bitis_tarih_saat |date:"H:i (l)" }}</td>
+                            <td>
+                                <a class="btn btn-secondary btn-circle" title="Detayına Git"
+                                   href="#">
+                                    <i class="fa fas fa-sitemap" style="color: black"></i></a>
+                                <a href="{% url 'calendarapp:sil_etkinlik_by_id' etkinlik.id %}"
+                                   class=" btn btn-danger btn-circle confirm-delete" title="Sil"
+                                   data-toggle="modal"
+                                   data-target="#confirmDeleteModal"
+                                   id="delete_etkinlik_{{ etkinlik.id }}">
+                                    <i class="fa fa-trash" style="color: black"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endif %}
+

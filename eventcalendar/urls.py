@@ -21,6 +21,7 @@ from .views import DashboardView
 
 urlpatterns = [
     path("", DashboardView.as_view(), name="dashboard"),
+    path("ajax", views.etkinlik_listesi_tablosu_getir_ajax, name="etkinlik_listesi_tablosu_getir_ajax"),
     path("baslangic-metodu", views.baslangic_metodu, name="baslangic_metodu"),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),

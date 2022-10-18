@@ -1,0 +1,151 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Etkinlik Listesi{% endblock title %}
+
+{% block breadcrumb %}
+    <div>
+        <h1><i class="fa fa-dashboard"></i> Anasayfa</h1>
+        <p>Etkinlik Listesi</p>
+    </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
+    </ul>
+{% endblock breadcrumb %}
+{% block extracss %}
+    {% include 'base/remark_css.html' %}
+    {#    <link rel="stylesheet" href="{% static 'template/classic/global/vendor/bootstrap-select/bootstrap-select.css' %}">#}
+    {#    <link rel="stylesheet" href="{% static 'template/classic/base/assets/examples/css/apps/documents.css' %}">#}
+{% endblock extracss %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 col-lg-3">
+            <div class="widget-small primary coloured-icon">
+                <i class="icon fa fa-files-o fa-3x"></i>
+                <div class="info">
+                    <h4>Tüm Etkinlikler</h4>
+                    <p><b>{{ tum_etkinlik_sayisi }}</b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="widget-small info coloured-icon">
+                <i class="icon fa fa-thumbs-o-up fa-3x"></i>
+                <div class="info">
+                    <h4>Bugünün Etkinlikleri</h4>
+                    <p><b>{{ bugun_kalan_etkinlik_sayisi }}</b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="widget-small warning coloured-icon">
+                <i class="icon fa fa-users fa-3x"></i>
+                <div class="info">
+                    <h4>Aktif Üye Sayısı</h4>
+                    <a href="{% url 'calendarapp:index_uye' %}"><p><b>{{ aktif_uye_sayisi }}</b></p></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="widget-small danger coloured-icon">
+                <i class="icon fa fa-star fa-3x"></i>
+                <div class="info">
+                    <h4>Stars</h4>
+                    <p><b>500</b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 ">
+            <div class="tile">
+                <div class="tile-body">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Filtrele</h3>
+                    </div>
+                    <div class="panel-body container-fluid">
+                        <form autocomplete="off" id="filtreForm" method="get">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    <label class="form-control-label">Kort</label>
+                                    <select class="form-control" id="id_kort" name="kort">
+                                        <option></option>
+                                        {% for kort in kortlar %}
+                                            <option value="{{ kort.id }}">{{ kort }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="form-control-label">Antrenör</label>
+                                    <select class="form-control" id="id_antrenor_turu" name="antrenor">
+                                        <option></option>
+                                        {% for antrenor in antrenorler %}
+                                            <option value="{{ antrenor.id }}">{{ antrenor }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="form-control-label" for="id_baslangic_tarihi">Başlangıç Tarihi</label>
+                                    <input type="date" class="form-control" id="id_baslangic_tarihi"
+                                           name="baslangic_tarihi" placeholder="Başlangıç Tarih"
+                                           autocomplete="off">
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="form-control-label" for="id_bitis_tarihi">Bitiş Tarihi</label>
+                                    <input type="date" class="form-control" id="id_bitis_tarihi"
+                                           name="bitis_tarihi" placeholder="Bitiş Tarih"
+                                           autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <a id="temizleBtn" onclick="formTemizle()"
+                                       class="btn btn-outline btn-sm btn-primary m-10 float-right">Temizle</a>
+                                    <a id="filtreBtn" onclick="filtreleGetir()"
+                                       class="btn btn-outline btn-sm btn-success m-10 float-right">Filtre</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <p class="red-900">{{ filtreMetni |default_if_none:"" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="etkinlikListesi" class="col-md-12">
+            {{ gelecek_etkinlikler }}
+        </div>
+    </div>
+    <script>
+        function formTemizle() {
+            let elements = document.getElementsByClassName("form-control");
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].value = "";
+            }
+        }
+
+        function filtreleGetir() {
+            let form = $('#filtreForm').serialize();
+            debugger;
+            $.ajax({
+                url: "{% url 'etkinlik_listesi_tablosu_getir_ajax' %}",
+                data: form,
+                type: "get",
+                dataType: 'json',
+                success: function (result) {
+                    debugger;
+                    if (result.status == "success") {
+                        $('#etkinlikListesi').html(result.html);
+                    } else {
+                        popupMesajGoster(result.message, result.status);
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock content %}
+
+

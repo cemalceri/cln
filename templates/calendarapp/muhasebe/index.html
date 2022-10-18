@@ -7,20 +7,15 @@
     {#    <link rel="stylesheet" href="{% static 'template/classic/base/assets/examples/css/apps/documents.css' %}">#}
 {% endblock extracss %}
 {% block extrascripts %}
-{#    {% include 'base/remark_js.html' %}#}
-    {#    <script src="{% static 'template/classic/global/vendor/matchheight/jquery.matchHeight-min.js' %}"></script>#}
-    {#    <script src="{% static 'template/classic/global/vendor/bootstrap-select/bootstrap-select.js' %}"></script>#}
-    {#    <script src="{% static 'template/classic/global/vendor/stickyfill/stickyfill.js' %}"></script>#}
-    {##}
-    {#    <script src="{% static 'template/classic/global/js/Plugin/matchheight.js' %}"></script>#}
-    {#    <script src="{% static 'template/classic/global/js/Plugin/bootstrap-select.js' %}"></script>#}
-    {#    <script src="{% static 'template/classic/global/js/Plugin/animate-list.js' %}"></script>#}
-    {#    <script src="{% static 'template/classic/base/assets/js/Site.js' %}"></script>#}
-    {#    <script src="{% static 'template/classic/base/assets/js/App/Documents.js' %}"></script>#}
-    {#    <script src="{% static 'template/classic/base/assets/examples/js/apps/documents.js' %}"></script>#}
-    {#        <script>#}
-    {#            (document, window, jQuery);#}
-    {#        </script>#}
+    {% block breadcrumb %}
+    <div>
+        <h1><i class="fa fa-dashboard"></i> Muhasebe</h1>
+        </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
+    </ul>
+{% endblock breadcrumb %}
 {% endblock extrascripts %}
 {% block content %}
     <div class="page-content">
@@ -108,14 +103,14 @@
                                 <tr>
                                     <td class="sorting_1">{{ forloop.counter }}</td>
                                     <td>{{ giris.uye }}</td>
-                                    <td>{{ giris.paket |default_if_none:""}}</td>
+                                    <td>{{ giris.paket |default_if_none:"" }}</td>
                                     <td>{{ giris.tutar }}</td>
                                     <td>{{ giris.tarih }}</td>
                                     <td>{{ giris.aciklama| default_if_none:"" }}</td>
                                     <td>
-                                        <a class="btn btn-secondary btn-circle" title="Üye Profiline Git"
+                                        <a class="btn btn-info btn-circle" title="Üye Profiline Git"
                                            href="{% url 'calendarapp:profil_uye' giris.uye_id %}">
-                                            <i class="fa fas fa-user" style="color: black"></i></a>
+                                            <i class="fa fas fa-user black"></i></a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -155,14 +150,14 @@
                                 <tr>
                                     <td class="sorting_1">{{ forloop.counter }}</td>
                                     <td>{{ cikis.antrenor }}</td>
-                                    <td>{{ cikis.odeme_turu | default_if_none:""}}</td>
+                                    <td>{{ cikis.odeme_turu | default_if_none:"" }}</td>
                                     <td>{{ cikis.tutar }}</td>
                                     <td>{{ cikis.tarih }}</td>
                                     <td>{{ cikis.aciklama| default_if_none:"" }}</td>
                                     <td>
-                                        <a class="btn btn-secondary btn-circle" title="Üye Profiline Git"
-                                           href="{% url 'calendarapp:profil_uye' cikis.antrenor_id %}">
-                                            <i class="fa fas fa-user" style="color: black"></i></a>
+                                        <a class="btn btn-info btn-circle" title="Antrenör Profiline Git"
+                                           href="{% url 'calendarapp:profil_antrenor' cikis.antrenor_id %}">
+                                            <i class="fa fas fa-user-secret black"></i></a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -189,7 +184,6 @@
                 elements[i].value = "";
             }
         }
-
         function filtreleGetir() {
             document.getElementById("filtreForm").submit();
         }

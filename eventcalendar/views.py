@@ -2,6 +2,8 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -18,19 +20,50 @@ from calendarapp.models.concrete.uye import UyeModel, GrupModel, UyeGrupModel
 
 class DashboardView(LoginRequiredMixin, View):
     login_url = "accounts:signin"
-    template_name = "calendarapp/dashboard.html"
+    template_name = "calendarapp/anasayfa/dashboard.html"
 
     def get(self, request, *args, **kwargs):
-        tum_etkinlik_sayisi = EtkinlikModel.objects.filter(is_active=True, is_deleted=False).count()
+        tum_etkinlik_sayisi = EtkinlikModel.objects.filter(baslangic_tarih_saat__year=datetime.now().year).count()
+        kortlar = KortModel.objects.all()
+        antrenorler = AntrenorModel.objects.all()
         bugun_kalan_etkinlik_sayisi = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler().count()
         gelecek_etkinlikler = EtkinlikModel.objects.getir_gelecek_etkinlikler()
-
+        aktif_uye_sayisi = UyeModel.objects.filter(aktif_mi=True).count()
+        html = render_to_string('calendarapp/anasayfa/_etkinlik_listesi_tablosu.html',
+                                {'etkinlikler': gelecek_etkinlikler}, request=request)
         context = {
             "tum_etkinlik_sayisi": tum_etkinlik_sayisi,
             "bugun_kalan_etkinlik_sayisi": bugun_kalan_etkinlik_sayisi,
-            "gelecek_etkinlikler": gelecek_etkinlikler,
+            "gelecek_etkinlikler": html,
+            "aktif_uye_sayisi": aktif_uye_sayisi,
+            "kortlar": kortlar,
+            "antrenorler": antrenorler,
         }
         return render(request, self.template_name, context)
+
+
+@login_required
+def etkinlik_listesi_tablosu_getir_ajax(request):
+    kort_id = request.GET.get('kort')
+    antrenor_id = request.GET.get('antrenor')
+    print(antrenor_id)
+    baslangic_tarih = request.GET.get('baslangic_tarihi')
+    print(baslangic_tarih)
+    bitis_tarih = request.GET.get('bitis_tarihi')
+    print(kort_id)
+    etkinlikler = EtkinlikModel.objects.all()
+    if kort_id:
+        etkinlikler = etkinlikler.filter(kort_id=kort_id)
+    if baslangic_tarih:
+        etkinlikler = etkinlikler.filter(baslangic_tarih_saat__gte=baslangic_tarih)
+    if bitis_tarih:
+        etkinlikler = etkinlikler.filter(bitis_tarih_saat__lte=bitis_tarih)
+    if antrenor_id:
+        print("antrenor id var")
+        etkinlikler = etkinlikler.filter(antrenor_id=antrenor_id)
+    html = render_to_string('calendarapp/anasayfa/_etkinlik_listesi_tablosu.html',
+                            {'etkinlikler': etkinlikler})
+    return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
 
 
 @login_required
