@@ -1,71 +1,26 @@
-# cal/views.py
 from itertools import chain
 
 from django.db.models import Q
-from django.forms import model_to_dict
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.views import generic
 from datetime import timedelta, datetime, date
-import calendar
 from django.contrib.auth.decorators import login_required
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
-from django.views.generic import ListView
 
 from calendarapp.models.Enums import KatilimDurumuEnum
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
-from calendarapp.utils import get_verbose_name, formErrorsToText
+from calendarapp.utils import formErrorsToText
 
 
-class ButunEtkinliklerListView(ListView):
-    template_name = "calendarapp/etkinlik/etkinlik_listesi.html"
-    model = EtkinlikModel
+@login_required
+def index(request):
+    kortlar = KortModel.objects.all()
+    etkinlikler = EtkinlikModel.objects.filter(user=request.user)
+    return render(request, "calendarapp/etkinlik/index.html", {"etkinlikler": etkinlikler, "kortlar": kortlar})
 
-    def get_queryset(self):
-        events = EtkinlikModel.objects.getir_butun_etkinlikler(user=self.request.user)
-        return events
-
-
-class BugunEtkinlikleriListView(ListView):
-    template_name = "calendarapp/etkinlik/etkinlik_listesi.html"
-    model = EtkinlikModel
-
-    def get_queryset(self):
-        return EtkinlikModel.objects.getir_bugunun_etkinlikleri()
-
-
-class GelecekEtkinliklerListView(ListView):
-    template_name = "calendarapp/etkinlik/etkinlik_listesi.html"
-    model = EtkinlikModel
-
-    def get_queryset(self):
-        return EtkinlikModel.objects.getir_gelecek_etkinlikler()
-
-
-# def get_date(req_day):
-#     if req_day:
-#         year, month = (int(x) for x in req_day.split("-"))
-#         return date(year, month, day=1)
-#     return datetime.today()
-#
-#
-# def prev_month(d):
-#     first = d.replace(day=1)
-#     prev_month = first - timedelta(days=1)
-#     month = "month=" + str(prev_month.year) + "-" + str(prev_month.month)
-#     return month
-#
-#
-# def next_month(d):
-#     days_in_month = calendar.monthrange(d.year, d.month)[1]
-#     last = d.replace(day=days_in_month)
-#     next_month = last + timedelta(days=1)
-#     month = "month=" + str(next_month.year) + "-" + str(next_month.month)
-#     return month
-#
 
 @login_required(login_url="signup")
 def getir_etkinlik_bilgisi_ajax(request):

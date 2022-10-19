@@ -35,7 +35,7 @@ class UyeModel(BaseAbstract):
     telefon = models.CharField('Telefon', max_length=11, null=True, blank=True)
     email = models.EmailField('E-Mail', max_length=250, null=True, blank=True)
     adres = models.TextField('Adres', max_length=250, null=True, blank=True)
-    seviye_rengi = models.CharField(max_length=20, choices=SeviyeRenkEnum.choices(), default="gray",
+    seviye_rengi = models.CharField(max_length=20, choices=SeviyeRenkEnum.choices(), default="red",
                                     verbose_name="Seviye Rengi")
     okul = models.ForeignKey('OkulModel', on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
     onaylandi_mi = models.BooleanField('Onay Durumu', default=False)
@@ -83,6 +83,9 @@ class GrupModel(BaseAbstract):
             for item in grup:
                 string += str(item.uye.uye_no) + "-" + item.uye.adi + " " + item.uye.soyadi + " / "
             return string
+
+    def renk(self):
+        return UyeGrupModel.objects.filter(grup_id=self.id).first().uye.seviye_rengi
 
 
 class UyeGrupModel(BaseAbstract):

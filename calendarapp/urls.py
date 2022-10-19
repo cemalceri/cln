@@ -10,13 +10,11 @@ from .views import muhasebe_views
 app_name = "calendarapp"
 
 urlpatterns = [
-    # Takvim
+    # Takvim ve Etkinlikler
     path("takvim/", etkinlik_views.takvim_getir, name="takvim-getir"),
     path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim-getir_by_kort_id"),
-    path("etkinlik/", etkinlik_views.ButunEtkinliklerListView.as_view(), name="getir_butun_etkinlikler"),
-    path("etkinlik/bugun-devam-eden", etkinlik_views.BugunEtkinlikleriListView.as_view(),
-         name="getir_bugun_devam_eden_etkinlikler"),
-    path("etkinlik/gelecek", etkinlik_views.GelecekEtkinliklerListView.as_view(), name="getir_gelecek_etkinlikler"),
+    path("etkinlik", etkinlik_views.index, name="index_etkinlik"),
+
 
     # Etkinlik
     path("etkinlik/detay", etkinlik_views.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id"),

@@ -1,11 +1,9 @@
 from django.db import models
-
 from accounts.models import User
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 
 
 class KortManager(models.Manager):
-
     def getir_butun_kortlar(self, user=None):
         events = KortModel.objects.filter(
             # user=user,

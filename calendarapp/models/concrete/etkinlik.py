@@ -79,6 +79,18 @@ class EtkinlikModel(BaseAbstract):
     def __str__(self):
         return self.baslik
 
+    def pixel_degeri(self):
+        start = self.baslangic_tarih_saat
+        end = self.bitis_tarih_saat
+        start_hour = start.hour
+        start_minute = start.minute
+        end_hour = end.hour
+        end_minute = end.minute
+        start_pixel = (start_hour * 60) + start_minute
+        end_pixel = (end_hour * 60) + end_minute
+        pixel = end_pixel - start_pixel
+        return pixel
+
     def get_absolute_url(self):
         return reverse("calendarapp:event-detail", args=(self.id,))
 

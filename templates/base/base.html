@@ -29,7 +29,7 @@
 <header class="app-header">
     <a class="app-header__logo" href="#">Fit Calendar</a>
     <!-- Sidebar toggle button-->
-{#    <a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>#}
+    {#    <a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>#}
     <!-- Navbar Right Menu-->
     <ul class="app-nav">
         <li class="app-search">
@@ -165,7 +165,11 @@
         </li>
         <li>
             <a class="app-menu__item" href="{% url 'calendarapp:takvim-getir' %}"><i
-                    class="app-menu__icon fa fa-calendar"></i><span class="app-menu__label">Etkinlik</span></a>
+                    class="app-menu__icon fa fa-calendar"></i><span class="app-menu__label">Takvim</span></a>
+        </li>
+        <li>
+            <a class="app-menu__item" href="{% url 'calendarapp:index_etkinlik' %}"><i
+                    class="app-menu__icon fa fa-codepen"></i><span class="app-menu__label">Etkinlikler</span></a>
         </li>
         <li>
             <a class="app-menu__item" href="{% url 'calendarapp:index_rezervasyon' %}"><i

@@ -1,0 +1,52 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Etkinlik Listesi{% endblock title %}
+{% block extracss %}
+    {% include 'base/remark_css.html' %}
+{% endblock extracss %}
+{% block breadcrumb %}
+    <div>
+        <h1><i class="fa fa-dashboard"></i> Etkinlikler</h1>
+        <p>Etkinlik Listesi</p>
+    </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
+    </ul>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="row">
+        {% for kort in kortlar %}
+            <div class="col-xl-2 col-lg-2">
+                <!-- Card -->
+                <div class="card p-5 flex-row justify-content-between m-0 border-dark">
+                    <div class="counter counter-md text-center">
+                        <div class="counter-label text-capitalize font-size-16">{{ kort}}</div>
+                    </div>
+                </div>
+                {% for etkinlik in etkinlikler %}
+                    {% if etkinlik.kort == kort %}
+                        <div class="card-group">
+                            <div class="card card-block p-0 border">
+                                <div class="counter counter-lg counter-inverse bg-{{ etkinlik.grup.renk }}-700 vertical-align" style="height: {{ etkinlik.pixel_degeri }}px">
+                                    <div class="vertical-align-middle">
+{#                                        <span class="counter-number">{{ etkinlik.baslangic_tarih_saat }} - {{ etkinlik.bitis_tarih_saat }}</span>#}
+                                        <span class="counter-number">{{ etkinlik.grup }}</span>
+{#                                        <span class="counter-number">{{ etkinlik.pixel_degeri }}</span>#}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+
+    </div>
+{% endblock content %}
+
+{% block extrascripts %}
+{% endblock extrascripts %}

@@ -48,7 +48,7 @@ def etkinlik_listesi_tablosu_getir_ajax(request):
     antrenor_id = request.GET.get('antrenor')
     baslangic_tarih = request.GET.get('baslangic_tarihi')
     bitis_tarih = request.GET.get('bitis_tarihi')
-    etkinlikler = EtkinlikModel.objects.all()
+    etkinlikler = EtkinlikModel.objects.all().order_by("baslangic_tarih_saat")
     if kort_id:
         etkinlikler = etkinlikler.filter(kort_id=kort_id)
     if baslangic_tarih:
