@@ -18,8 +18,17 @@ from calendarapp.utils import formErrorsToText
 @login_required
 def index(request):
     kortlar = KortModel.objects.all()
-    etkinlikler = EtkinlikModel.objects.filter(user=request.user)
-    return render(request, "calendarapp/etkinlik/index.html", {"etkinlikler": etkinlikler, "kortlar": kortlar})
+    etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
+    time_range = range(9, 24)
+    list_range = 2 if kortlar.count() > 6 else 1
+    time_list_count = range(0,list_range)
+    context = {
+        "kortlar": kortlar,
+        "etkinlikler": etkinlikler,
+        "time_range": time_range,
+        "time_list_count": time_list_count
+    }
+    return render(request, "calendarapp/etkinlik/index.html", context)
 
 
 @login_required(login_url="signup")
