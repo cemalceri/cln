@@ -19,7 +19,7 @@ def index(request):
         son_30_odeme_idler = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value,
                                                               tarih__gte=bir_ay_onceki_gun).values_list("paket_id",
                                                                                                         flat=True)
-        odeme_yapilmayan_uyelikler = AbonelikModel.objects.filter(~Q(paket_id__in=son_30_odeme_idler))
+        odeme_yapilmayan_uyelikler = AbonelikModel.objects.all().exclude(paket_id__in=son_30_odeme_idler)
         baslangic_tarihi = request.POST.get("baslangic_tarihi" or None)
         bitis_tarihi = request.POST.get("bitis_tarihi" or None)
         tutar_max = request.POST.get("tutar_max" or None)
