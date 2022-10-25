@@ -24,7 +24,8 @@ def kaydet_grup(request, id=None):
                                         odeme_sekli=request.POST.get("odeme_sekli"))
             grup_id = request.POST.get("grup_id")
         else:
-            grup = GrupModel.objects.create(adi="grup", tekil_mi=False)
+            grup_adi = request.POST.get("adi" or None)
+            grup = GrupModel.objects.create(adi=grup_adi, tekil_mi=False)
             grup_id = grup.id
             UyeGrupModel.objects.create(grup=grup, uye_id=request.POST.get("uye_id"),
                                         odeme_sekli=request.POST.get("odeme_sekli"))
@@ -33,14 +34,10 @@ def kaydet_grup(request, id=None):
         uyeler = UyeModel.objects.filter(onaylandi_mi=True)
         odemeler_tipleri = GrupOdemeSekliEnum.choices()
         uye_grup_listesi = UyeGrupModel.objects.filter(grup_id=id)
+        grup_adi = GrupModel.objects.get(id=id).adi
         return render(request, "calendarapp/grup/kaydet.html",
                       {'uyeler': uyeler, 'odemeler_tipleri': odemeler_tipleri, 'grup_id': id,
-                       'uye_grup_listesi': uye_grup_listesi})
-
-
-@login_required
-def detay_grup(request, id):
-    pass
+                       'uye_grup_listesi': uye_grup_listesi, 'grup_adi':grup_adi})
 
 
 @login_required
@@ -55,5 +52,6 @@ def sil_grup_uyesi(request):
                                 uye_id=request.POST.get("uye_id")).first().delete()
     # Son üye silindiğinde grup silinir. dolayısıyla sayfada tekrar üye eklemeye çalışınca hata alınır.
     # Yeni grup kaydı gibi olması için grup id'si 0 gönderilir.
-    grup_id = 0 if UyeGrupModel.objects.filter(grup_id=request.POST.get("grup_id")).count() ==0 else request.POST.get("grup_id")
+    grup_id = 0 if UyeGrupModel.objects.filter(grup_id=request.POST.get("grup_id")).count() == 0 else request.POST.get(
+        "grup_id")
     return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "grup_id": grup_id})

@@ -75,17 +75,22 @@ class GrupModel(BaseAbstract):
 
     def __str__(self):
         if self.tekil_mi is True:
-            return str(self.adi)
+            return str(self.grup_uyegrup_relations.first().uye.uye_no) \
+                   + "-" + self.grup_uyegrup_relations.first().uye.adi + " " + self.grup_uyegrup_relations.first().uye.soyadi
         else:
-            string = ""
-            grup = UyeGrupModel.objects.filter(grup_id=self.id)
-            string += "( " + str(grup.count()) + " Üyeli Grup) "
-            for item in grup:
-                string += str(item.uye.uye_no) + "-" + item.uye.adi + " " + item.uye.soyadi + " / "
-            return string
+            if self.adi is None or self.adi == "":
+                string = ""
+                grup = UyeGrupModel.objects.filter(grup_id=self.id)
+                string += "( " + str(grup.count()) + " Üyeli Grup) "
+                for item in grup:
+                    string += str(item.uye.uye_no) + "-" + item.uye.adi + " " + item.uye.soyadi + " / "
+                return string
+            else:
+                return self.adi
 
-    def renk(self):
-        return UyeGrupModel.objects.filter(grup_id=self.id).first().uye.seviye_rengi
+
+def renk(self):
+    return UyeGrupModel.objects.filter(grup_id=self.id).first().uye.seviye_rengi
 
 
 class UyeGrupModel(BaseAbstract):
@@ -105,7 +110,6 @@ class UyeGrupModel(BaseAbstract):
 
     def delete(self, *args, **kwargs):
         # grupta son kalan kişi ise grup silinir
-        print(UyeGrupModel.objects.filter(grup_id=self.grup.id).count())
         if UyeGrupModel.objects.filter(grup_id=self.grup.id).count() == 1:
             GrupModel.objects.filter(pk=self.grup.id).delete()
         super(UyeGrupModel, self).delete(*args, **kwargs)

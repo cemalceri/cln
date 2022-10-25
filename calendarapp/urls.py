@@ -15,7 +15,6 @@ urlpatterns = [
     path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim-getir_by_kort_id"),
     path("etkinlik", etkinlik_views.index, name="index_etkinlik"),
 
-
     # Etkinlik
     path("etkinlik/detay", etkinlik_views.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id"),
     path("etkinlik/sil", etkinlik_views.sil_etkinlik_ajax, name="sil_etkinlik_by_ajax"),
@@ -26,10 +25,14 @@ urlpatterns = [
     path("etkinlik/tamamlandi", etkinlik_views.etkinlik_tamamlandi_ajax, name="etkinlik_tamamlandi_ajax"),
     path("etkinlik/katilim-ekle/<int:id>/<int:uye_id>", etkinlik_views.katilim_ekle,
          name="katilim_ekle_etkinlik"),
-    path("etkinlik/iptal-et/<int:id>/<int:uye_id>", etkinlik_views.iptal_et,
+    path("etkinlik/iptal-et-etkinlik/<int:id>/<int:uye_id>", etkinlik_views.iptal_et,
          name="iptal_et_etkinlik"),
     path("etkinlik/iptal-geri-al/<int:id>/<int:uye_id>", etkinlik_views.iptal_geri_al,
          name="iptal_geri_al_etkinlik"),
+    path("etkinlik/iptal-et-etkinlik-antrenor/<int:id>", etkinlik_views.iptal_et_by_antrenor,
+         name="iptal_et_etkinlik_by_antrenor"),
+    path("etkinlik/iptal-geri-al-by_antrenor/<int:id>>", etkinlik_views.iptal_geri_al_by_antrenor,
+         name="iptal_geri_al_etkinlik_by_antrenor"),
 
     # Uye
     path("uye/index", uye_views.index, name="index_uye"),
@@ -55,7 +58,6 @@ urlpatterns = [
     # Grup
     path("grup/index", grup_views.index_grup, name="index_grup"),
     path("grup/kaydet", grup_views.kaydet_grup, name="kaydet_grup"),
-    path("grup/detay/<int:id>", grup_views.detay_grup, name="detay_grup"),
     path("grup/guncelle/<int:id>", grup_views.kaydet_grup, name="guncelle_grup"),
     path("grup/sil/<int:id>", grup_views.sil_grup, name="sil_grup"),
     path("grup/sil", grup_views.sil_grup_uyesi, name="sil_grup_uyesi"),
@@ -75,7 +77,8 @@ urlpatterns = [
     # path("telafi-ders/detay/<int:id>", telafi_ders_views.detay, name="detay_telafi_ders"),
     path("telafi-ders/guncelle/<int:id>", telafi_ders_views.guncelle, name="guncelle_telafi_ders"),
     path("telafi-ders/sil/<int:id>", telafi_ders_views.sil, name="sil_telafi_ders"),
-    path("telafi-ders/kaydet-yapilan-telafi-ders/<int:telafi_id>", telafi_ders_views.kaydet_yapilan_telafi_ders, name="kaydet_yapilan_telafi_ders"),
+    path("telafi-ders/kaydet-yapilan-telafi-ders/<int:telafi_id>", telafi_ders_views.kaydet_yapilan_telafi_ders,
+         name="kaydet_yapilan_telafi_ders"),
 
     # Abonelik
     path("abonelik/kaydet-abonelik/<int:uye_id>", abonelik_views.kaydet_abonelik, name="kaydet_abonelik"),
@@ -86,7 +89,8 @@ urlpatterns = [
     path("muhasebe/index", muhasebe_views.index, name="index_muhasebe"),
     path("muhasebe/kaydet-uye-odemesi", muhasebe_views.kaydet_uye_odemesi_ajax, name="kaydet_uye_odemesi_ajax"),
     path("muhasebe/getir-odeme-by-id", muhasebe_views.getir_odeme_by_id_ajax, name="getir_odeme_by_id_ajax"),
-    path("muhasebe/kaydet-antrenor-odemesi", muhasebe_views.kaydet_antrenor_odemesi_ajax, name="kaydet_antrenor_odemesi_ajax"),
+    path("muhasebe/kaydet-antrenor-odemesi", muhasebe_views.kaydet_antrenor_odemesi_ajax,
+         name="kaydet_antrenor_odemesi_ajax"),
     path("muhasebe/sil-odeme/<int:id>", muhasebe_views.sil_odeme, name="sil_odeme"),
 
 ]

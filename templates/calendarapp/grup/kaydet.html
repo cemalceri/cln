@@ -19,14 +19,18 @@
         <div class="panel">
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" id="id_adi" name="adi"
+                               placeholder="Grup Adı" value="{{ grup_adi |default_if_none:"" }}">
+                    </div>
+                    <div class="col-md-2">
                         <select id="seciliUye" class="form-control">
                             {% for uye in uyeler %}
                                 <option value="{{ uye.id }}"> {{ uye }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <select id="seciliOdemeSekli" class="form-control">
                             {% for key,value in odemeler_tipleri %}
                                 <option value="{{ key }}"> {{ value }}</option>
@@ -36,7 +40,7 @@
                     <div class="col-md-2">
                         <button type="button" id="ekleBtn" class="btn btn-block btn-success">Ekle >></button>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div id="uyeList" class="list-group">
                             <a href="#" class="list-group-item list-group-item-action active">
                                 Grup Üyeleri
@@ -70,6 +74,7 @@
                     'uye_id': $("#seciliUye").val(),
                     'odeme_sekli': $("#seciliOdemeSekli").val(),
                     'grup_id': grup_id,
+                    'adi': $("#id_adi").val(),
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                 },
                 type: "post",

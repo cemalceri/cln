@@ -73,7 +73,7 @@
                             <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
                                                                         href="#paket" aria-controls="paket"
                                                                         role="tab"
-                                                                        aria-selected="false">Paket/Üyelik</a>
+                                                                        aria-selected="false">Paket / Abonelik</a>
                             </li>
                             <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
                                                                         href="#odeme"
@@ -335,7 +335,8 @@
                             </div>
                             <div class="tab-pane animation-slide-left" id="paket" role="tabpanel">
                                 <a href="{% url 'calendarapp:kaydet_abonelik' uye.id %}"
-                                   class="btn btn-success m-10 float-right"><i class="fa fa-plus "></i>Paket / Üyelik Ekle</a>
+                                   class="btn btn-success m-10 float-right"><i class="fa fa-plus "></i>Paket / Üyelik
+                                    Ekle</a>
                                 <div class="border p-10">
                                     <div class="tile-body">
                                         <div class="table-responsive">
@@ -350,6 +351,7 @@
                                                                 <th>Paket / Abonelik</th>
                                                                 <th>Başlangıç Tarihi</th>
                                                                 <th>Bitiş Tarihi</th>
+                                                                <th>Aktif Mi</th>
                                                                 <th>Kalan Adet</th>
                                                                 <th>Açıklama</th>
                                                                 <th>İşlemler</th>
@@ -362,6 +364,7 @@
                                                                     <td>{{ abonelik }}</td>
                                                                     <td>{{ abonelik.baslangic_tarihi }}</td>
                                                                     <td>{{ abonelik.bitis_tarihi | default_if_none:"" }}</td>
+                                                                    <td>{{ abonelik.aktif_mi | yesno:"Evet,Hayır" }}</td>
                                                                     <td>{{ abonelik.kalan_adet }}</td>
                                                                     <td>{{ abonelik.aciklama }}</td>
                                                                     <td>
@@ -459,7 +462,7 @@
                                                                 <th>#</th>
                                                                 <th>Tarih</th>
                                                                 <th>Tutar</th>
-                                                                <th>Paket/Üyelik</th>
+                                                                <th>Paket / Abonelik</th>
                                                                 <th>Açıklama</th>
                                                                 <th>İşlemler</th>
                                                             </tr>

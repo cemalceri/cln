@@ -8,10 +8,12 @@ from django.contrib.auth.decorators import login_required
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 
 from calendarapp.models.Enums import KatilimDurumuEnum
+from calendarapp.models.concrete.abonelik import AbonelikModel, PaketKullanimModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
+from calendarapp.models.concrete.uye import GrupModel, UyeGrupModel
 from calendarapp.utils import formErrorsToText
 
 
@@ -21,7 +23,7 @@ def index(request):
     etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
     time_range = range(9, 24)
     list_range = 2 if kortlar.count() > 6 else 1
-    time_list_count = range(0,list_range)
+    time_list_count = range(0, list_range)
     context = {
         "kortlar": kortlar,
         "etkinlikler": etkinlikler,
@@ -124,15 +126,29 @@ def kaydet_etkinlik_ajax(request):
 
 
 def etkinlik_kaydi_hata_var_mi(form):
-    mesaj = None
+    mesaj = ""
     if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
         mesaj = "Etkinlik başlangıç tarihi bitiş tarihinden sonra olamaz."
-    elif ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
-                                       form.data["kort"], form.cleaned_data["pk"]):
+        return JsonResponse(data={"status": "error", "message": mesaj})
+    if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
+                                     form.data["kort"], form.cleaned_data["pk"]):
         mesaj = "Seçilen tarih saate başka etkinlik eklenemez."
-    if mesaj is not None:
+        return JsonResponse(data={"status": "error", "message": mesaj})
+    uye = paket_uyeligi_olmayan_grup_uyesi(form)
+    if uye:
+        mesaj = "Grupta bulunan '" + str(uye) + "' üyesinin paket/abonelik kaydı olmadığı için etkinlik eklenemez."
         return JsonResponse(data={"status": "error", "message": mesaj})
     return False
+
+
+def paket_uyeligi_olmayan_grup_uyesi(form):
+    grup_id = form.data["grup" or None]
+    uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
+    for item in uye_grubu:
+        abonelik_paket_listesi = AbonelikModel.objects.filter(uye_id=item.uye_id, aktif_mi=True)
+        if not abonelik_paket_listesi.exists():
+            return str(item.uye)
+    return None
 
 
 def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, etkinlik_id=None):
@@ -189,12 +205,17 @@ def etkinlik_tamamlandi_ajax(request):
         if etkinlik.bitis_tarih_saat > datetime.now():
             return JsonResponse(
                 data={"status": "error", "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
+        uye_grup = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
+        for item in uye_grup:
+            paket = AbonelikModel.objects.filter(uye=item.uye, paket__isnull=False, aktif_mi=True).order_by("-id")
+            if paket.exists():
+                PaketKullanimModel.objects.create(uye=item.uye, abonelik=paket.first(), etkinlik=etkinlik,
+                                                  user=request.user)
+            EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye=item.uye,
+                                                katilim_durumu=KatilimDurumuEnum.Katıldı.value,
+                                                user=request.user)
         etkinlik.tamamlandi_mi = True
         etkinlik.save()
-        for uye_grubu in etkinlik.grup.grup_uyegrup_relations.all():
-            if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye=uye_grubu.uye).exists():
-                EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye=uye_grubu.uye,
-                                                    katilim_durumu=KatilimDurumuEnum.Katıldı.value, user=request.user)
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
     except Exception as e:
         return JsonResponse(data={"status": "error", "message": "Hata oluştu." + e.__str__()})
@@ -241,6 +262,21 @@ def iptal_et(request, id, uye_id):
 
 
 @login_required
+def iptal_et_by_antrenor(request, id):
+    try:
+        etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+        if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik).exists():
+            for item in UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id):
+                EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye=item.uye,
+                                                    katilim_durumu=KatilimDurumuEnum.İptal.value, user=request.user)
+        messages.success(request, "İşlem Başarılı.")
+        return redirect("calendarapp:profil_antrenor", etkinlik.antrenor_id)
+    except Exception as e:
+        messages.error(request, "Hata oluştu." + e.__str__())
+        return redirect("calendarapp:index_antrenor")
+
+
+@login_required
 def iptal_geri_al(request, id, uye_id):
     try:
         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
@@ -253,3 +289,18 @@ def iptal_geri_al(request, id, uye_id):
     except Exception as e:
         messages.error(request, "Hata oluştu." + e.__str__())
         return redirect("calendarapp:profil_uye", uye_id)
+
+
+@login_required
+def iptal_geri_al_by_antrenor(request, id):
+    try:
+        etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+        iptal_edilen = EtkinlikKatilimModel.objects.filter(etkinlik_id=id,
+                                                           katilim_durumu=KatilimDurumuEnum.İptal.value)
+        if iptal_edilen.exists():
+            iptal_edilen.delete()
+        messages.success(request, "İşlem Başarılı.")
+        return redirect("calendarapp:profil_antrenor", etkinlik.antrenor_id)
+    except Exception as e:
+        messages.error(request, "Hata oluştu." + e.__str__())
+        return redirect("calendarapp:profil_antrenor")

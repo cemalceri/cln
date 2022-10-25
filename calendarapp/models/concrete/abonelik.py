@@ -19,9 +19,9 @@ class AbonelikModel(BaseAbstract):
 
     def __str__(self):
         return self.paket.adi
-            #    + " - Başlangıç: " \
-            #    + self.baslangic_tarihi.strftime(
-            # "%d-%m-%Y") + " - Bitiş: " + self.bitis_tarihi.strftime("%d-%m-%Y")
+        #    + " - Başlangıç: " \
+        #    + self.baslangic_tarihi.strftime(
+        # "%d-%m-%Y") + " - Bitiş: " + self.bitis_tarihi.strftime("%d-%m-%Y")
 
     class Meta:
         verbose_name = "Abonelik"
@@ -69,3 +69,11 @@ class PaketKullanimModel(BaseAbstract):
         verbose_name = "Paket Kullanım"
         verbose_name_plural = "Paket Kullanım"
         ordering = ["id"]
+
+    def save(self, *args, **kwargs):
+        # Paketin sonu ise aktif false yapılır
+        print(self.abonelik.kalan_adet())
+        if self.abonelik.kalan_adet() >= 1:
+            self.abonelik.aktif_mi = False
+            self.abonelik.save()
+        super(PaketKullanimModel, self).save(*args, **kwargs)

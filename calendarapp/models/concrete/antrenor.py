@@ -7,7 +7,7 @@ from calendarapp.models.abstract.base_abstract import BaseAbstract
 
 class AntrenorModel(BaseAbstract):
     adi = models.CharField('Ad Soyad', max_length=250, null=False, blank=False)
-    renk = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray",
+    renk = models.CharField(max_length=20, choices=RenkEnum.choices(), default="purple",
                             verbose_name="Renk")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="antrenor", null=True, blank=True,
                              verbose_name="Ekleyen")

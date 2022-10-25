@@ -114,6 +114,12 @@ class EtkinlikModel(BaseAbstract):
     def get_absolute_url(self):
         return reverse("calendarapp:event-detail", args=(self.id,))
 
+    def renk(self):
+        if self.antrenor:
+            return self.antrenor.renk
+        else:
+            return "purple"
+
     @property
     def get_html_url(self):
         url = reverse("calendarapp:event-detail", args=(self.id,))
@@ -137,3 +143,5 @@ class EtkinlikKatilimModel(BaseAbstract):
 
     def __str__(self):
         return f"{self.etkinlik.baslik} - {self.uye.adi}"
+
+

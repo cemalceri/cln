@@ -31,6 +31,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Adı</th>
+                                            <th>Renk</th>
                                             <th>İşlemler</th>
                                         </tr>
                                         </thead>
@@ -39,6 +40,7 @@
                                             <tr>
                                                 <td class="sorting_1">{{ forloop.counter }}</td>
                                                 <td>{{ item.adi }}</td>
+                                                <td>{{ item.renk }}</td>
                                                 <td>
                                                     <a class="btn btn-primary btn-circle" title="Kaydı Düzenle"
                                                        href="{% url 'calendarapp:guncelle_antrenor' item.id %}"><i
