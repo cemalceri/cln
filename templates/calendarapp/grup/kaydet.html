@@ -22,6 +22,7 @@
                     <div class="col-md-2">
                         <input type="text" class="form-control" id="id_adi" name="adi"
                                placeholder="Grup Adı" value="{{ grup_adi |default_if_none:"" }}">
+                        <button type="button" id="kaydetBtn" class="btn btn-sm btn-block btn-info">Adı Güncelle</button>
                     </div>
                     <div class="col-md-2">
                         <select id="seciliUye" class="form-control">
@@ -67,7 +68,6 @@
             let grup_id = 0;
         {% endif %}
         $('#ekleBtn').click(function () {
-            debugger;
             $.ajax({
                 url: "{% url 'calendarapp:kaydet_grup' %}",
                 data: {
@@ -85,6 +85,25 @@
                         grup_id = data.grup_id;
                         let uye = $("#seciliUye").val();
                         $('#uyeList').append('<a href="#" id="uye_' + uye + '" onclick="seciliUyeCikar(' + uye + ')" class="list-group-item list-group-item-action">' + $("#seciliUye option:selected").text() + ' - ' + $("#seciliOdemeSekli option:selected").text() + '</a>');
+                    } else {
+                        popupMesajGoster(data.message, data.status);
+                    }
+                }
+            });
+        });
+        $('#kaydetBtn').click(function () {
+            $.ajax({
+                url: "{% url 'calendarapp:guncelle_grup_adi' %}",
+                data: {
+                    'grup_id': grup_id,
+                    'adi': $("#id_adi").val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                type: "post",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == "success") {
+                        popupMesajGoster(data.message, data.status);
                     } else {
                         popupMesajGoster(data.message, data.status);
                     }

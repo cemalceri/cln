@@ -34,10 +34,22 @@ def kaydet_grup(request, id=None):
         uyeler = UyeModel.objects.filter(onaylandi_mi=True)
         odemeler_tipleri = GrupOdemeSekliEnum.choices()
         uye_grup_listesi = UyeGrupModel.objects.filter(grup_id=id)
-        grup_adi = GrupModel.objects.get(id=id).adi
+        grup_adi = GrupModel.objects.get(id=id).adi if id else None
         return render(request, "calendarapp/grup/kaydet.html",
                       {'uyeler': uyeler, 'odemeler_tipleri': odemeler_tipleri, 'grup_id': id,
-                       'uye_grup_listesi': uye_grup_listesi, 'grup_adi':grup_adi})
+                       'uye_grup_listesi': uye_grup_listesi, 'grup_adi': grup_adi})
+
+
+@login_required
+def guncelle_grup_adi(request):
+    if request.method == 'POST':
+        if int(request.POST.get("grup_id")) > 0:
+            grup = GrupModel.objects.filter(id=request.POST.get("grup_id")).first()
+            grup.adi = request.POST.get("adi")
+            grup.save()
+            return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
+        else:
+            return JsonResponse(data={"status": "error", "message": "Üye ekleyiniz."})
 
 
 @login_required

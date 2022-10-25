@@ -59,6 +59,7 @@ urlpatterns = [
     path("grup/index", grup_views.index_grup, name="index_grup"),
     path("grup/kaydet", grup_views.kaydet_grup, name="kaydet_grup"),
     path("grup/guncelle/<int:id>", grup_views.kaydet_grup, name="guncelle_grup"),
+    path("grup/guncelle-grup-adi", grup_views.guncelle_grup_adi, name="guncelle_grup_adi"),
     path("grup/sil/<int:id>", grup_views.sil_grup, name="sil_grup"),
     path("grup/sil", grup_views.sil_grup_uyesi, name="sil_grup_uyesi"),
 
