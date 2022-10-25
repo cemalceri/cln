@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from calendarapp.forms.abonelik_forms import AbonelikKayitForm
-from calendarapp.forms.antrenor_forms import AntrenorKayitForm
 from calendarapp.models.concrete.abonelik import AbonelikModel
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.uye import UyeModel

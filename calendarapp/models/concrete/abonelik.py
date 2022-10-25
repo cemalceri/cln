@@ -32,7 +32,7 @@ class AbonelikModel(BaseAbstract):
         if self.paket.tipi is AbonelikTipikEnum.Paket.value and self.paket.adet is not None:
             kullanim_sayisi = PaketKullanimModel.objects.filter(abonelik=self).count()
             return self.paket.adet - kullanim_sayisi
-        return ""
+        return None
 
 
 class PaketModel(BaseAbstract):
@@ -73,7 +73,7 @@ class PaketKullanimModel(BaseAbstract):
     def save(self, *args, **kwargs):
         # Paketin sonu ise aktif false yapılır
         print(self.abonelik.kalan_adet())
-        if self.abonelik.kalan_adet() >= 1:
+        if self.abonelik.paket.tipi == AbonelikTipikEnum.Paket.value and self.abonelik.kalan_adet() >= 1:
             self.abonelik.aktif_mi = False
             self.abonelik.save()
         super(PaketKullanimModel, self).save(*args, **kwargs)

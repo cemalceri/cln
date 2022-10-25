@@ -136,7 +136,8 @@ def etkinlik_kaydi_hata_var_mi(form):
         return JsonResponse(data={"status": "error", "message": mesaj})
     uye = paket_uyeligi_olmayan_grup_uyesi(form)
     if uye:
-        mesaj = "Grupta bulunan '" + str(uye) + "' üyesinin paket/abonelik kaydı olmadığı için etkinlik eklenemez."
+        mesaj = "Grupta bulunan '" + str(
+            uye) + "' üyesinin uygun paket/abonelik kaydı olmadığı için etkinlik eklenemez."
         return JsonResponse(data={"status": "error", "message": mesaj})
     return False
 
@@ -145,7 +146,8 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
     grup_id = form.data["grup" or None]
     uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
     for item in uye_grubu:
-        abonelik_paket_listesi = AbonelikModel.objects.filter(uye_id=item.uye_id, aktif_mi=True)
+        abonelik_paket_listesi = AbonelikModel.objects.filter(uye_id=item.uye_id, aktif_mi=True,
+                                                              baslangic_tarihi__lte=date.today())
         if not abonelik_paket_listesi.exists():
             return str(item.uye)
     return None
@@ -207,7 +209,7 @@ def etkinlik_tamamlandi_ajax(request):
                 data={"status": "error", "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
         uye_grup = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
         for item in uye_grup:
-            paket = AbonelikModel.objects.filter(uye=item.uye, paket__isnull=False, aktif_mi=True).order_by("-id")
+            paket = AbonelikModel.objects.filter(uye=item.uye, paket__isnull=False, aktif_mi=True, ).order_by("-id")
             if paket.exists():
                 PaketKullanimModel.objects.create(uye=item.uye, abonelik=paket.first(), etkinlik=etkinlik,
                                                   user=request.user)
