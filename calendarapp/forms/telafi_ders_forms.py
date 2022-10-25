@@ -12,7 +12,7 @@ class TelafiDersKayitForm(ModelForm):
         model = TelafiDersModel
         fields = '__all__'
         exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'kullanilan_etkinlik',
-                   'telafi_etkinlik']
+                   'telafi_etkinlik', 'yapilan_kort', 'yapilan_antrenor', 'yapilma_tarih_saat', 'yapilma_aciklama']
 
     def __init__(self, *args, **kwargs):
         super(TelafiDersKayitForm, self).__init__(*args, **kwargs)

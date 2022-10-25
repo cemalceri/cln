@@ -47,7 +47,7 @@
                                                 </td>
                                                 <td>{{ item.telafi_etkinlik }}
                                                     -{{ item.telafi_etkinlik.baslangic_tarih_saat }}</td>
-                                                <td>{{ item.aciklama }}</td>
+                                                <td>{{ item.aciklama | default_if_none:""}}</td>
                                                 <td>{{ item.yapilma_tarih_saat | default_if_none:"" }}</td>
                                                 <td>{{ item.yapilan_kort | default_if_none:"" }}</td>
                                                 <td>{{ item.yapilan_antrenor | default_if_none:"" }}</td>
@@ -56,7 +56,7 @@
                                                     <a class="btn btn-primary btn-circle" title="Kaydı Düzenle"
                                                        href="{% url 'calendarapp:guncelle_telafi_ders' item.id %}"><i
                                                             class="fa fa-edit"></i></a>
-                                                    <a class="btn btn-secondary btn-circle" title="Telafi Yapılan Dersi Girişi"
+                                                    <a class="btn btn-secondary btn-circle" title="Yapılan Telafi Dersi Girişi"
                                                        href="{% url 'calendarapp:kaydet_yapilan_telafi_ders' item.id %}">
                                                         <i class="fa fas fa-gamepad"></i></a>
                                                     <a href="{% url 'calendarapp:sil_telafi_ders' item.id %}"
