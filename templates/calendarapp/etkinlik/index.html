@@ -17,52 +17,51 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-    <div class="row">
+    <div class="row mb-20">
         <div class="col-md-1">
-            {% for t in time_list_count %}
-                <div class="card p-5 flex-row justify-content-between m-1 mt-10 border-dark">
+            <div>
+                <div>
                     <div class="counter counter-md text-center">
-                        <div class="counter-label text-capitalize font-size-16">Saatler</div>
+                        <div class="counter-label text-capitalize font-size-16 bg-info">Saatler</div>
                     </div>
                 </div>
-                <div class="card-group">
-                    <div class="card card-block p-0 border">
+                <div class="">
+                    <div class="">
                         {% for i in time_range %}
-                            <div class="counter counter-lg border-bottom counter-inverse bg-purple-500 vertical-align"
-                                 style="height: 30px">
+                            <div class="counter border-bottom bg-purple-500 vertical-align" style="height: 60px">
                                 <div class="vertical-align-middle">
-                                    <span class="counter-number black">{{ i }}:00</span>
+                                    <span class="black">{{ i }}:00</span> <br>
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                 </div>
-            {% endfor %}
+            </div>
         </div>
         <div class="col-md-11">
             <div class="row">
-                {% for kort in kortlar %}
-                    <div class="col-xl-2 col-lg-2">
+                {% for kort in kortlar_ilk_alti %}
+                    <div class="col-md-2  p-0 border">
                         <!-- Card -->
-                        <div class="card p-5 flex-row justify-content-between m-1 mt-10 border-dark">
+                        <div>
                             <div class="counter counter-md text-center">
-                                <div class="counter-label text-capitalize font-size-16">{{ kort }}</div>
+                                <div class="counter-label text-capitalize font-size-16 bg-info">{{ kort }}</div>
                             </div>
                         </div>
                         {% for etkinlik in etkinlikler %}
                             {% if etkinlik.kort == kort %}
                                 <div class="card-group">
-                                    <div class="card card-block p-0 border">
+                                    <div class="card card-block p-0">
                                         <div class="counter counter-lg counter-inverse bg-grey-500 vertical-align"
                                              style="height: {{ etkinlik.ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika }}px">
-                                            <div class="vertical-align-middle">
-                                                <span class="counter-number black">Boş saat</span>
-                                            </div>
+                                            {#                                            <div class="vertical-align-middle">#}
+                                            {#                                                <span class="counter-number black">Boş saat</span>#}
+                                            {#                                            </div>#}
                                         </div>
                                         <div class="counter counter-lg counter-inverse bg-{{ etkinlik.renk }}-700 vertical-align"
                                              style="height: {{ etkinlik.pixel_degeri }}px">
                                             <div class="vertical-align-middle">
-                                                <span class="counter-number black">{{ etkinlik.grup}}</span>
+                                                <span class="counter-number black">{{ etkinlik.baslangic_tarih_saat.time }}/{{ etkinlik.grup }} </span>
                                             </div>
                                         </div>
                                     </div>
@@ -74,6 +73,63 @@
             </div>
         </div>
     </div>
+    <div class="row mb-20">
+        <div class="col-md-1 p-0">
+            <div>
+                <div>
+                    <div class="counter counter-md text-center">
+                        <div class="counter-label text-capitalize font-size-16 bg-info">Saatler</div>
+                    </div>
+                </div>
+                <div class="">
+                    <div class="">
+                        {% for i in time_range %}
+                            <div class="counter border-bottom bg-purple-500 vertical-align" style="height: 60px">
+                                <div class="vertical-align-middle">
+                                    <span class="black">{{ i }}:00</span> <br>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-11">
+            <div class="row">
+                {% for kort in kortlar_ikinci_alti %}
+                    <div class="col-md-2  p-0 border">
+                        <!-- Card -->
+                        <div>
+                            <div class="counter counter-md text-center">
+                                <div class="counter-label text-capitalize font-size-16 bg-info">{{ kort }}</div>
+                            </div>
+                        </div>
+                        {% for etkinlik in etkinlikler %}
+                            {% if etkinlik.kort == kort %}
+                                <div class="card-group">
+                                    <div class="card card-block p-0">
+                                        <div class="counter counter-lg counter-inverse bg-grey-500 vertical-align"
+                                             style="height: {{ etkinlik.ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika }}px">
+                                            {#                                            <div class="vertical-align-middle">#}
+                                            {#                                                <span class="counter-number black">Boş saat</span>#}
+                                            {#                                            </div>#}
+                                        </div>
+                                        <div class="counter counter-lg counter-inverse bg-{{ etkinlik.renk }}-700 vertical-align"
+                                             style="height: {{ etkinlik.pixel_degeri }}px">
+                                            <div class="vertical-align-middle">
+                                                <span class="counter-number black">{{ etkinlik.baslangic_tarih_saat.time }}/{{ etkinlik.grup }} </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
 {% endblock content %}
 
 {% block extrascripts %}

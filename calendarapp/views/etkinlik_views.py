@@ -19,16 +19,19 @@ from calendarapp.utils import formErrorsToText
 
 @login_required
 def index(request):
-    kortlar = KortModel.objects.all()
     etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
+    kortlar_ilk_alti = KortModel.objects.all()[:6]
+    kortlar_ikinci_alti = KortModel.objects.all()[6:12]
+    kortlar_ucuncu_alti = KortModel.objects.all()[12:18]
     time_range = range(9, 24)
-    list_range = 2 if kortlar.count() > 6 else 1
-    time_list_count = range(0, list_range)
+    dakikalar= [00, 15, 30, 45]
     context = {
-        "kortlar": kortlar,
+        "kortlar_ilk_alti": kortlar_ilk_alti,
+        "kortlar_ikinci_alti": kortlar_ikinci_alti,
         "etkinlikler": etkinlikler,
         "time_range": time_range,
-        "time_list_count": time_list_count
+        "kortlar_ucuncu_alti": kortlar_ucuncu_alti,
+        "dakikalar": dakikalar
     }
     return render(request, "calendarapp/etkinlik/index.html", context)
 

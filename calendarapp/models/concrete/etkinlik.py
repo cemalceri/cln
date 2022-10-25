@@ -89,7 +89,7 @@ class EtkinlikModel(BaseAbstract):
         start_pixel = (start_hour * 60) + start_minute
         end_pixel = (end_hour * 60) + end_minute
         pixel = end_pixel - start_pixel
-        return int(pixel / 2)
+        return int(pixel)
 
     def ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika(self):
         today = datetime.now().date()
@@ -109,7 +109,7 @@ class EtkinlikModel(BaseAbstract):
             if onceki_etkinlik:
                 onceki_etkinlik_bitis = onceki_etkinlik.bitis_tarih_saat
                 gecen_dakika = (start - onceki_etkinlik_bitis).seconds / 60
-        return int(gecen_dakika / 2)
+        return int(gecen_dakika)
 
     def get_absolute_url(self):
         return reverse("calendarapp:event-detail", args=(self.id,))
@@ -118,7 +118,7 @@ class EtkinlikModel(BaseAbstract):
         if self.antrenor:
             return self.antrenor.renk
         else:
-            return "purple"
+            return "white"
 
     @property
     def get_html_url(self):
