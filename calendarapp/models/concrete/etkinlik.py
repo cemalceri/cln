@@ -112,7 +112,7 @@ class EtkinlikModel(BaseAbstract):
         return int(gecen_dakika)
 
     def get_absolute_url(self):
-        return reverse("calendarapp:event-detail", args=(self.id,))
+        return reverse("calendarapp:event-detail", args=(self.id))
 
     def renk(self):
         if self.antrenor:

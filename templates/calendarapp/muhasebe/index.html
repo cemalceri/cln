@@ -204,13 +204,6 @@
                         </table>
                     </div>
                     <div class="panel-footer">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4 class="panel-title">Toplam Çıkış: <span
-                                        id="toplamCikis">{{ toplam_cikis |default_if_none:"0" }} TL </span></h4>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -225,34 +218,27 @@
                             <tr>
                                 <th>#</th>
                                 <th>Üye</th>
-                                <th>Paket/Abonelik Adı</th>
-                                <th>Paket/Abonelik Tutarı</th>
-                                <th>Son Yapılan Ödeme Tarihi</th>
-                                <th>Son Yapılan Ödeme Tutarı</th>
+                                <th>Paket Adı</th>
+                                <th>Paket Tutarı</th>
+                                <th>Kalan Adet</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for abonelik in odeme_yapilmayan_uyelikler %}
+                            {% for paket in bitmek_uzere_olan_paketler %}
                                 <tr>
                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                    <td>{{ abonelik.uye }}</td>
-                                    <td>{{ abonelik.paket }}</td>
-                                    <td>{{ abonelik.paket.toplam_fiyati }}</td>
-                                    <td>{{ abonelik.son_yapilan_odeme_tarihi | default_if_none:"" }}</td>
-                                    <td>{{ abonelik.son_yapilan_odeme_tutari| default_if_none:"" }}</td>
+                                    <td>
+                                        <a href="{% url 'calendarapp:profil_uye' paket.uye_id %}">{{ paket.uye }}</a>
+                                    </td>
+                                    <td>{{ paket.abonelik }}</td>
+                                    <td>{{ paket.abonelik.paket.toplam_fiyati }}</td>
+                                    <td>{{ paket.kalan_adet }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     <div class="panel-footer">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4 class="panel-title">Toplam Çıkış: <span
-                                        id="toplamCikis">{{ toplam_cikis |default_if_none:"0" }} TL </span></h4>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>

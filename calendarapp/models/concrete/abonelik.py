@@ -71,11 +71,12 @@ class PaketKullanimModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
                                  null=False)
+    kalan_adet = models.SmallIntegerField(verbose_name="Kalan Adet", null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="paket_kullanim", null=True, blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):
-        return str(self.abonelik) + " " + self.uye.adi + " " + self.uye.soyadi
+        return str(self.abonelik) + " " + str(self.uye)
 
     class Meta:
         verbose_name = "Paket Kullanım"
@@ -84,8 +85,8 @@ class PaketKullanimModel(BaseAbstract):
 
     def save(self, *args, **kwargs):
         # Paketin sonu ise aktif false yapılır
-        print(self.abonelik.kalan_adet())
-        if self.abonelik.paket.tipi == AbonelikTipikEnum.Paket.value and self.abonelik.kalan_adet() >= 1:
+        self.kalan_adet = self.abonelik.kalan_adet() - 1
+        if self.abonelik.paket.tipi == AbonelikTipikEnum.Paket.value and self.abonelik.kalan_adet() <= 1:
             self.abonelik.aktif_mi = False
             self.abonelik.save()
         super(PaketKullanimModel, self).save(*args, **kwargs)
