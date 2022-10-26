@@ -75,13 +75,13 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="panel border">
                     <div class="panel-heading">
                         <h3 class="panel-title">Para Girişleri</h3>
                     </div>
                     <div class="panel-body container-fluid">
-                        <table id="tableIn" class="table table-bordered dataTable table-responsive-lg">
+                        <table id="tableIn" class="table table-bordered dataTable">
                             <thead>
                             <tr>
                                 <th>#</th>
@@ -122,13 +122,13 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="panel border">
                     <div class="panel-heading">
                         <h3 class="panel-title">Para Çıkışları</h3>
                     </div>
                     <div class="panel-body container-fluid">
-                        <table id="tableIn" class="table table-bordered dataTable table-responsive-lg">
+                        <table id="tableIn" class="table table-bordered dataTable">
                             <thead>
                             <tr>
                                 <th>#</th>
@@ -154,6 +154,92 @@
                                            href="{% url 'calendarapp:profil_antrenor' cikis.antrenor_id %}">
                                             <i class="fa fas fa-user-secret black"></i></a>
                                     </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="panel-title">Toplam Çıkış: <span
+                                        id="toplamCikis">{{ toplam_cikis |default_if_none:"0" }} TL </span></h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="panel border">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Bekleyen Ödemeler</h3>
+                    </div>
+                    <div class="panel-body container-fluid">
+                        <table id="tableIn" class="table table-bordered dataTable">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Üye</th>
+                                <th>Abonelik Adı</th>
+                                <th>Abonelik Tutarı</th>
+                                <th>Son Yapılan Ödeme Tarihi</th>
+                                <th>Son Yapılan Ödeme Tutarı</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for abonelik in odeme_yapilmayan_uyelikler %}
+                                <tr>
+                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                    <td>
+                                        <a href="{% url 'calendarapp:profil_uye' abonelik.uye_id %}">{{ abonelik.uye }}</a>
+                                    </td>
+                                    <td>{{ abonelik.paket }}</td>
+                                    <td>{{ abonelik.paket.toplam_fiyati }}</td>
+                                    <td>{{ abonelik.son_yapilan_odeme_tarihi | default_if_none:"" }}</td>
+                                    <td>{{ abonelik.son_yapilan_odeme_tutari| default_if_none:"" }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="panel-title">Toplam Çıkış: <span
+                                        id="toplamCikis">{{ toplam_cikis |default_if_none:"0" }} TL </span></h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="panel border">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Bitmek Üzere Olan Paketler</h3>
+                    </div>
+                    <div class="panel-body container-fluid">
+                        <table id="tableIn" class="table table-bordered dataTable">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Üye</th>
+                                <th>Paket/Abonelik Adı</th>
+                                <th>Paket/Abonelik Tutarı</th>
+                                <th>Son Yapılan Ödeme Tarihi</th>
+                                <th>Son Yapılan Ödeme Tutarı</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for abonelik in odeme_yapilmayan_uyelikler %}
+                                <tr>
+                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                    <td>{{ abonelik.uye }}</td>
+                                    <td>{{ abonelik.paket }}</td>
+                                    <td>{{ abonelik.paket.toplam_fiyati }}</td>
+                                    <td>{{ abonelik.son_yapilan_odeme_tarihi | default_if_none:"" }}</td>
+                                    <td>{{ abonelik.son_yapilan_odeme_tutari| default_if_none:"" }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>

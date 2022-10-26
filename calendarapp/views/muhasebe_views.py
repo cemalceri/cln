@@ -1,23 +1,32 @@
+from datetime import date, datetime, timedelta
 from itertools import chain
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import models
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from calendarapp.models.Enums import ParaHareketTuruEnum
+from calendarapp.models.concrete.abonelik import AbonelikModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel
 
 
 @login_required
 def index(request):
     if request.method == "POST":
+        bir_ay_onceki_gun = date.today() - timedelta(days=30)
+        son_30_odeme_idler = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value,
+                                                              tarih__gte=bir_ay_onceki_gun).values_list("paket_id",
+                                                                                                        flat=True)
+        odeme_yapilmayan_uyelikler = AbonelikModel.objects.all().exclude(paket_id__in=son_30_odeme_idler)
         baslangic_tarihi = request.POST.get("baslangic_tarihi" or None)
         bitis_tarihi = request.POST.get("bitis_tarihi" or None)
         tutar_max = request.POST.get("tutar_max" or None)
         tutar_min = request.POST.get("tutar_min" or None)
         para_girisleri = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value)
         para_cikislari = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Cikis.value)
+
         filtre_metni = ""
         if baslangic_tarihi:
             filtre_metni += "Başlangıç tarihi " + baslangic_tarihi + " tarihinden büyük, "
@@ -46,11 +55,17 @@ def index(request):
             "para_cikislari": para_cikislari,
             "toplam_giris": toplam_giris,
             "toplam_cikis": toplam_cikis,
+            "odeme_yapilmayan_uyelikler": odeme_yapilmayan_uyelikler,
             "filtreMetni": filtre_metni
         }
         messages.success(request, "İşlem başarılı!")
         return render(request, "calendarapp/muhasebe/index.html", context)
     else:
+        bir_ay_onceki_gun = date.today() - timedelta(days=30)
+        son_30_odeme_idler = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value,
+                                                              tarih__gte=bir_ay_onceki_gun).values_list("paket_id",
+                                                                                                        flat=True)
+        odeme_yapilmayan_uyelikler = AbonelikModel.objects.filter(~Q(paket_id__in=son_30_odeme_idler))
         para_girisleri = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value).order_by(
             '-tarih')[0:100]
         para_cikislari = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Cikis.value).order_by(
@@ -62,6 +77,7 @@ def index(request):
             "para_cikislari": para_cikislari,
             "toplam_giris": toplam_giris,
             "toplam_cikis": toplam_cikis,
+            "odeme_yapilmayan_uyelikler": odeme_yapilmayan_uyelikler
         }
         return render(request, "calendarapp/muhasebe/index.html", context)
 

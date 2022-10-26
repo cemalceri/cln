@@ -1,7 +1,7 @@
 from django.db import models
 
 from accounts.models import User
-from calendarapp.models.Enums import RenkEnum, AbonelikTipikEnum
+from calendarapp.models.Enums import AbonelikTipikEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.uye import UyeModel
@@ -34,6 +34,18 @@ class AbonelikModel(BaseAbstract):
             return self.paket.adet - kullanim_sayisi
         return None
 
+    def son_yapilan_odeme_tarihi(self):
+        son_odeme = self.paket.paket_parahareketi_relations.filter().order_by("-tarih").first()
+        if son_odeme:
+            return son_odeme.tarih
+        return None
+
+    def son_yapilan_odeme_tutari(self):
+        son_odeme = self.paket.paket_parahareketi_relations.filter().order_by("-tarih").first()
+        if son_odeme:
+            return son_odeme.tutar
+        return None
+
 
 class PaketModel(BaseAbstract):
     adi = models.CharField(max_length=200, verbose_name="Paket Adı")
@@ -63,7 +75,7 @@ class PaketKullanimModel(BaseAbstract):
                              verbose_name="Ekleyen")
 
     def __str__(self):
-        return self.paket.adi + " " + self.uye.adi + " " + self.uye.soyadi
+        return str(self.abonelik) + " " + self.uye.adi + " " + self.uye.soyadi
 
     class Meta:
         verbose_name = "Paket Kullanım"
