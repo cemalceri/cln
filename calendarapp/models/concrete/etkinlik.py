@@ -91,25 +91,25 @@ class EtkinlikModel(BaseAbstract):
         pixel = end_pixel - start_pixel
         return int(pixel)
 
-    def ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika(self):
-        today = datetime.now().date()
-        gecen_dakika = 0
-        today_start = datetime.combine(today, time()) + timedelta(minutes=540)
-        gunun_etkinlikleri = EtkinlikModel.objects.filter(kort_id=self.kort_id,
-                                                          bitis_tarih_saat__gte=today_start).order_by(
-            "baslangic_tarih_saat")
-        if gunun_etkinlikleri.first().id == self.id:
-            gecen_dakika = (self.baslangic_tarih_saat - today_start).total_seconds() / 60
-        else:
-            start = self.baslangic_tarih_saat
-            onceki_etkinlik = EtkinlikModel.objects.filter(kort_id=self.kort_id,
-                                                           bitis_tarih_saat__gte=today_start,
-                                                           baslangic_tarih_saat__lt=start).order_by(
-                "-baslangic_tarih_saat").first()
-            if onceki_etkinlik:
-                onceki_etkinlik_bitis = onceki_etkinlik.bitis_tarih_saat
-                gecen_dakika = (start - onceki_etkinlik_bitis).seconds / 60
-        return int(gecen_dakika)
+    # def ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika(self):
+    #     today = datetime.now().date()
+    #     gecen_dakika = 0
+    #     today_start = datetime.combine(today, time()) + timedelta(minutes=540)
+    #     gunun_etkinlikleri = EtkinlikModel.objects.filter(kort_id=self.kort_id,
+    #                                                       bitis_tarih_saat__gte=today_start).order_by(
+    #         "baslangic_tarih_saat")
+    #     if gunun_etkinlikleri.first().id == self.id:
+    #         gecen_dakika = (self.baslangic_tarih_saat - today_start).total_seconds() / 60
+    #     else:
+    #         start = self.baslangic_tarih_saat
+    #         onceki_etkinlik = EtkinlikModel.objects.filter(kort_id=self.kort_id,
+    #                                                        bitis_tarih_saat__gte=today_start,
+    #                                                        baslangic_tarih_saat__lt=start).order_by(
+    #             "-baslangic_tarih_saat").first()
+    #         if onceki_etkinlik:
+    #             onceki_etkinlik_bitis = onceki_etkinlik.bitis_tarih_saat
+    #             gecen_dakika = (start - onceki_etkinlik_bitis).seconds / 60
+    #     return int(gecen_dakika)
 
     def get_absolute_url(self):
         return reverse("calendarapp:event-detail", args=(self.id))

@@ -5,6 +5,10 @@
 {% block extracss %}
     {% include 'base/remark_css.html' %}
 {% endblock extracss %}
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static '/js/jspdf/html2canvas.js' %}"></script>
+    <script type="text/javascript" src="{% static '/js/jspdf/jspdf.min.js' %}"></script>
+{% endblock %}
 {% block breadcrumb %}
     <div>
         <h1><i class="fa fa-dashboard"></i> Etkinlikler</h1>
@@ -17,30 +21,47 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-    <div class="row mb-20">
-        <div class="col-md-1">
-            <div>
-                <div>
-                    <div class="counter counter-md text-center">
-                        <div class="counter-label text-capitalize font-size-16 bg-info">Saatler</div>
+    <div class="row">
+        <a onclick="printDiv()" class="btn btn-success float-right black" style="margin: auto">
+            <i class="fa fa-file-pdf-o"> PDF indir</i>
+        </a>
+    </div>
+    <div class='html-content'>
+        <div class="row">
+            {% for kort in kortlar_ilk_alti %}
+                <div class="col-md-2  p-0 border">
+                    <!-- Card -->
+                    <div>
+                        <div class="counter counter-md text-center">
+                            <div class="counter-label text-capitalize font-size-16 bg-info">{{ kort }}</div>
+                        </div>
                     </div>
-                </div>
-                <div class="">
-                    <div class="">
-                        {% for i in time_range %}
-                            <div class="counter border-bottom bg-purple-500 vertical-align" style="height: 60px">
-                                <div class="vertical-align-middle">
-                                    <span class="black">{{ i }}:00</span> <br>
+                    {% for etkinlik in etkinlikler %}
+                        {% if etkinlik.kort == kort %}
+                            <div class="card-group">
+                                <div class="card card-block p-0">
+                                    {#                                        <div class="counter counter-lg counter-inverse bg-grey-500 vertical-align"#}
+                                    {#                                             style="height: {{ etkinlik.ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika }}px">#}
+                                    {#                                            <div class="vertical-align-middle">#}
+                                    {#                                                <span class="counter-number black">Boş saat</span>#}
+                                    {#                                            </div>#}
+                                    {#                                        </div>#}
+                                    <div class="counter counter-lg counter-inverse bg-{{ etkinlik.renk }}-700 vertical-align"
+                                         style="height: {{ etkinlik.pixel_degeri }}px">
+                                        <div class="vertical-align-middle">
+                                            <span class="counter-number black">{{ etkinlik.baslangic_tarih_saat.time }}- {{ etkinlik.bitis_tarih_saat.time }}/{{ etkinlik.grup }} </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        {% endfor %}
-                    </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
-            </div>
+            {% endfor %}
         </div>
-        <div class="col-md-11">
-            <div class="row">
-                {% for kort in kortlar_ilk_alti %}
+        <div class="row mt-30">
+            {% if kortlar_ikinci_alti %}
+                {% for kort in kortlar_ikinci_alti %}
                     <div class="col-md-2  p-0 border">
                         <!-- Card -->
                         <div>
@@ -70,69 +91,31 @@
                         {% endfor %}
                     </div>
                 {% endfor %}
-            </div>
+            {% endif %}
         </div>
     </div>
-    {% if kortlar_ikinci_alti %}
-        <div class="row mb-20">
-            <div class="col-md-1 p-0">
-                <div>
-                    <div>
-                        <div class="counter counter-md text-center">
-                            <div class="counter-label text-capitalize font-size-16 bg-info">Saatler</div>
-                        </div>
-                    </div>
-                    <div class="">
-                        <div class="">
-                            {% for i in time_range %}
-                                <div class="counter border-bottom bg-purple-500 vertical-align" style="height: 60px">
-                                    <div class="vertical-align-middle">
-                                        <span class="black">{{ i }}:00</span> <br>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-11">
-                <div class="row">
-                    {% for kort in kortlar_ikinci_alti %}
-                        <div class="col-md-2  p-0 border">
-                            <!-- Card -->
-                            <div>
-                                <div class="counter counter-md text-center">
-                                    <div class="counter-label text-capitalize font-size-16 bg-info">{{ kort }}</div>
-                                </div>
-                            </div>
-                            {% for etkinlik in etkinlikler %}
-                                {% if etkinlik.kort == kort %}
-                                    <div class="card-group">
-                                        <div class="card card-block p-0">
-                                            <div class="counter counter-lg counter-inverse bg-grey-500 vertical-align"
-                                                 style="height: {{ etkinlik.ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika }}px">
-                                                {#                                            <div class="vertical-align-middle">#}
-                                                {#                                                <span class="counter-number black">Boş saat</span>#}
-                                                {#                                            </div>#}
-                                            </div>
-                                            <div class="counter counter-lg counter-inverse bg-{{ etkinlik.renk }}-700 vertical-align"
-                                                 style="height: {{ etkinlik.pixel_degeri }}px">
-                                                <div class="vertical-align-middle">
-                                                    <span class="counter-number black">{{ etkinlik.baslangic_tarih_saat.time }}/{{ etkinlik.grup }} </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    <script>
+        function printDiv() {
+            var HTML_Width = $(".html-content").width();
+            var HTML_Height = $(".html-content").height();
+            var top_left_margin = 80;
+            var PDF_Width = HTML_Width + (top_left_margin * 2);
+            var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+            var canvas_image_width = HTML_Width;
+            var canvas_image_height = HTML_Height;
 
+            var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+
+            html2canvas($(".html-content")[0]).then(function (canvas) {
+                var imgData = canvas.toDataURL("image/jpeg", 1.0);
+                var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+                pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+                for (var i = 1; i <= totalPDFPages; i++) {
+                    pdf.addPage(PDF_Width, PDF_Height);
+                    pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+                }
+                pdf.save("etkinlikler.pdf");
+            });
+        }
+    </script>
 {% endblock content %}
-
-{% block extrascripts %}
-{% endblock extrascripts %}
