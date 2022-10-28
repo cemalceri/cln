@@ -20,18 +20,16 @@ from calendarapp.utils import formErrorsToText
 @login_required
 def index(request):
     etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
+    # kortlarin_bos_saatleri = kortlarin_bos_saatlerini_getir(datetime.now())
     kortlar_ilk_alti = KortModel.objects.all()[:6]
     kortlar_ikinci_alti = KortModel.objects.all()[6:12]
     kortlar_ucuncu_alti = KortModel.objects.all()[12:18]
-    time_range = range(9, 24)
-    dakikalar= [00, 15, 30, 45]
     context = {
         "kortlar_ilk_alti": kortlar_ilk_alti,
         "kortlar_ikinci_alti": kortlar_ikinci_alti,
         "etkinlikler": etkinlikler,
-        "time_range": time_range,
         "kortlar_ucuncu_alti": kortlar_ucuncu_alti,
-        "dakikalar": dakikalar
+        # "kortlarin_bos_saatleri": kortlarin_bos_saatleri
     }
     return render(request, "calendarapp/etkinlik/index.html", context)
 
@@ -199,7 +197,7 @@ def saat_guncelle_etkinlik_ajax(request):
     etkinlik.baslangic_tarih_saat = baslangic_tarih_saat
     etkinlik.bitis_tarih_saat = bitis_tarih_saat
     etkinlik.save()
-    return JsonResponse(data={"status": "success", "message": "Etkinlik guncellendi."})
+    return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
 
 
 @login_required
@@ -246,7 +244,7 @@ def katilim_ekle(request, id, uye_id):
                 etkinlik.tamamlandi_mi = True
                 etkinlik.save()
             messages.success(request, "İşlem Başarılı.")
-            return redirect("calendarapp:profil_uye", uye_id)
+        return redirect("calendarapp:profil_uye", uye_id)
     except Exception as e:
         messages.error(request, "Hata oluştu." + e.__str__())
         return redirect("calendarapp:profil_uye", uye_id)
@@ -309,3 +307,41 @@ def iptal_geri_al_by_antrenor(request, id):
     except Exception as e:
         messages.error(request, "Hata oluştu." + e.__str__())
         return redirect("calendarapp:profil_antrenor")
+
+
+# @login_required
+# def kortlarin_bos_saatlerini_getir(request):
+#     kortlarin_bos_saatleri = {}
+#     time_range = range(9, 24)
+#     dakikalar = [00, 15, 30, 45]
+#     for kort in KortModel.objects.all():
+#         kortlarin_bos_saatleri[kort.id] = []
+#         for saat in time_range:
+#             for dakika in dakikalar:
+#                 sorgu_saati = datetime.today().replace(hour=saat, minute=dakika, second=0, microsecond=0)
+#                 etkinlik = EtkinlikModel.objects.filter(kort_id=kort.id,
+#                                                         baslangic_tarih_saat=sorgu_saati)
+#                 if not etkinlik.exists():
+#                     kortlarin_bos_saatleri[kort.id].append(sorgu_saati)
+#     return JsonResponse(
+#         data={"status": "success", "messages": "İşlem başarılı", "data": kortlarin_bos_saatleri})
+
+
+@login_required
+def kortlarin_bos_saatlerini_getir(request):
+    kortlarin_bos_saatleri = {}
+    time_range = range(9, 24)
+    dakikalar = [00, 15, 30, 45]
+    bugunun_etkinlikleri = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
+    kortlar = KortModel.objects.all()
+    for kort in kortlar:
+        kortlarin_bos_saatleri[kort.id] = []
+        for saat in time_range:
+            for dakika in dakikalar:
+                sorgu_saati = datetime.today().replace(hour=saat, minute=dakika, second=0, microsecond=0)
+                etkinlik = bugunun_etkinlikleri.filter(kort_id=kort.id, baslangic_tarih_saat__lte=sorgu_saati,
+                                                       bitis_tarih_saat__gt=sorgu_saati)
+                if not etkinlik.exists():
+                    kortlarin_bos_saatleri[kort.id].append(sorgu_saati)
+    return JsonResponse(
+        data={"status": "success", "messages": "İşlem başarılı", "data": kortlarin_bos_saatleri})

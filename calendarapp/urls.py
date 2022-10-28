@@ -33,6 +33,8 @@ urlpatterns = [
          name="iptal_et_etkinlik_by_antrenor"),
     path("etkinlik/iptal-geri-al-by_antrenor/<int:id>>", etkinlik_views.iptal_geri_al_by_antrenor,
          name="iptal_geri_al_etkinlik_by_antrenor"),
+    path("etkinlik/bos-saatleri-getir", etkinlik_views.kortlarin_bos_saatlerini_getir,
+         name="getir_bos-saatleri-getir-ajax"),
 
     # Uye
     path("uye/index", uye_views.index, name="index_uye"),

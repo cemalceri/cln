@@ -66,6 +66,7 @@ class EtkinlikModel(BaseAbstract):
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")
     tamamlandi_mi = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
+    tamamlandi_onay = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Yönetici)")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik", null=True, blank=True,
                              verbose_name="Ekleyen")
 
@@ -80,15 +81,18 @@ class EtkinlikModel(BaseAbstract):
         return self.baslik
 
     def pixel_degeri(self):
-        start = self.baslangic_tarih_saat
-        end = self.bitis_tarih_saat
-        start_hour = start.hour
-        start_minute = start.minute
-        end_hour = end.hour
-        end_minute = end.minute
-        start_pixel = (start_hour * 60) + start_minute
-        end_pixel = (end_hour * 60) + end_minute
-        pixel = end_pixel - start_pixel
+        # start = self.baslangic_tarih_saat
+        # end = self.bitis_tarih_saat
+        # start_hour = start.hour
+        # start_minute = start.minute
+        # end_hour = end.hour
+        # end_minute = end.minute
+        # start_pixel = (start_hour * 60) + start_minute
+        # end_pixel = (end_hour * 60) + end_minute
+        # pixel = end_pixel - start_pixel
+        # print((self.baslangic_tarih_saat -).total_seconds() / 60)
+        pixel = (self.bitis_tarih_saat - self.baslangic_tarih_saat).total_seconds() / 60
+        # print(self.baslangic_tarih_saat, self.bitis_tarih_saat, pixel)
         return int(pixel)
 
     # def ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika(self):
@@ -128,7 +132,7 @@ class EtkinlikModel(BaseAbstract):
 
 class EtkinlikKatilimModel(BaseAbstract):
     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
-                                 null=True, related_name="etkinlik")
+                                 null=True, related_name="etkinlik_etkinlikkatilim_relations")
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False,
                             related_name="uye")
     katilim_durumu = models.SmallIntegerField('Katılım Durumu', choices=KatilimDurumuEnum.choices(), null=False,
@@ -143,5 +147,3 @@ class EtkinlikKatilimModel(BaseAbstract):
 
     def __str__(self):
         return f"{self.etkinlik.baslik} - {self.uye.adi}"
-
-

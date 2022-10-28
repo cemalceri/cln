@@ -18,14 +18,14 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-    <nav class="navbar navbar-light bg-dark rounded mb-2">
-        <form>
-            {% for kort in kortlar %}
-                <a class="btn btn-primary m-1"
+    <div class="row bg-transparent">
+        {% for kort in kortlar %}
+            <div class="col-md-2">
+                <a class="btn btn-primary btn-block m-1"
                    href="{% url 'calendarapp:takvim-getir_by_kort_id' kort.id %}">{{ kort.adi }}</a>
-            {% endfor %}
-        </form>
-    </nav>
+            </div>
+        {% endfor %}
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="tile row">
@@ -141,7 +141,6 @@
     <script>
         let _selectedEvent;
         let seciliKort;
-        debugger;
         if (seciliKort = 'undefined') {
             seciliKort = {{secili_kort.id}};
         }
@@ -271,8 +270,8 @@
                                 element.value = data[item];
                         }
                         if (item === 'tamamlandi_mi') {
+                            //Etkinlik tamamlandı (data[item]) ise = true telafi ve tamamla butonu gizle
                             document.getElementById("btnTamamlandi").hidden = data[item]
-                            //Etkinlik tamamlandı işaretlenmediyse telafi ders butonu göster
                             document.getElementById("btnTelafiDers").hidden = data[item]
                             let url = "{% url 'calendarapp:kaydet_telafi_ders' 0 %}".replace("/0", "/" + event.id)
                             document.getElementById("btnTelafiDers").setAttribute("href", url)

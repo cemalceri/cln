@@ -152,11 +152,10 @@
                                                 <div data-role="content" class="scrollable-content">
                                                     {% for etkinlik in yapilan_etkinlikler %}
                                                         <li class="list-group-item justify-content-between">
-                                                            {% if not etkinlik.tamamlandi_mi %}
-                                                                <a href="{% url 'calendarapp:katilim_ekle_etkinlik' id=etkinlik.id uye_id=uye.id %}">
-                                                                    <small class="badge badge-round badge-info float-right">Tamamlandı
-                                                                        yap</small>
-                                                                </a>
+                                                            {% if etkinlik.tamamlandi_mi %}
+                                                                <small class="badge badge-round badge-success float-right">Tamamlandı </small>
+                                                            {% else %}
+                                                                <small class="badge badge-round badge-info float-right">Onay Bekliyor </small>
                                                             {% endif %}
                                                             <p>
                                                                 <span> Kort: {{ etkinlik.kort }} - Antrenör: {{ etkinlik.antrenor |default_if_none:"" }} Tarih: {{ etkinlik.baslangic_tarih_saat }}</span>
