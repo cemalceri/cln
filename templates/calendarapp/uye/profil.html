@@ -155,7 +155,8 @@
                                                             {% if etkinlik.tamamlandi_mi %}
                                                                 <small class="badge badge-round badge-success float-right">Tamamlandı </small>
                                                             {% else %}
-                                                                <small class="badge badge-round badge-info float-right">Onay Bekliyor </small>
+                                                                <small class="badge badge-round badge-info float-right">Onay
+                                                                    Bekliyor </small>
                                                             {% endif %}
                                                             <p>
                                                                 <span> Kort: {{ etkinlik.kort }} - Antrenör: {{ etkinlik.antrenor |default_if_none:"" }} Tarih: {{ etkinlik.baslangic_tarih_saat }}</span>
@@ -333,7 +334,7 @@
                                 </div>
                             </div>
                             <div class="tab-pane animation-slide-left" id="paket" role="tabpanel">
-                                <a href="{% url 'calendarapp:kaydet_abonelik' uye.id %}"
+                                <a href="{% url 'calendarapp:kaydet_uye_abonelik' uye.id %}"
                                    class="btn btn-success m-10 float-right"><i class="fa fa-plus "></i>Paket / Üyelik
                                     Ekle</a>
                                 <div class="border p-10">
@@ -368,7 +369,7 @@
                                                                     <td>{{ abonelik.aciklama }}</td>
                                                                     <td>
                                                                         <a class="btn btn-primary btn-circle"
-                                                                           href="{% url 'calendarapp:guncelle_abonelik' abonelik.id %}"
+                                                                           href="{% url 'calendarapp:guncelle_uye_abonelik' abonelik.id %}"
                                                                            title="Kaydı Düzenle"><i
                                                                                 class="fa fa-edit black"></i></a>
                                                                         <a href="{% url 'calendarapp:sil_abonelik' abonelik.id %}"

@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from calendarapp.models.Enums import ParaHareketTuruEnum, AbonelikTipikEnum
-from calendarapp.models.concrete.abonelik import AbonelikModel, PaketKullanimModel
+from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel
 
 
@@ -146,10 +146,10 @@ def to_dict(instance):
 def son_bir_ayda_odeme_yapilmayan_uyelikler():
     bir_ay_onceki_gun = date.today() - timedelta(days=30)
     son_30_odeme_idler = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value,
-                                                          paket__tipi=AbonelikTipikEnum.Uyelik.value,
+                                                          paket__tipi=AbonelikTipikEnum.Üyelik.value,
                                                           tarih__gte=bir_ay_onceki_gun).values_list("paket_id",
                                                                                                     flat=True)
-    result = AbonelikModel.objects.filter(~Q(paket_id__in=son_30_odeme_idler, aktif_mi=True))
+    result = UyeAbonelikModel.objects.filter(~Q(paket_id__in=son_30_odeme_idler, aktif_mi=True))
     return result
 
 

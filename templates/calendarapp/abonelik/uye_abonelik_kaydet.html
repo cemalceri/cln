@@ -20,9 +20,9 @@
             <div class="panel-body">
                 <form autocomplete="nope" method="post"
                         {% if form.instance.id %}
-                      action="{% url 'calendarapp:guncelle_abonelik' form.instance.id %}">
+                      action="{% url 'calendarapp:guncelle_uye_abonelik' form.instance.id %}">
                         {% else %}
-                            action="{% url 'calendarapp:kaydet_abonelik' form.initial.uye.id %}">
+                            action="{% url 'calendarapp:kaydet_uye_abonelik' form.initial.uye.id %}">
                         {% endif %}
                 {% csrf_token %}
                 <div class="row ">

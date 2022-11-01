@@ -23,7 +23,7 @@ class SeviyeRenkEnum(Enum):
 
     @classmethod
     def choices(cls):
-        return [(key.value, key.name) for key in cls]
+        return [(key.name, key.value) for key in cls]
 
 
 class GunlerModel(models.Model):
@@ -56,7 +56,7 @@ class SaatlerModel(models.Model):
 
 class AbonelikTipikEnum(Enum):
     Paket = 1
-    Uyelik = 2
+    Üyelik = 2
 
     @classmethod
     def choices(cls):

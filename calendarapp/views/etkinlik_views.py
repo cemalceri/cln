@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 
 from calendarapp.models.Enums import KatilimDurumuEnum
-from calendarapp.models.concrete.abonelik import AbonelikModel, PaketKullanimModel
+from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from django.contrib import messages
 
@@ -147,7 +147,7 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
     grup_id = form.data["grup" or None]
     uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
     for item in uye_grubu:
-        abonelik_paket_listesi = AbonelikModel.objects.filter(uye_id=item.uye_id, aktif_mi=True,
+        abonelik_paket_listesi = UyeAbonelikModel.objects.filter(uye_id=item.uye_id, aktif_mi=True,
                                                               baslangic_tarihi__lte=date.today())
         if not abonelik_paket_listesi.exists():
             return str(item.uye)
@@ -210,7 +210,7 @@ def etkinlik_tamamlandi_ajax(request):
                 data={"status": "error", "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
         uye_grup = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
         for item in uye_grup:
-            paket = AbonelikModel.objects.filter(uye=item.uye, paket__isnull=False, aktif_mi=True, ).order_by("-id")
+            paket = UyeAbonelikModel.objects.filter(uye=item.uye, paket__isnull=False, aktif_mi=True, ).order_by("-id")
             if paket.exists():
                 PaketKullanimModel.objects.create(uye=item.uye, abonelik=paket.first(), etkinlik=etkinlik,
                                                   user=request.user)
@@ -345,3 +345,5 @@ def kortlarin_bos_saatlerini_getir(request):
                     kortlarin_bos_saatleri[kort.id].append(sorgu_saati)
     return JsonResponse(
         data={"status": "success", "messages": "İşlem başarılı", "data": kortlarin_bos_saatleri})
+
+

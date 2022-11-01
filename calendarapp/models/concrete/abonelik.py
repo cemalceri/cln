@@ -7,7 +7,7 @@ from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.uye import UyeModel
 
 
-class AbonelikModel(BaseAbstract):
+class UyeAbonelikModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
     paket = models.ForeignKey("PaketModel", verbose_name="Paket", on_delete=models.PROTECT, blank=False, null=False)
     baslangic_tarihi = models.DateField(verbose_name="Başlangıç Tarihi", null=False, blank=False)
@@ -50,7 +50,7 @@ class AbonelikModel(BaseAbstract):
 class PaketModel(BaseAbstract):
     adi = models.CharField(max_length=200, verbose_name="Paket Adı")
     tipi = models.SmallIntegerField(verbose_name="Tipi", choices=AbonelikTipikEnum.choices(), blank=False, null=False,
-                                    default=AbonelikTipikEnum.Uyelik)
+                                    default=AbonelikTipikEnum.Üyelik)
     adet = models.IntegerField(verbose_name="Adet", null=True, blank=True)
     toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="paket", null=True, blank=True,
@@ -66,7 +66,7 @@ class PaketModel(BaseAbstract):
 
 
 class PaketKullanimModel(BaseAbstract):
-    abonelik = models.ForeignKey(AbonelikModel, verbose_name="Abonelik", on_delete=models.CASCADE, blank=False,
+    abonelik = models.ForeignKey(UyeAbonelikModel, verbose_name="Abonelik", on_delete=models.CASCADE, blank=False,
                                  null=False)
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,

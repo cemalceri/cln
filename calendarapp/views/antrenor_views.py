@@ -20,8 +20,8 @@ def index(request):
 
 @login_required
 def kaydet(request, id=None):
+    entity = AntrenorModel.objects.filter(pk=id).first()
     if request.method == 'POST':
-        entity = AntrenorModel.objects.filter(pk=id).first()
         form = AntrenorKayitForm(request.POST, instance=entity)
         if form.is_valid():
             entity = form.save(commit=False)
@@ -32,7 +32,7 @@ def kaydet(request, id=None):
         else:
             messages.error(request, formErrorsToText(form.errors, AntrenorModel))
             return render(request, "calendarapp/antrenor/kaydet.html", context={'form': form})
-    form = AntrenorKayitForm(instance=AntrenorModel.objects.filter(pk=id).first())
+    form = AntrenorKayitForm(instance=entity)
     return render(request, "calendarapp/antrenor/kaydet.html", context={'form': form})
 
 

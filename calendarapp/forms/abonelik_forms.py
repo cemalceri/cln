@@ -1,10 +1,10 @@
 from django.forms import ModelForm, DateInput
-from calendarapp.models.concrete.abonelik import AbonelikModel, PaketModel
+from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketModel
 
 
-class AbonelikKayitForm(ModelForm):
+class UyeAbonelikKayitForm(ModelForm):
     class Meta:
-        model = AbonelikModel
+        model = UyeAbonelikModel
         fields = '__all__'
         exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
         widgets = {
@@ -19,7 +19,7 @@ class AbonelikKayitForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(AbonelikKayitForm, self).__init__(*args, **kwargs)
+        super(UyeAbonelikKayitForm, self).__init__(*args, **kwargs)
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',
