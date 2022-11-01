@@ -1,0 +1,69 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Paket Detayı{% endblock title %}
+{% block extracss %}
+    {% include 'base/remark_css.html' %}
+{% endblock extracss %}
+{% block extrascripts %}
+{% endblock extrascripts %}
+{% block breadcrumb %}
+    <div>
+        <h1><i class="fa fa-dashboard"></i> Paket Detayı</h1>
+    </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
+    </ul>
+{% endblock breadcrumb %}
+{% block content %}
+    <div class="page-content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel border">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ paket }} Sahip Kişi Listesi</h3>
+                    </div>
+                    <div class="panel-body container-fluid">
+                        <table id="tableIn" class="table table-bordered dataTable">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Üye</th>
+                                <th>Başlangıç Tarihi</th>
+                                <th>Bitiş Tarihi</th>
+                                <th>Aktif Mi</th>
+                                <th>Açıklama</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for uye_paket in uye_paket_listesi %}
+                                <tr>
+                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                    <td>
+                                        <a href="{% url 'calendarapp:profil_uye' uye_paket.uye_id %}">{{ uye_paket.uye }}</a>
+                                    </td>
+                                    <td>{{ uye_paket.baslangic_tarihi }}</td>
+                                    <td>{{ uye_paket.bitis_tarihi | default_if_none:"" }}</td>
+                                    <td>{{ uye_paket.aktif_mi|yesno:"Aktif,Pasif" }}</td>
+                                    <td>{{ uye_paket.aciklama| default_if_none:"" }}</td>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="col-md-4 offset-md-4">
+                                    <a href="{% url 'calendarapp:index_paket' %}"
+                                       class="btn btn-secondary float-right mr-2">Geri</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

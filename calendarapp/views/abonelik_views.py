@@ -69,7 +69,9 @@ def guncelle_uye_abonelik(request, id):
 
 @login_required
 def detay(request, id):
-    pass
+    uye_paket_listesi = UyeAbonelikModel.objects.filter(paket_id=id)
+    paket = PaketModel.objects.filter(pk=id).first()
+    return render(request, "calendarapp/abonelik/detay.html", {"uye_paket_listesi": uye_paket_listesi, "paket": paket})
 
 
 @login_required

@@ -48,11 +48,12 @@ class UyeAbonelikModel(BaseAbstract):
 
 
 class PaketModel(BaseAbstract):
-    adi = models.CharField(max_length=200, verbose_name="Paket Adı")
+    adi = models.CharField(max_length=200, verbose_name="Paket / Abonelik Adı")
     tipi = models.SmallIntegerField(verbose_name="Tipi", choices=AbonelikTipikEnum.choices(), blank=False, null=False,
                                     default=AbonelikTipikEnum.Üyelik)
     adet = models.IntegerField(verbose_name="Adet", null=True, blank=True)
     toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=True, blank=True)
+    ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="paket", null=True, blank=True,
                              verbose_name="Ekleyen")
 
