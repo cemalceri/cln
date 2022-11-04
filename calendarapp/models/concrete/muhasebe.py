@@ -1,6 +1,6 @@
 from django.db import models
 
-from accounts.models import User
+from django.conf import settings
 from calendarapp.models.Enums import RenkEnum, ParaHareketTuruEnum, OdemeTuruEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.abonelik import PaketModel
@@ -22,7 +22,7 @@ class ParaHareketiModel(BaseAbstract):
                               null=True, blank=True)
     tarih = models.DateField(verbose_name="Tarih", null=False, blank=False)
     aciklama = models.CharField('Açıklama', max_length=250, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="user_parahareketi_relations", null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="user_parahareketi_relations", null=True, blank=True)
 
     def __str__(self):
         return self.get_hareket_turu_display() + " " + str(self.tutar)

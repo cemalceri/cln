@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save, post_delete
 
-from accounts.models import User
+from django.conf import settings
 from calendarapp.models.Enums import SeviyeRenkEnum, GrupOdemeSekliEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 
@@ -40,7 +40,7 @@ class UyeModel(BaseAbstract):
     okul = models.ForeignKey('OkulModel', on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
     onaylandi_mi = models.BooleanField('Onay Durumu', default=False)
     aktif_mi = models.BooleanField('Aktif mi', default=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="uye", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="uye", null=True, blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):

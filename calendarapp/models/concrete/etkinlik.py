@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, time
 from django.db import models
 from django.urls import reverse
-from accounts.models import User
+from django.conf import settings
 from calendarapp.models.Enums import RenkEnum, KatilimDurumuEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
@@ -67,7 +67,7 @@ class EtkinlikModel(BaseAbstract):
     ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")
     tamamlandi_mi = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
     tamamlandi_onay = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Yönetici)")
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik", null=True, blank=True,
                              verbose_name="Ekleyen")
 
     objects = EtkinlikManager()
@@ -137,7 +137,7 @@ class EtkinlikKatilimModel(BaseAbstract):
                             related_name="uye")
     katilim_durumu = models.SmallIntegerField('Katılım Durumu', choices=KatilimDurumuEnum.choices(), null=False,
                                               blank=False, default=KatilimDurumuEnum.Katıldı.value)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="etkinlik_katilim", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik_katilim", null=True, blank=True,
                              verbose_name="Ekleyen")
 
     class Meta:

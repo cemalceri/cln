@@ -8,7 +8,7 @@ from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 
-from accounts.models import User
+from django.conf import settings
 from calendarapp.models.concrete.abonelik import PaketModel
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
@@ -18,28 +18,25 @@ from calendarapp.models.concrete.telafi_ders import TelafiDersModel
 from calendarapp.models.concrete.uye import UyeModel, GrupModel, UyeGrupModel
 
 
-class DashboardView(LoginRequiredMixin, View):
-    login_url = "accounts:signin"
-    template_name = "calendarapp/anasayfa/dashboard.html"
-
-    def get(self, request, *args, **kwargs):
-        tum_etkinlik_sayisi = EtkinlikModel.objects.filter(baslangic_tarih_saat__year=datetime.now().year).count()
-        kortlar = KortModel.objects.all()
-        antrenorler = AntrenorModel.objects.all()
-        bugun_kalan_etkinlik_sayisi = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler().count()
-        gelecek_etkinlikler = EtkinlikModel.objects.getir_gelecek_etkinlikler()
-        aktif_uye_sayisi = UyeModel.objects.filter(aktif_mi=True).count()
-        html = render_to_string('calendarapp/anasayfa/_etkinlik_listesi_tablosu.html',
-                                {'etkinlikler': gelecek_etkinlikler}, request=request)
-        context = {
-            "tum_etkinlik_sayisi": tum_etkinlik_sayisi,
-            "bugun_kalan_etkinlik_sayisi": bugun_kalan_etkinlik_sayisi,
-            "gelecek_etkinlikler": html,
-            "aktif_uye_sayisi": aktif_uye_sayisi,
-            "kortlar": kortlar,
-            "antrenorler": antrenorler,
-        }
-        return render(request, self.template_name, context)
+@login_required
+def dasboard(request):
+    tum_etkinlik_sayisi = EtkinlikModel.objects.filter(baslangic_tarih_saat__year=datetime.now().year).count()
+    kortlar = KortModel.objects.all()
+    antrenorler = AntrenorModel.objects.all()
+    bugun_kalan_etkinlik_sayisi = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler().count()
+    gelecek_etkinlikler = EtkinlikModel.objects.getir_gelecek_etkinlikler()
+    aktif_uye_sayisi = UyeModel.objects.filter(aktif_mi=True).count()
+    html = render_to_string('calendarapp/anasayfa/_etkinlik_listesi_tablosu.html',
+                            {'etkinlikler': gelecek_etkinlikler}, request=request)
+    context = {
+        "tum_etkinlik_sayisi": tum_etkinlik_sayisi,
+        "bugun_kalan_etkinlik_sayisi": bugun_kalan_etkinlik_sayisi,
+        "gelecek_etkinlikler": html,
+        "aktif_uye_sayisi": aktif_uye_sayisi,
+        "kortlar": kortlar,
+        "antrenorler": antrenorler,
+    }
+    return render(request,'calendarapp/anasayfa/dashboard.html', context)
 
 
 @login_required

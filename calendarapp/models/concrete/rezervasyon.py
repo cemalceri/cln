@@ -1,6 +1,6 @@
 from django.db import models
 
-from accounts.models import User
+from django.conf import settings
 from calendarapp.models.Enums import GunlerModel, SaatlerModel
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
@@ -27,7 +27,7 @@ class RezervasyonModel(BaseAbstract):
                                  blank=True)
     aktif_mi = models.BooleanField('Aktif Mi', default=True)
     aciklama = models.TextField('Açıklama', null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="rezervasyon", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="rezervasyon", null=True, blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):

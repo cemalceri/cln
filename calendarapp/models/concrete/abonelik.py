@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.db import models
 
-from accounts.models import User
 from calendarapp.models.Enums import AbonelikTipikEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
@@ -14,7 +14,8 @@ class UyeAbonelikModel(BaseAbstract):
     bitis_tarihi = models.DateField(verbose_name="Bitiş Tarihi", null=True, blank=True)
     aktif_mi = models.BooleanField(default=True)
     aciklama = models.TextField(verbose_name="Açıklama", null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="abonelik", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="abonelik", null=True,
+                             blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):
@@ -54,8 +55,8 @@ class PaketModel(BaseAbstract):
     adet = models.IntegerField(verbose_name="Adet", null=True, blank=True)
     toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=True, blank=True)
     ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="paket", null=True, blank=True,
-                             verbose_name="Ekleyen")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="paket", null=True,
+                             blank=True, verbose_name="Ekleyen")
 
     def __str__(self):
         return self.adi
@@ -73,7 +74,8 @@ class PaketKullanimModel(BaseAbstract):
     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
                                  null=False)
     kalan_adet = models.SmallIntegerField(verbose_name="Kalan Adet", null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="paket_kullanim", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="paket_kullanim",
+                             null=True, blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):

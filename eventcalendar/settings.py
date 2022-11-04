@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "calendarapp.apps.CalendarappConfig",
-    "accounts.apps.AccountsConfig",
+    "auths.apps.AuthConfig",
 ]
 
 MIDDLEWARE = [
@@ -93,7 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation." "NumericPasswordValidator"},
 ]
 
-AUTH_USER_MODEL = "accounts.User"
+# AUTH_USER_MODEL = "auth.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -126,3 +126,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 import django_heroku
 
 django_heroku.settings(locals())
+
+LOGIN_URL = '/auths/login'

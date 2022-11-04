@@ -2,7 +2,7 @@
 <html lang="en">
 	{% load static %}
     <head>
-        <title>Sign In | Event Calendar</title>
+        <title>Sign Up | Event Calendar</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
@@ -28,7 +28,7 @@
                                 <div class="row justify-content-center py-md-5">
                                     <div class="col-lg-9">
                                         <div class="social-wrap">
-                                            <h3 class="mb-3 text-center">Signin with this services</h3>
+                                            <h3 class="mb-3 text-center">Signup with this services</h3>
                                             <p class="social-media d-flex justify-content-center">
                                                 <a href="#" class="social-icon google d-flex align-items-center justify-content-center"><span class="fa fa-google"></span></a>
                                                 <a href="#" class="social-icon facebook d-flex align-items-center justify-content-center"><span class="fa fa-facebook"></span></a>
@@ -45,23 +45,43 @@
                                                     <div class="form-group">
                                                         <label class="label" for="email">Email Address</label>
                                                         {{ form.email }}
+                                                        <span class="text-danger">{{ form.errors.email }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="label" for="password">Password</label>
-                                                        {{ form.password }}
+                                                        {{ form.password1 }}
+                                                        <span class="text-danger">{{ form.errors.password1 }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group">
-                                                        <button type="submit" class="btn btn-primary">Sign In</button>
+                                                        <label class="label" for="password">Password</label>
+                                                        {{ form.password2 }}
+                                                        <span class="text-danger">{{ form.errors.password2 }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 my-4">
+                                                    <div class="form-group">
+                                                        <div class="w-100">
+                                                            <label class="checkbox-wrap checkbox-primary">
+                                                                I agree all statements in terms of service
+                                                                <input type="checkbox" checked />
+                                                                <span class="checkmark"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-primary">Create an account</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </form>
                                         <div class="w-100">
-                                            <p class="mt-4">New in event calendar? <a href="{% url 'accounts:signup' %}">Sign Up</a></p>
+                                            <p class="mt-4">I'm already a member! <a href="{% url 'auth:signin' %}">Sign In</a></p>
                                         </div>
                                     </div>
                                 </div>

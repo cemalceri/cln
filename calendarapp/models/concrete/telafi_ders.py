@@ -1,6 +1,6 @@
 from django.db import models
 
-from accounts.models import User
+from django.conf import settings
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
@@ -20,7 +20,7 @@ class TelafiDersModel(BaseAbstract):
     yapilma_tarih_saat = models.DateTimeField(verbose_name="Etkinlik Tarihi", null=True, blank=True)
     yapilma_aciklama = models.TextField(verbose_name="Etkinlik Açıklaması", null=True, blank=True)
     aciklama = models.TextField('Açıklama', null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="telafiDers", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="telafiDers", null=True, blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):
