@@ -17,8 +17,10 @@ class RezervasyonManager(models.Manager):
 
 
 class RezervasyonModel(BaseAbstract):
-    uye = models.ForeignKey(UyeModel, on_delete=models.CASCADE, related_name="rezervasyonlar", )
-    onem_derecesi = models.IntegerField('Önem Derecesi', null=False, blank=False, default=0)
+    uye = models.ForeignKey(UyeModel, on_delete=models.CASCADE, related_name="rezervasyonlar", verbose_name="Üye",
+                            null=True, blank=True)
+    misafir = models.CharField(max_length=100, verbose_name="Misafir", null=True, blank=True)
+    onem_derecesi = models.IntegerField('Önem Derecesi', null=True, blank=True, default=0)
     gunler = models.ManyToManyField(GunlerModel, verbose_name='Günler', blank=True, null=True,
                                     related_name='gunler_rezervasyon_tablosu')
     saatler = models.ManyToManyField(SaatlerModel, verbose_name='Saatler', blank=True, null=True,
@@ -27,7 +29,8 @@ class RezervasyonModel(BaseAbstract):
                                  blank=True)
     aktif_mi = models.BooleanField('Aktif Mi', default=True)
     aciklama = models.TextField('Açıklama', null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="rezervasyon", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="rezervasyon", null=True,
+                             blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):

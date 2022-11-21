@@ -9,7 +9,7 @@ class RezervasyonKayitForm(ModelForm):
     gunler = forms.ModelMultipleChoiceField(widget=forms.SelectMultiple, queryset=GunlerModel.objects.all(),
                                             help_text="*Gün seçilmez ise bütün günler geçerlidir.", required=False)
     saatler = forms.ModelMultipleChoiceField(widget=forms.SelectMultiple, queryset=SaatlerModel.objects.all(),
-                                             help_text="*Saat seçilmez ise bütün saatler geçerlidir." ,required=False)
+                                             help_text="*Saat seçilmez ise bütün saatler geçerlidir.", required=False)
 
     class Meta:
         model = RezervasyonModel
@@ -23,4 +23,11 @@ class RezervasyonKayitForm(ModelForm):
                 'class': 'form-control',
                 'autocomplete': 'nope'
             })
+        self.fields['uye'].help_text = "*Bekleyen üye ise seçiniz."
+        self.fields['misafir'].help_text = "*Bekleyen üye değil ise misafir adını giriniz."
 
+    def clean(self):
+        uye = self.cleaned_data.get('uye')
+        misafir = self.cleaned_data.get('misafir')
+        if uye is None and misafir is None:
+            self.add_error('uye', 'Lütfen bir üye veya misafir seçiniz!')
