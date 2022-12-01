@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from calendarapp.models.Enums import ParaHareketTuruEnum, AbonelikTipikEnum
+from calendarapp.models.Enums import ParaHareketTuruEnum, AbonelikTipiEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel
 

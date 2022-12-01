@@ -7,7 +7,7 @@ from datetime import timedelta, datetime, date
 from django.contrib.auth.decorators import login_required
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 
-from calendarapp.models.Enums import KatilimDurumuEnum
+from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from django.contrib import messages
@@ -92,10 +92,10 @@ def takvim_getir(request, kort_id=None):
         event_list.append(
             {
                 "id": event.id,
-                "title": event.baslik,
+                "title": event.grup.__str__(),
                 "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                 "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                "backgroundColor": event.antrenor.renk if event.antrenor else "gray",
+                "backgroundColor": event.top_rengi,
                 # "eventColor": event.renk,
             }
         )
@@ -113,14 +113,15 @@ def kaydet_etkinlik_ajax(request):
         if result:
             return result
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
-            form = EtkinlikForm(data=request.POST,
-                                instance=EtkinlikModel.objects.get(id=form.cleaned_data["pk"]))
-            form.save()
+            eski_etkinlik = EtkinlikModel.objects.get(id=form.cleaned_data["pk"])
+            form = EtkinlikForm(data=request.POST, instance=eski_etkinlik)
+            yeni_etkinlik = form.save()
+            abonelik_guncelle(eski_etkinlik, yeni_etkinlik)
         else:
             item = form.save(commit=False)
             item.user = request.user
             item.save()
-            etkinlik_tekrar_sayisi_kadar_ekle(request, form, item.id)
+            abonelik_olustur(item)
         return JsonResponse(data={"status": "success", "message": "Etkinlik kaydedildi."})
     else:
         return JsonResponse(data={"status": "error", "message": formErrorsToText(form.errors, EtkinlikModel)})
@@ -135,11 +136,12 @@ def etkinlik_kaydi_hata_var_mi(form):
                                      form.data["kort"], form.cleaned_data["pk"]):
         mesaj = "Seçilen tarih saate başka etkinlik eklenemez."
         return JsonResponse(data={"status": "error", "message": mesaj})
-    uye = paket_uyeligi_olmayan_grup_uyesi(form)
-    if uye:
-        mesaj = "Grupta bulunan '" + str(
-            uye) + "' üyesinin uygun paket/abonelik kaydı olmadığı için etkinlik eklenemez."
-        return JsonResponse(data={"status": "error", "message": mesaj})
+    if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Paket.value:
+        uye = paket_uyeligi_olmayan_grup_uyesi(form)
+        if uye:
+            mesaj = "Grupta bulunan '" + str(
+                uye) + "' üyesinin uygun paket/abonelik kaydı olmadığı için etkinlik eklenemez."
+            return JsonResponse(data={"status": "error", "message": mesaj})
     return False
 
 
@@ -148,7 +150,7 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
     uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
     for item in uye_grubu:
         abonelik_paket_listesi = UyeAbonelikModel.objects.filter(uye_id=item.uye_id, aktif_mi=True,
-                                                              baslangic_tarihi__lte=date.today())
+                                                                 baslangic_tarihi__lte=date.today())
         if not abonelik_paket_listesi.exists():
             return str(item.uye)
     return None
@@ -168,23 +170,23 @@ def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_i
     return result.count() > 3
 
 
-def etkinlik_tekrar_sayisi_kadar_ekle(request, form, etkinlik_id):
-    tekrar_sayisi = form.cleaned_data["tekrar"]
-    baslangic_tarih_saat = form.cleaned_data["baslangic_tarih_saat"]
-    bitis_tarih_saat = form.cleaned_data["bitis_tarih_saat"]
-    baslik = form.cleaned_data["baslik"]
-    if tekrar_sayisi and tekrar_sayisi > 0:
-        for i in range(tekrar_sayisi):
-            form.cleaned_data["baslangic_tarih_saat"] = baslangic_tarih_saat + timedelta(days=7 * (i + 1))
-            form.cleaned_data["bitis_tarih_saat"] = bitis_tarih_saat + timedelta(days=7 * (i + 1))
-            form.cleaned_data["baslik"] = baslik + " - Tekrar " + str(i + 1) + ". Hafta"
-            if not ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"],
-                                                 form.cleaned_data["bitis_tarih_saat"], form.data["kort"]):
-                item = EtkinlikForm(data=form.cleaned_data).save(commit=False)
-                item.user = request.user
-                item.ilk_etkinlik_id = etkinlik_id
-                item.save()
-
+# def etkinlik_tekrar_sayisi_kadar_ekle(request, form, etkinlik_id):
+#     tekrar_sayisi = form.cleaned_data["tekrar"]
+#     baslangic_tarih_saat = form.cleaned_data["baslangic_tarih_saat"]
+#     bitis_tarih_saat = form.cleaned_data["bitis_tarih_saat"]
+#     baslik = form.cleaned_data["baslik"]
+#     if tekrar_sayisi and tekrar_sayisi > 0:
+#         for i in range(tekrar_sayisi):
+#             form.cleaned_data["baslangic_tarih_saat"] = baslangic_tarih_saat + timedelta(days=7 * (i + 1))
+#             form.cleaned_data["bitis_tarih_saat"] = bitis_tarih_saat + timedelta(days=7 * (i + 1))
+#             form.cleaned_data["baslik"] = baslik + " - Tekrar " + str(i + 1) + ". Hafta"
+#             if not ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"],
+#                                                  form.cleaned_data["bitis_tarih_saat"], form.data["kort"]):
+#                 item = EtkinlikForm(data=form.cleaned_data).save(commit=False)
+#                 item.user = request.user
+#                 item.ilk_etkinlik_id = etkinlik_id
+#                 item.save()
+#
 
 @login_required
 def saat_guncelle_etkinlik_ajax(request):
@@ -347,3 +349,61 @@ def kortlarin_bos_saatlerini_getir(request):
         data={"status": "success", "messages": "İşlem başarılı", "data": kortlarin_bos_saatleri})
 
 
+def abonelik_olustur(etkinlik):
+    uye_grubu = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
+    haftaninin_gunu = etkinlik.baslangic_tarih_saat.weekday()
+    gun_adi = gun_adi_getir(haftaninin_gunu)
+    for item in uye_grubu:
+        if not UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
+                                               baslangic_tarih_saat=etkinlik.baslangic_tarih_saat).exists():
+            UyeAbonelikModel.objects.create(uye=item.uye, haftanin_gunu=haftaninin_gunu, gun_adi=gun_adi,
+                                            baslangic_tarih_saat=etkinlik.baslangic_tarih_saat, grup=etkinlik.grup,
+                                            bitis_tarih_saat=etkinlik.bitis_tarih_saat,
+                                            aktif_mi=True, kort=etkinlik.kort, user=etkinlik.user)
+
+
+def abonelik_guncelle(eski_etkinlik, yeni_etkinlik):
+    if eski_etkinlik.grup_id == yeni_etkinlik.grup_id:  # Grup değişmediyse aşağıdaki işlemleri yap
+        uye_grubu = UyeGrupModel.objects.filter(grup_id=yeni_etkinlik.grup_id)
+        haftaninin_gunu = eski_etkinlik.baslangic_tarih_saat.weekday()
+        for item in uye_grubu:
+            abonelik = UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu, grup=yeni_etkinlik.grup,
+                                                       baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat)
+            if abonelik.exists():  # Grup üyesinin eskidende bu grubun içindeyse zaten abonelik kaydı vardır. O yüzden mevcut kaydı güncelle
+                print("Güncelleme")
+                abonelik = abonelik.first()
+                abonelik.baslangic_tarih_saat = yeni_etkinlik.baslangic_tarih_saat
+                abonelik.bitis_tarih_saat = yeni_etkinlik.bitis_tarih_saat
+                abonelik.kort = yeni_etkinlik.kort
+                haftaninin_gunu = yeni_etkinlik.baslangic_tarih_saat.weekday()
+                gun_adi = gun_adi_getir(haftaninin_gunu)
+                abonelik.gun_adi = gun_adi
+                abonelik.save()
+            else:  # Grup üyesinin eski tarih saatte üyeliği yok ise demek ki yeni gruba eklenmiş. Yeni abonelik kaydı oluştur.
+                print("Yeni abonelik kaydı oluşturulacak")
+                haftaninin_gunu = yeni_etkinlik.baslangic_tarih_saat.weekday()
+                gun_adi = gun_adi_getir(haftaninin_gunu)
+                UyeAbonelikModel.objects.create(uye=item.uye, haftanin_gunu=haftaninin_gunu, gun_adi=gun_adi,
+                                                baslangic_tarih_saat=yeni_etkinlik.baslangic_tarih_saat,
+                                                grup=yeni_etkinlik.grup,
+                                                bitis_tarih_saat=yeni_etkinlik.bitis_tarih_saat,
+                                                aktif_mi=True, kort=yeni_etkinlik.kort, user=yeni_etkinlik.user)
+
+
+def gun_adi_getir(haftanin_gunu):
+    value = ""
+    if haftanin_gunu == 0:
+        value = "Pazartesi"
+    elif haftanin_gunu == 1:
+        value = "Salı"
+    elif haftanin_gunu == 2:
+        value = "Çarşamba"
+    elif haftanin_gunu == 3:
+        value = "Perşembe"
+    elif haftanin_gunu == 4:
+        value = "Cuma"
+    elif haftanin_gunu == 5:
+        value = "Cumartesi"
+    elif haftanin_gunu == 6:
+        value = "Pazar"
+    return value

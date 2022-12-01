@@ -54,7 +54,7 @@ class SaatlerModel(models.Model):
         ordering = ["id"]
 
 
-class AbonelikTipikEnum(Enum):
+class AbonelikTipiEnum(Enum):
     Paket = 1
     Üyelik = 2
 
@@ -104,6 +104,29 @@ class KatilimDurumuEnum(Enum):
         Katıldı: "Katıldı",
         Katılmadı: "Katılmadı",
         İptal: "İptal",
+    }
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
+
+
+class GunEnum:
+    Pazartesi = 1
+    Salı = 2
+    Çarşamba = 3
+    Perşembe = 4
+    Cuma = 5
+    Cumartesi = 6
+    Pazar = 7
+    __labels__ = {
+        Pazartesi: "Pazartesi",
+        Salı: "Salı",
+        Çarşamba: "Çarşamba",
+        Perşembe: "Perşembe",
+        Cuma: "Cuma",
+        Cumartesi: "Cumartesi",
+        Pazar: "Pazar",
     }
 
     @classmethod

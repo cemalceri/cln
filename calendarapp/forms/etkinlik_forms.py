@@ -9,8 +9,8 @@ class EtkinlikForm(ModelForm):
     class Meta:
         model = EtkinlikModel
         fields = '__all__'
-        exclude = ['tamamlandi_mi', 'tamamlandi_onay', 'ilk_etkinlik_id', 'created_at',
-                   'is_active', 'is_deleted', 'updated_at', 'user']
+        exclude = ['tamamlandi_uye', 'tamamlandi_antrenor', 'tamamlandi_yonetici', 'ilk_etkinlik_id',
+                   'created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
         # datetime-local is a HTML5 input type
         widgets = {
             "baslangic_tarih_saat": DateInput(
@@ -23,7 +23,7 @@ class EtkinlikForm(ModelForm):
             ),
         }
         help_texts = {
-            "tekrar": '*Girilen sayı kadar sonraki haftalara kayıt oluşturulur.',
+            # "tekrar": '*Girilen sayı kadar sonraki haftalara kayıt oluşturulur.',
         }
 
     def __init__(self, *args, **kwargs):

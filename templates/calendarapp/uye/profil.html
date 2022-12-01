@@ -348,12 +348,12 @@
                                                             <thead>
                                                             <tr>
                                                                 <th>#</th>
-                                                                <th>Paket / Abonelik</th>
-                                                                <th>Başlangıç Tarihi</th>
-                                                                <th>Bitiş Tarihi</th>
+                                                                <th>Kişiler</th>
+                                                                <th>Kort</th>
+                                                                <th>Gün</th>
+                                                                <th>Başlangıç - Bitiş</th>
+                                                                <th>Süre</th>
                                                                 <th>Aktif Mi</th>
-                                                                <th>Kalan Adet</th>
-                                                                <th>Açıklama</th>
                                                                 <th>İşlemler</th>
                                                             </tr>
                                                             </thead>
@@ -361,12 +361,12 @@
                                                             {% for abonelik in abonelikler %}
                                                                 <tr>
                                                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                                                    <td>{{ abonelik }}</td>
-                                                                    <td>{{ abonelik.baslangic_tarihi }}</td>
-                                                                    <td>{{ abonelik.bitis_tarihi | default_if_none:"" }}</td>
+                                                                    <td>{{ abonelik.grup }}</td>
+                                                                    <td>{{ abonelik.kort }}</td>
+                                                                    <td>{{ abonelik.gun_adi }}</td>
+                                                                    <td>{{ abonelik.baslangic_tarih_saat| time:'H:i' }} - {{ abonelik.bitis_tarih_saat| time:'H:i'}}</td>
+                                                                    <td>{{ abonelik.dakika_degeri}}</td>
                                                                     <td>{{ abonelik.aktif_mi | yesno:"Evet,Hayır" }}</td>
-                                                                    <td>{{ abonelik.kalan_adet }}</td>
-                                                                    <td>{{ abonelik.aciklama }}</td>
                                                                     <td>
                                                                         <a class="btn btn-primary btn-circle"
                                                                            href="{% url 'calendarapp:guncelle_uye_abonelik' abonelik.id %}"

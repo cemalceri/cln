@@ -111,7 +111,7 @@ def ilk_kayitlari_ekle():
     if AntrenorModel.objects.count() == 0:
         AntrenorModel.objects.create(id=1, adi="Antrenör 1")
     if EtkinlikModel.objects.count() == 0:
-        EtkinlikModel.objects.create(id=1, baslik="İlk Etkinlik", grup_id=1,
+        EtkinlikModel.objects.create(id=1, grup_id=1,
                                      baslangic_tarih_saat=datetime.now().strftime("%Y-%m-%d %H:%M"),
                                      bitis_tarih_saat=datetime.now().strftime("%Y-%m-%d %H:%M"), kort_id=1,
                                      antrenor_id=1)

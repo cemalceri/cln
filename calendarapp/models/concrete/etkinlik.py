@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, time
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from calendarapp.models.Enums import RenkEnum, KatilimDurumuEnum
+from calendarapp.models.Enums import RenkEnum, KatilimDurumuEnum, AbonelikTipiEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.kort import KortModel
@@ -53,21 +53,24 @@ class EtkinlikManager(models.Manager):
 
 
 class EtkinlikModel(BaseAbstract):
-    baslik = models.CharField(max_length=200, verbose_name="Başlık")
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
                              null=False, related_name="etkinlik_grup_relations")
+    abonelik_tipi = models.IntegerField(max_length=20, choices=AbonelikTipiEnum.choices(),
+                                     default=2, verbose_name="Abonelik Tipi")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False,
                              related_name="kort")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name="anternor")
-    tekrar = models.IntegerField(blank=True, null=True, verbose_name="Tekrar Sayısı")
-    aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
+    top_rengi = models.CharField(max_length=20, choices=RenkEnum.choices(), default="purple", verbose_name="Renk")
     ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")
-    tamamlandi_mi = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
-    tamamlandi_onay = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Yönetici)")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik", null=True, blank=True,
+    tamamlandi_antrenor = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
+    tamamlandi_yonetici = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Yönetici)")
+    tamamlandi_uye = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Üye)")
+    aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik", null=True,
+                             blank=True,
                              verbose_name="Ekleyen")
 
     objects = EtkinlikManager()
@@ -137,7 +140,8 @@ class EtkinlikKatilimModel(BaseAbstract):
                             related_name="uye")
     katilim_durumu = models.SmallIntegerField('Katılım Durumu', choices=KatilimDurumuEnum.choices(), null=False,
                                               blank=False, default=KatilimDurumuEnum.Katıldı.value)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik_katilim", null=True, blank=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik_katilim",
+                             null=True, blank=True,
                              verbose_name="Ekleyen")
 
     class Meta:
