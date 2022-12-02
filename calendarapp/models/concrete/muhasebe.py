@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from calendarapp.models.Enums import RenkEnum, ParaHareketTuruEnum, OdemeTuruEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
-from calendarapp.models.concrete.abonelik import PaketModel
+# from calendarapp.models.concrete.abonelik import PaketModel
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.uye import UyeModel
 
@@ -18,8 +18,8 @@ class ParaHareketiModel(BaseAbstract):
     antrenor = models.ForeignKey(AntrenorModel, on_delete=models.SET_NULL,
                                  related_name="antrenor_parahareketi_relations",
                                  null=True, blank=True)
-    paket = models.ForeignKey(PaketModel, on_delete=models.SET_NULL, related_name="paket_parahareketi_relations",
-                              null=True, blank=True)
+    # paket = models.ForeignKey(PaketModel, on_delete=models.SET_NULL, related_name="paket_parahareketi_relations",
+    #                           null=True, blank=True)
     tarih = models.DateField(verbose_name="Tarih", null=False, blank=False)
     aciklama = models.CharField('Açıklama', max_length=250, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="user_parahareketi_relations", null=True, blank=True)

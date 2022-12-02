@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 
 from django.conf import settings
-from calendarapp.models.concrete.abonelik import PaketModel
+# from calendarapp.models.concrete.abonelik import PaketModel
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from calendarapp.models.concrete.kort import KortModel

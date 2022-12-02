@@ -334,10 +334,12 @@
                                 </div>
                             </div>
                             <div class="tab-pane animation-slide-left" id="paket" role="tabpanel">
-                                <a href="{% url 'calendarapp:kaydet_uye_abonelik' uye.id %}"
-                                   class="btn btn-success m-10 float-right"><i class="fa fa-plus "></i>Paket / Üyelik
-                                    Ekle</a>
                                 <div class="border p-10">
+                                    <div class="row border-bottom mb-3 pb-3 ">
+                                        <div class="col">
+                                            <h3 class="tile-title">Üyelikler</h3>
+                                        </div>
+                                    </div>
                                     <div class="tile-body">
                                         <div class="table-responsive">
                                             <div id="sampleTable_wrapper"
@@ -364,18 +366,65 @@
                                                                     <td>{{ abonelik.grup }}</td>
                                                                     <td>{{ abonelik.kort }}</td>
                                                                     <td>{{ abonelik.gun_adi }}</td>
-                                                                    <td>{{ abonelik.baslangic_tarih_saat| time:'H:i' }} - {{ abonelik.bitis_tarih_saat| time:'H:i'}}</td>
-                                                                    <td>{{ abonelik.dakika_degeri}}</td>
+                                                                    <td>{{ abonelik.baslangic_tarih_saat| time:'H:i' }}
+                                                                        - {{ abonelik.bitis_tarih_saat| time:'H:i' }}</td>
+                                                                    <td>{{ abonelik.dakika_degeri }}</td>
                                                                     <td>{{ abonelik.aktif_mi | yesno:"Evet,Hayır" }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border p-10">
+                                    <a href="{% url 'calendarapp:kaydet_uye_paket' uye.id %}"
+                                       class="btn btn-success m-10 float-right"><i class="fa fa-plus "></i>Paket
+                                        Ekle</a>
+                                    <div class="row border-bottom mb-3 pb-3 ">
+                                        <div class="col">
+                                            <h3 class="tile-title">Paketler</h3>
+                                        </div>
+                                    </div>
+                                    <div class="tile-body">
+                                        <div class="table-responsive">
+                                            <div id="sampleTable_wrapper"
+                                                 class="container-fluid ">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <table class="table table-bordered dataTable table-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Kort</th>
+                                                                <th>Başlangıç - Bitiş</th>
+                                                                <th>Adet</th>
+                                                                <th>Aktif Mi</th>
+                                                                <th>Özellikler</th>
+                                                                <th>İşlemler</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for paket in paketler %}
+                                                                <tr>
+                                                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                                                    <td>{{ paket.kort }}</td>
+                                                                    <td>{{ paket.baslangic_tarih_saat| time:'H:i' }}
+                                                                        - {{ paket.bitis_tarih_saat| time:'H:i' }}</td>
+                                                                    <td>{{ paket.adet }}</td>
+                                                                    <td>{{ paket.aktif_mi | yesno:"Evet,Hayır" }}</td>
+                                                                    <td>{{ paket.ozellikler | default_if_none:"" }}</td>
                                                                     <td>
                                                                         <a class="btn btn-primary btn-circle"
-                                                                           href="{% url 'calendarapp:guncelle_uye_abonelik' abonelik.id %}"
+                                                                           href="{% url 'calendarapp:guncelle_uye_paket' paket.id %}"
                                                                            title="Kaydı Düzenle"><i
                                                                                 class="fa fa-edit black"></i></a>
-                                                                        <a href="{% url 'calendarapp:sil_abonelik' abonelik.id %}"
+                                                                        <a href="{% url 'calendarapp:sil_uye_paket' paket.id %}"
                                                                            class="btn btn-danger btn-circle confirm-delete"
-                                                                           title="Sil"
-                                                                           data-toggle="modal"
+                                                                           title="Sil" data-toggle="modal"
                                                                            data-target="#confirmDeleteModal"
                                                                            id="delete_uye_{{ abonelik.id }}">
                                                                             <i class="fa fa-trash black"></i></a>

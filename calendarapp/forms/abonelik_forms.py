@@ -1,10 +1,10 @@
 from django.forms import ModelForm, DateInput
-from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketModel
+from calendarapp.models.concrete.abonelik import UyePaketModel
 
 
-class UyeAbonelikKayitForm(ModelForm):
+class UyePaketKayitForm(ModelForm):
     class Meta:
-        model = UyeAbonelikModel
+        model = UyePaketModel
         fields = '__all__'
         exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
         widgets = {
@@ -19,7 +19,7 @@ class UyeAbonelikKayitForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(UyeAbonelikKayitForm, self).__init__(*args, **kwargs)
+        super(UyePaketKayitForm, self).__init__(*args, **kwargs)
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',
@@ -27,16 +27,16 @@ class UyeAbonelikKayitForm(ModelForm):
             })
 
 
-class PaketKayitForm(ModelForm):
-    class Meta:
-        model = PaketModel
-        fields = '__all__'
-        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
-
-    def __init__(self, *args, **kwargs):
-        super(PaketKayitForm, self).__init__(*args, **kwargs)
-        for field in iter(self.fields):
-            self.fields[field].widget.attrs.update({
-                'class': 'form-control',
-                'autocomplete': 'nope'
-            })
+# class PaketKayitForm(ModelForm):
+#     class Meta:
+#         model = PaketModel
+#         fields = '__all__'
+#         exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
+#
+#     def __init__(self, *args, **kwargs):
+#         super(PaketKayitForm, self).__init__(*args, **kwargs)
+#         for field in iter(self.fields):
+#             self.fields[field].widget.attrs.update({
+#                 'class': 'form-control',
+#                 'autocomplete': 'nope'
+#             })

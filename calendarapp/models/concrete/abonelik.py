@@ -40,41 +40,50 @@ class UyeAbonelikModel(BaseAbstract):
 class UyePaketModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False)
-    haftanin_gunu = models.IntegerField(verbose_name="Gün", blank=True, null=True)
-    gun_adi = models.CharField(max_length=20, verbose_name="Gün Adı", blank=False, null=False)
     baslangic_tarih_saat = models.DateTimeField("Başlangıç Tarihi", null=False, blank=False)
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarihi", null=False, blank=False)
-    aktif_mi = models.BooleanField(default=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
-                             related_name="user_uyepaket_relations", null=True, blank=True, verbose_name="Ekleyen")
-
-
-class PaketModel(BaseAbstract):
-    adi = models.CharField(max_length=200, verbose_name="Paket / Abonelik Adı")
-    tipi = models.SmallIntegerField(verbose_name="Tipi", choices=AbonelikTipiEnum.choices(), blank=False, null=False,
-                                    default=AbonelikTipiEnum.Üyelik)
-    adet = models.IntegerField(verbose_name="Adet", null=True, blank=True)
+    adet = models.IntegerField(verbose_name="Adet", null=False, blank=False)
     toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=True, blank=True)
     ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="paket", null=True,
-                             blank=True, verbose_name="Ekleyen")
+    aktif_mi = models.BooleanField(default=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                             related_name="uyepaket_relations", null=True, blank=True, verbose_name="Ekleyen")
 
-    def __str__(self):
-        return self.adi
+    def kalan_adet(self):
+        kullanilan_adet = PaketKullanimModel.objects.filter(uye_paket_id=self.id).count()
+        return self.adet - kullanilan_adet
 
     class Meta:
-        verbose_name = "Paket ve Abonelik Çeşitleri"
-        verbose_name_plural = "Paket ve Abonelik Çeşitleri"
+        verbose_name = "Üyenin Paketleri"
+        verbose_name_plural = "Üyenin Paketleri"
         ordering = ["id"]
 
 
+# class PaketModel(BaseAbstract):
+#     adi = models.CharField(max_length=200, verbose_name="Paket/Abonelik Adı")
+#     tipi = models.SmallIntegerField(verbose_name="Tipi", choices=AbonelikTipiEnum.choices(), blank=False, null=False,
+#                                     default=AbonelikTipiEnum.Üyelik)
+#     adet = models.IntegerField(verbose_name="Adet", null=True, blank=True)
+#     toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=True, blank=True)
+#     ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="paket", null=True,
+#                              blank=True, verbose_name="Ekleyen")
+#
+#     def __str__(self):
+#         return self.adi
+#
+#     class Meta:
+#         verbose_name = "Paket ve Abonelik Çeşitleri"
+#         verbose_name_plural = "Paket ve Abonelik Çeşitleri"
+#         ordering = ["id"]
+
+
 class PaketKullanimModel(BaseAbstract):
-    abonelik = models.ForeignKey(UyeAbonelikModel, verbose_name="Abonelik", on_delete=models.CASCADE, blank=False,
-                                 null=False)
+    uye_paket = models.ForeignKey(UyePaketModel, verbose_name="Paket", on_delete=models.CASCADE, blank=False,
+                                  null=False)
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
                                  null=False)
-    kalan_adet = models.SmallIntegerField(verbose_name="Kalan Adet", null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="paket_kullanim",
                              null=True, blank=True,
                              verbose_name="Ekleyen")

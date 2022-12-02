@@ -20,9 +20,9 @@
             <div class="panel-body">
                 <form autocomplete="nope" method="post"
                         {% if form.instance.id %}
-                      action="{% url 'calendarapp:guncelle_uye_abonelik' form.instance.id %}">
+                      action="{% url 'calendarapp:guncelle_uye_paket' form.instance.id %}">
                         {% else %}
-                            action="{% url 'calendarapp:kaydet_uye_abonelik' form.initial.uye.id %}">
+                            action="{% url 'calendarapp:kaydet_uye_paket' form.initial.uye.id %}">
                         {% endif %}
                 {% csrf_token %}
                 <div class="row ">
@@ -50,7 +50,7 @@
                         {% if form.instance.id %}
                             <a href="{% url 'calendarapp:profil_uye' form.instance.uye.id %}"
                                class="btn btn-secondary float-right mr-2">Geri</a>
-                            <a href="{% url 'calendarapp:sil_abonelik' form.instance.id %}"
+                            <a href="{% url 'calendarapp:sil_uye_paket' form.instance.id %}"
                                class=" btn btn-danger btn-circle confirm-delete" title="Sil"
                                data-toggle="modal"
                                data-target="#confirmDeleteModal" id="delete_abonelik_{{ form.instance.id }}">

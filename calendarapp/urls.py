@@ -84,14 +84,14 @@ urlpatterns = [
          name="kaydet_yapilan_telafi_ders"),
 
     # Abonelik
-    path("abonelik/index", abonelik_views.index, name="index_paket"),
-    path("abonelik/kaydet", abonelik_views.kaydet, name="kaydet_paket"),
-    path("abonelik/guncelle/<int:id>", abonelik_views.kaydet, name="guncelle_paket"),
-    path("abonelik/sil/<int:id>", abonelik_views.sil, name="sil_paket"),
-    path("abonelik/detay/<int:id>", abonelik_views.detay, name="detay_paket"),
-    path("abonelik/kaydet-uye-abonelik/<int:uye_id>", abonelik_views.kaydet_uye_abonelik, name="kaydet_uye_abonelik"),
-    path("abonelik/guncelle-uye-abonelik/<int:id>", abonelik_views.guncelle_uye_abonelik, name="guncelle_uye_abonelik"),
-    path("abonelik/sil-abonelik/<int:id>", abonelik_views.sil_abonelik, name="sil_abonelik"),
+    path("abonelik/index", abonelik_views.index_uye_paket, name="index_uye_paket"),
+    # path("abonelik/kaydet", abonelik_views.kaydet, name="kaydet_paket"),
+    # path("abonelik/guncelle/<int:id>", abonelik_views.kaydet, name="guncelle_paket"),
+    # path("abonelik/sil/<int:id>", abonelik_views.sil, name="sil_paket"),
+    # path("abonelik/detay/<int:id>", abonelik_views.detay, name="detay_paket"),
+    path("abonelik/kaydet-uye-paket/<int:uye_id>", abonelik_views.kaydet_uye_paket, name="kaydet_uye_paket"),
+    path("abonelik/guncelle-uye_paket/<int:id>", abonelik_views.guncelle_uye_paket, name="guncelle_uye_paket"),
+    path("abonelik/sil_uye_paket/<int:id>", abonelik_views.sil_uye_paket, name="sil_uye_paket"),
 
     # Muhasebe
     path("muhasebe/index", muhasebe_views.index, name="index_muhasebe"),
