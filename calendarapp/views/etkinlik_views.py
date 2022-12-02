@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 
 from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum
-from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel
+from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel, UyePaketModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
 from django.contrib import messages
 
@@ -114,9 +114,12 @@ def kaydet_etkinlik_ajax(request):
             return result
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
             eski_etkinlik = EtkinlikModel.objects.get(id=form.cleaned_data["pk"])
+            if form.cleaned_data["abonelik_tipi"] != eski_etkinlik.abonelik_tipi:
+                return JsonResponse(data={"status": "error",
+                                          "message": "Abonelik tipi güncellenemez. Lütfen etkinliği silerek yenisini oluşturunuz."})
+            abonelik_guncelle(form, eski_etkinlik)
             form = EtkinlikForm(data=request.POST, instance=eski_etkinlik)
-            yeni_etkinlik = form.save()
-            abonelik_guncelle(eski_etkinlik, yeni_etkinlik)
+            form.save()
         else:
             item = form.save(commit=False)
             item.user = request.user
@@ -149,8 +152,7 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
     grup_id = form.data["grup" or None]
     uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
     for item in uye_grubu:
-        abonelik_paket_listesi = UyeAbonelikModel.objects.filter(uye_id=item.uye_id, aktif_mi=True,
-                                                                 baslangic_tarihi__lte=date.today())
+        abonelik_paket_listesi = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True)
         if not abonelik_paket_listesi.exists():
             return str(item.uye)
     return None
@@ -362,32 +364,51 @@ def abonelik_olustur(etkinlik):
                                             aktif_mi=True, kort=etkinlik.kort, user=etkinlik.user)
 
 
-def abonelik_guncelle(eski_etkinlik, yeni_etkinlik):
-    if eski_etkinlik.grup_id == yeni_etkinlik.grup_id:  # Grup değişmediyse aşağıdaki işlemleri yap
-        uye_grubu = UyeGrupModel.objects.filter(grup_id=yeni_etkinlik.grup_id)
+def abonelik_guncelle(yeni_etkinlik_form, eski_etkinlik):
+    if yeni_etkinlik_form.cleaned_data["grup"] == eski_etkinlik.grup:  # Grup değişmediyse aşağıdaki işlemleri yap
+        uye_grubu = UyeGrupModel.objects.filter(grup_id=eski_etkinlik.grup_id)
         haftaninin_gunu = eski_etkinlik.baslangic_tarih_saat.weekday()
         for item in uye_grubu:
-            abonelik = UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu, grup=yeni_etkinlik.grup,
+            abonelik = UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
+                                                       grup_id=eski_etkinlik.grup_id,
                                                        baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat)
             if abonelik.exists():  # Grup üyesinin eskidende bu grubun içindeyse zaten abonelik kaydı vardır. O yüzden mevcut kaydı güncelle
-                print("Güncelleme")
                 abonelik = abonelik.first()
-                abonelik.baslangic_tarih_saat = yeni_etkinlik.baslangic_tarih_saat
-                abonelik.bitis_tarih_saat = yeni_etkinlik.bitis_tarih_saat
-                abonelik.kort = yeni_etkinlik.kort
-                haftaninin_gunu = yeni_etkinlik.baslangic_tarih_saat.weekday()
+                abonelik.baslangic_tarih_saat = yeni_etkinlik_form.cleaned_data["baslangic_tarih_saat"]
+                abonelik.bitis_tarih_saat = yeni_etkinlik_form.cleaned_data["bitis_tarih_saat"]
+                abonelik.kort = yeni_etkinlik_form.cleaned_data["kort"]
+                haftaninin_gunu = yeni_etkinlik_form.cleaned_data["baslangic_tarih_saat"].weekday()
                 gun_adi = gun_adi_getir(haftaninin_gunu)
                 abonelik.gun_adi = gun_adi
                 abonelik.save()
             else:  # Grup üyesinin eski tarih saatte üyeliği yok ise demek ki yeni gruba eklenmiş. Yeni abonelik kaydı oluştur.
-                print("Yeni abonelik kaydı oluşturulacak")
-                haftaninin_gunu = yeni_etkinlik.baslangic_tarih_saat.weekday()
+                haftaninin_gunu = yeni_etkinlik_form.cleaned_data["baslangic_tarih_saat"].weekday()
                 gun_adi = gun_adi_getir(haftaninin_gunu)
                 UyeAbonelikModel.objects.create(uye=item.uye, haftanin_gunu=haftaninin_gunu, gun_adi=gun_adi,
-                                                baslangic_tarih_saat=yeni_etkinlik.baslangic_tarih_saat,
-                                                grup=yeni_etkinlik.grup,
-                                                bitis_tarih_saat=yeni_etkinlik.bitis_tarih_saat,
-                                                aktif_mi=True, kort=yeni_etkinlik.kort, user=yeni_etkinlik.user)
+                                                baslangic_tarih_saat=yeni_etkinlik_form.cleaned_data[
+                                                    "baslangic_tarih_saat"],
+                                                grup=yeni_etkinlik_form.cleaned_data["grup"],
+                                                bitis_tarih_saat=yeni_etkinlik_form.cleaned_data["bitis_tarih_saat"],
+                                                aktif_mi=True, kort=yeni_etkinlik_form.cleaned_data["kort"])
+    else:  # Grup değiştiyse eski grup üyelerinin aboneliklerini sil, yeni üyelere abonelik oluştur
+        eski_uye_grubu = UyeGrupModel.objects.filter(grup_id=eski_etkinlik.grup_id)
+        yeni_uye_grubu = UyeGrupModel.objects.filter(grup_id=yeni_etkinlik_form.cleaned_data["grup"].id)
+        haftaninin_gunu = eski_etkinlik.baslangic_tarih_saat.weekday()
+        for item in eski_uye_grubu:
+            abonelik = UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
+                                                       grup_id=eski_etkinlik.grup_id,
+                                                       baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat)
+            if abonelik.exists():
+                abonelik = abonelik.first()
+                abonelik.delete()
+        for item in yeni_uye_grubu:
+            if not UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
+                                                   baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat).exists():
+                UyeAbonelikModel.objects.create(uye=item.uye, haftanin_gunu=haftaninin_gunu,
+                                                baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat,
+                                                grup=yeni_etkinlik_form.cleaned_data["grup"],
+                                                bitis_tarih_saat=eski_etkinlik.bitis_tarih_saat,
+                                                aktif_mi=True, kort=eski_etkinlik.kort)
 
 
 def gun_adi_getir(haftanin_gunu):

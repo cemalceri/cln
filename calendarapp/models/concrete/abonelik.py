@@ -10,7 +10,8 @@ from calendarapp.models.concrete.uye import UyeModel, GrupModel
 
 class UyeAbonelikModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
-    grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False, null=False)
+    grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
+                             null=False)
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False)
     haftanin_gunu = models.IntegerField(verbose_name="Gün", blank=True, null=True)
     gun_adi = models.CharField(max_length=20, verbose_name="Gün Adı", blank=False, null=False)
@@ -31,27 +32,21 @@ class UyeAbonelikModel(BaseAbstract):
         verbose_name_plural = "Abonelik"
         ordering = ["id"]
 
-    # def kalan_adet(self):
-    #     if self.paket.tipi is AbonelikTipiEnum.Paket.value and self.paket.adet is not None:
-    #         kullanim_sayisi = PaketKullanimModel.objects.filter(abonelik=self).count()
-    #         return self.paket.adet - kullanim_sayisi
-    #     return None
-    #
-    # def son_yapilan_odeme_tarihi(self):
-    #     son_odeme = self.paket.paket_parahareketi_relations.filter().order_by("-tarih").first()
-    #     if son_odeme:
-    #         return son_odeme.tarih
-    #     return None
-    #
-    # def son_yapilan_odeme_tutari(self):
-    #     son_odeme = self.paket.paket_parahareketi_relations.filter().order_by("-tarih").first()
-    #     if son_odeme:
-    #         return son_odeme.tutar
-    #     return None
-
     @property
     def dakika_degeri(self):
         return self.bitis_tarih_saat - self.baslangic_tarih_saat
+
+
+class UyePaketModel(BaseAbstract):
+    uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
+    kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False)
+    haftanin_gunu = models.IntegerField(verbose_name="Gün", blank=True, null=True)
+    gun_adi = models.CharField(max_length=20, verbose_name="Gün Adı", blank=False, null=False)
+    baslangic_tarih_saat = models.DateTimeField("Başlangıç Tarihi", null=False, blank=False)
+    bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarihi", null=False, blank=False)
+    aktif_mi = models.BooleanField(default=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                             related_name="user_uyepaket_relations", null=True, blank=True, verbose_name="Ekleyen")
 
 
 class PaketModel(BaseAbstract):
