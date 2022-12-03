@@ -40,8 +40,8 @@ class UyeAbonelikModel(BaseAbstract):
 class UyePaketModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False)
-    baslangic_tarih_saat = models.DateTimeField("Başlangıç Tarihi", null=False, blank=False)
-    bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarihi", null=False, blank=False)
+    baslangic_tarih_saat = models.DateField("Başlangıç Tarihi", null=False, blank=False)
+    bitis_tarih_saat = models.DateField(verbose_name="Bitiş Tarihi", null=False, blank=False)
     adet = models.IntegerField(verbose_name="Adet", null=False, blank=False)
     toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=True, blank=True)
     ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
@@ -89,17 +89,17 @@ class PaketKullanimModel(BaseAbstract):
                              verbose_name="Ekleyen")
 
     def __str__(self):
-        return str(self.abonelik) + " " + str(self.uye)
+        return str(self.etkinlik) + " " + str(self.uye)
 
     class Meta:
         verbose_name = "Paket Kullanım"
         verbose_name_plural = "Paket Kullanım"
         ordering = ["id"]
 
-    def save(self, *args, **kwargs):
-        # Paketin sonu ise aktif false yapılır
-        self.kalan_adet = self.abonelik.kalan_adet() - 1
-        if self.abonelik.paket.tipi == AbonelikTipikEnum.Paket.value and self.abonelik.kalan_adet() <= 1:
-            self.abonelik.aktif_mi = False
-            self.abonelik.save()
-        super(PaketKullanimModel, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # Paketin sonu ise aktif false yapılır
+    #     self.kalan_adet = self.abonelik.kalan_adet() - 1
+    #     if self.abonelik.paket.tipi == AbonelikTipikEnum.Paket.value and self.abonelik.kalan_adet() <= 1:
+    #         self.abonelik.aktif_mi = False
+    #         self.abonelik.save()
+    #     super(PaketKullanimModel, self).save(*args, **kwargs)

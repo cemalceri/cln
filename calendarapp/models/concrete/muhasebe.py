@@ -3,7 +3,6 @@ from django.db import models
 from django.conf import settings
 from calendarapp.models.Enums import RenkEnum, ParaHareketTuruEnum, OdemeTuruEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
-# from calendarapp.models.concrete.abonelik import PaketModel
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.uye import UyeModel
 

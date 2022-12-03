@@ -140,10 +140,9 @@ def etkinlik_kaydi_hata_var_mi(form):
         mesaj = "Seçilen tarih saate başka etkinlik eklenemez."
         return JsonResponse(data={"status": "error", "message": mesaj})
     if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Paket.value:
-        uye = paket_uyeligi_olmayan_grup_uyesi(form)
-        if uye:
-            mesaj = "Grupta bulunan '" + str(
-                uye) + "' üyesinin uygun paket/abonelik kaydı olmadığı için etkinlik eklenemez."
+        uyeler = paket_uyeligi_olmayan_grup_uyesi(form)
+        if uyeler:
+            mesaj = uyeler + " paket kaydı olmadığı için etkinlik eklenemez."
             return JsonResponse(data={"status": "error", "message": mesaj})
     return False
 
@@ -151,11 +150,14 @@ def etkinlik_kaydi_hata_var_mi(form):
 def paket_uyeligi_olmayan_grup_uyesi(form):
     grup_id = form.data["grup" or None]
     uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
+    uyeler = ""
     for item in uye_grubu:
         abonelik_paket_listesi = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True)
         if not abonelik_paket_listesi.exists():
-            return str(item.uye)
-    return None
+            uyeler += str(item.uye) + ", "
+    if uyeler != "":
+        return uyeler[:-2]
+    return False
 
 
 def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, etkinlik_id=None):

@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from calendarapp.models.Enums import GrupOdemeSekliEnum
+from calendarapp.models.concrete.abonelik import UyeAbonelikModel
 from calendarapp.models.concrete.uye import UyeGrupModel, GrupModel, UyeModel
 
 
@@ -29,6 +30,7 @@ def kaydet_grup(request, id=None):
             grup_id = grup.id
             UyeGrupModel.objects.create(grup=grup, uye_id=request.POST.get("uye_id"),
                                         odeme_sekli=request.POST.get("odeme_sekli"))
+        uyeye_grubun_aboneliklerini_ekle(request, request.POST.get("uye_id"), grup_id)
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "grup_id": grup_id})
     else:
         uyeler = UyeModel.objects.filter(onaylandi_mi=True)
@@ -62,8 +64,29 @@ def sil_grup(request, id):
 def sil_grup_uyesi(request):
     UyeGrupModel.objects.filter(grup_id=request.POST.get("grup_id"),
                                 uye_id=request.POST.get("uye_id")).first().delete()
+    uyeden_grubun_aboneliklerini_sil(request.POST.get("uye_id"), request.POST.get("grup_id"))
     # Son üye silindiğinde grup silinir. dolayısıyla sayfada tekrar üye eklemeye çalışınca hata alınır.
     # Yeni grup kaydı gibi olması için grup id'si 0 gönderilir.
     grup_id = 0 if UyeGrupModel.objects.filter(grup_id=request.POST.get("grup_id")).count() == 0 else request.POST.get(
         "grup_id")
     return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "grup_id": grup_id})
+
+
+@login_required
+def uyeye_grubun_aboneliklerini_ekle(request, uye_id, grup_id):
+    uyelikler = UyeAbonelikModel.objects.filter(grup_id=grup_id)
+    print(grup_id)
+    print(uye_id)
+    print(uyelikler)
+    for uyelik in uyelikler:
+        if not UyeAbonelikModel.objects.filter(uye_id=uye_id, grup_id=grup_id, haftanin_gunu=uyelik.haftanin_gunu,
+                                               baslangic_tarih_saat=uyelik.baslangic_tarih_saat).exists():
+            UyeAbonelikModel.objects.create(uye_id=uye_id, grup_id=uyelik.grup_id, kort=uyelik.kort,
+                                            haftanin_gunu=uyelik.haftanin_gunu, gun_adi=uyelik.gun_adi,
+                                            baslangic_tarih_saat=uyelik.baslangic_tarih_saat,
+                                            bitis_tarih_saat=uyelik.bitis_tarih_saat, aktif_mi=uyelik.aktif_mi,
+                                            user=request.user)
+
+
+def uyeden_grubun_aboneliklerini_sil(uye_id, grup_id):
+    UyeAbonelikModel.objects.filter(uye_id=uye_id, grup_id=grup_id).delete()

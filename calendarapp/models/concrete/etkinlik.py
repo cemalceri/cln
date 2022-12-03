@@ -55,8 +55,7 @@ class EtkinlikManager(models.Manager):
 class EtkinlikModel(BaseAbstract):
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
                              null=False, related_name="etkinlik_grup_relations")
-    abonelik_tipi = models.IntegerField(max_length=20, choices=AbonelikTipiEnum.choices(),
-                                     default=2, verbose_name="Abonelik Tipi")
+    abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.choices(), default=2, verbose_name="Abonelik Tipi")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False,
