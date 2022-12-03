@@ -52,16 +52,20 @@ def to_dict(instance):
     return data
 
 
-@login_required(login_url="signup")
+@login_required()
 def sil_etkinlik_ajax(request):
     id = request.GET.get("id")
-    EtkinlikModel.objects.filter(pk=id).first().delete()
+    etklik = EtkinlikModel.objects.filter(pk=id).first()
+    abonelik_sil(etklik)
+    etklik.delete()
     return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
 
 
 @login_required()
 def sil_etkinlik(request, id):
-    EtkinlikModel.objects.filter(pk=id).first().delete()
+    etklik = EtkinlikModel.objects.filter(pk=id).first()
+    abonelik_sil(etklik)
+    etklik.delete()
     messages.success(request, "Etkinlik silindi.")
     return redirect("dashboard")
 
@@ -413,20 +417,29 @@ def abonelik_guncelle(yeni_etkinlik_form, eski_etkinlik):
                                                 aktif_mi=True, kort=eski_etkinlik.kort)
 
 
+def abonelik_sil(etkinlik):
+    uye_grubu = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
+    haftaninin_gunu = etkinlik.baslangic_tarih_saat.weekday()
+    for item in uye_grubu:
+        abonelik = UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
+                                                   baslangic_tarih_saat=etkinlik.baslangic_tarih_saat)
+        if abonelik.exists():
+            abonelik = abonelik.first()
+            abonelik.delete()
+
+
 def gun_adi_getir(haftanin_gunu):
-    value = ""
     if haftanin_gunu == 0:
-        value = "Pazartesi"
+        return "Pazartesi"
     elif haftanin_gunu == 1:
-        value = "Salı"
+        return "Salı"
     elif haftanin_gunu == 2:
-        value = "Çarşamba"
+        return "Çarşamba"
     elif haftanin_gunu == 3:
-        value = "Perşembe"
+        return "Perşembe"
     elif haftanin_gunu == 4:
-        value = "Cuma"
+        return "Cuma"
     elif haftanin_gunu == 5:
-        value = "Cumartesi"
+        return "Cumartesi"
     elif haftanin_gunu == 6:
-        value = "Pazar"
-    return value
+        return "Pazar"
