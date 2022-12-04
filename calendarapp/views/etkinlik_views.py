@@ -15,6 +15,7 @@ from django.contrib import messages
 from calendarapp.models.concrete.kort import KortModel
 from calendarapp.models.concrete.uye import GrupModel, UyeGrupModel
 from calendarapp.utils import formErrorsToText
+import json
 
 
 @login_required
@@ -32,6 +33,42 @@ def index(request):
         # "kortlarin_bos_saatleri": kortlarin_bos_saatleri
     }
     return render(request, "calendarapp/etkinlik/index.html", context)
+
+
+@login_required
+def gunun_etkinlikleri_ajax(request):
+    etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
+    kortlar = KortModel.objects.all()
+    dict_kortlar = {}
+    for item in kortlar:
+        dict_kortlar[item.adi] = {}
+    for kort in kortlar:
+        print(kort)
+        sorgulanacak_saat = datetime.now().replace(hour=9, minute=0, second=0, microsecond=0)
+        while sorgulanacak_saat < datetime.now().replace(hour=23, minute=46, second=0, microsecond=0):
+            saat_etkinlikleri = etkinlikler.filter(kort=kort, baslangic_tarih_saat=sorgulanacak_saat)
+            if saat_etkinlikleri:
+                print(sorgulanacak_saat, "bu saat etkinlikler var")
+                dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")] = {}
+                son_saat = sorgulanacak_saat
+                for etkinlik in saat_etkinlikleri:
+                    dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk] = {}
+                    dk_degeri = (etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60
+                    dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk]["dk_degeri"] = str(int(
+                        dk_degeri))
+                    dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk]["etkinlik"] = str(etkinlik)
+                if son_saat < etkinlik.bitis_tarih_saat:
+                    son_saat = etkinlik.bitis_tarih_saat
+                    print("yeni sorgulanacak saat", son_saat)
+                sorgulanacak_saat = son_saat
+            else:
+                # print(sorgulanacak_saat, "bu saatte saat etkinlik yok")
+                dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")] = {}
+                sorgulanacak_saat += timedelta(minutes=15)
+                # print("Yeni sorgulanacak saat",sorgulanacak_saat)
+    # print(json.dumps(dict_kortlar))
+    data = json.loads(json.dumps(dict_kortlar))
+    return JsonResponse(data)
 
 
 @login_required(login_url="signup")

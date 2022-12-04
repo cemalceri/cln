@@ -39,7 +39,7 @@ class EtkinlikManager(models.Manager):
             is_active=True, is_deleted=False,
             baslangic_tarih_saat__lte=today_end,
             bitis_tarih_saat__gte=today_start,
-        ).order_by("baslangic_tarih_saat")
+        ).order_by("-baslangic_tarih_saat")
         return events
 
     def getir_gelecek_etkinlikler(self, user=None):
@@ -80,7 +80,7 @@ class EtkinlikModel(BaseAbstract):
         ordering = ["-id"]
 
     def __str__(self):
-        return self.baslik
+        return str(self.grup)
 
     def pixel_degeri(self):
         # start = self.baslangic_tarih_saat

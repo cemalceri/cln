@@ -123,49 +123,62 @@
     <script>
         let bosSaatler;
         $(document).ready(function () {
-            bos_saatleri_getir();
+            etkinlikleri_getir();
+            debugger;
+
         });
 
-        function bos_saatleri_getir() {
+        function etkinlikleri_getir() {
             $.ajax({
-                url: "{% url 'calendarapp:getir_bos-saatleri-getir-ajax' %}",
-                type: "get",
-                dataType: 'json',
-                success: function (result) {
-                    if (result.status == "success") {
-                        bosSaatler = result.data
-                        let idler = kortIDleriGetir()
-                        for (let i = 0; i < idler.length; i++) {
-                            let kort_id = idler[i]
-                            if (bosSaatler[kort_id].length > 0) {
-                                debugger;
-                                let button = document.getElementById("kort_" + kort_id);
-                                //button appendChild <i>
-                                let i = document.createElement("span");
-                                i.setAttribute("class", "fa fa-info-circle");
-                                i.setAttribute("style", "color: red");
-                                button.appendChild(i);
-                            }
-                        }
-                    } else {
-                        popupMesajGoster(data.message, data.status);
-                    }
+                url: "{% url 'calendarapp:gunun_etkinlikleri_ajax' %}",
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
                 }
             });
         }
 
-        function kortIDleriGetir() {
-            let kortIDleri = [];
-            {% for kort in kortlar_ilk_alti %}
-                kortIDleri.push({{ kort.id }});
-            {% endfor %}
-            {% if kortlar_ikinci_alti %}
-                {% for kort in kortlar_ikinci_alti %}
-                    kortIDleri.push({{ kort.id }});
-                {% endfor %}
-            {% endif %}
-            return kortIDleri;
-        }
+        {#function bos_saatleri_getir() {#}
+        {#    $.ajax({#}
+        {#        url: "{% url 'calendarapp:getir_bos-saatleri-getir-ajax' %}",#}
+        {#        type: "get",#}
+        {#        dataType: 'json',#}
+        {#        success: function (result) {#}
+        {#            if (result.status == "success") {#}
+        {#                bosSaatler = result.data#}
+        {#                let idler = kortIDleriGetir()#}
+        {#                for (let i = 0; i < idler.length; i++) {#}
+        {#                    let kort_id = idler[i]#}
+        {#                    if (bosSaatler[kort_id].length > 0) {#}
+        {#                        debugger;#}
+        {#                        let button = document.getElementById("kort_" + kort_id);#}
+        {#                        //button appendChild <i>#}
+        {#                        let i = document.createElement("span");#}
+        {#                        i.setAttribute("class", "fa fa-info-circle");#}
+        {#                        i.setAttribute("style", "color: red");#}
+        {#                        button.appendChild(i);#}
+        {#                    }#}
+        {#                }#}
+        {#            } else {#}
+        {#                popupMesajGoster(data.message, data.status);#}
+        {#            }#}
+        {#        }#}
+        {#    });#}
+        {#}#}
+        {##}
+        {#function kortIDleriGetir() {#}
+        {#    let kortIDleri = [];#}
+        {#    {% for kort in kortlar_ilk_alti %}#}
+        {#        kortIDleri.push({{ kort.id }});#}
+        {#    {% endfor %}#}
+        {#    {% if kortlar_ikinci_alti %}#}
+        {#        {% for kort in kortlar_ikinci_alti %}#}
+        {#            kortIDleri.push({{ kort.id }});#}
+        {#        {% endfor %}#}
+        {#    {% endif %}#}
+        {#    return kortIDleri;#}
+        {#}#}
 
         function printDiv() {
             var HTML_Width = $(".html-content").width();

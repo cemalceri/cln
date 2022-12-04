@@ -14,6 +14,7 @@ urlpatterns = [
     path("takvim/", etkinlik_views.takvim_getir, name="takvim-getir"),
     path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim-getir_by_kort_id"),
     path("etkinlik", etkinlik_views.index, name="index_etkinlik"),
+    path("gunun_etkinlikleri", etkinlik_views.gunun_etkinlikleri_ajax, name="gunun_etkinlikleri_ajax"),
 
     # Etkinlik
     path("etkinlik/detay", etkinlik_views.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id"),
