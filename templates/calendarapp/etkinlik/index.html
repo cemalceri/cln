@@ -28,104 +28,29 @@
     </div>
     <div class='html-content'>
         <div class="row">
-            {% for kort in kortlar_ilk_alti %}
-                <div class="col-md-2  p-0 border">
-                    <!-- Card -->
-                    <div>
-                        <div class="counter counter-md text-center">
-                            <button class="btn btn-info btn-block" id="kort_{{ kort.id }}"
-                                    onclick="modalDoldur('{{ kort.id }}')" data-target="#bosSaatModal"
-                                    data-toggle="modal" type="button"
-                                    title="Boş saatleri görmek için tıklayınız">{{ kort }}
-                            </button>
+            {% for kort in kortlar %}
+                <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
+                    <div class="row">
+                        <div class="container bg-info vertical-align border"
+                             style="height: 50px">
+                            <div class="vertical-align-middle black">
+                                {{ kort.adi }}
+                            </div>
                         </div>
                     </div>
-                    {% for etkinlik in etkinlikler %}
-                        {% if etkinlik.kort == kort %}
-                            <div class="card-group">
-                                <div class="card card-block p-0">
-                                    {#                                        <div class="counter counter-lg counter-inverse bg-grey-500 vertical-align"#}
-                                    {#                                             style="height: {{ etkinlik.ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika }}px">#}
-                                    {#                                            <div class="vertical-align-middle">#}
-                                    {#                                                <span class="counter-number black">Boş saat</span>#}
-                                    {#                                            </div>#}
-                                    {#                                        </div>#}
-                                    <div class="counter counter-lg counter-inverse bg-{{ etkinlik.renk }}-700 vertical-align"
-                                         style="height: {{ etkinlik.pixel_degeri }}px">
-                                        <div class="vertical-align-middle">
-                                            <span class="counter-number black">{{ etkinlik.baslangic_tarih_saat.time }}- {{ etkinlik.bitis_tarih_saat.time }}/{{ etkinlik.grup }} </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-        <div class="row mt-30">
-            {% for kort in kortlar_ikinci_alti %}
-                <div class="col-md-2  p-0 border">
-                    <!-- Card -->
-                    <div>
-                        <div class="counter counter-md text-center">
-                            <button class="btn btn-info btn-block" id="kort_{{ kort.id }}"
-                                    onclick="modalDoldur('{{ kort.id }}')" data-target="#bosSaatModal"
-                                    data-toggle="modal" type="button"
-                                    title="Boş saatleri görmek için tıklayınız">{{ kort }}
-                            </button>
-                        </div>
+                    <div class="row">
+                        <div id="kort_{{ kort.id }}_col_1" class="col col-md-3 bg-danger">a</div>
+                        <div id="kort_{{ kort.id }}_col_2" class="col col-md-3 bg-dark">b</div>
+                        <div id="kort_{{ kort.id }}_col_3" class="col col-md-3 bg-info">c</div>
+                        <div id="kort_{{ kort.id }}_col_4" class="col col-md-3 bg-success">d</div>
                     </div>
-                    {% for etkinlik in etkinlikler %}
-                        {% if etkinlik.kort == kort %}
-                            <div class="card-group">
-                                <div class="card card-block p-0">
-                                    {#                                        <div class="counter counter-lg counter-inverse bg-grey-500 vertical-align"#}
-                                    {#                                             style="height: {{ etkinlik.ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika }}px">#}
-                                    {#                                            <div class="vertical-align-middle">#}
-                                    {#                                                <span class="counter-number black">Boş saat</span>#}
-                                    {#                                            </div>#}
-                                    {#                                        </div>#}
-                                    <div class="counter counter-lg counter-inverse bg-{{ etkinlik.renk }}-700 vertical-align"
-                                         style="height: {{ etkinlik.pixel_degeri }}px">
-                                        <div class="vertical-align-middle">
-                                            <span class="counter-number black">{{ etkinlik.baslangic_tarih_saat.time }}- {{ etkinlik.bitis_tarih_saat.time }}/{{ etkinlik.grup }} </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
                 </div>
             {% endfor %}
-        </div>
-    </div>
-    <div class="modal fade" id="bosSaatModal" aria-labelledby="bosSaatModal" role="dialog" tabindex="-1"
-         style="display: none;" aria-hidden="true">
-        <div class="modal-dialog modal-simple modal-top">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                    <h4 class="modal-title" id="exampleModalTitle">Boş Saatleri</h4>
-                </div>
-                <div class="modal-body">
-                    <ul id="saatListesi">
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
         </div>
     </div>
     <script>
-        let bosSaatler;
         $(document).ready(function () {
             etkinlikleri_getir();
-            debugger;
-
         });
 
         function etkinlikleri_getir() {
@@ -134,51 +59,14 @@
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
-                    console.log(data);
+                    console.log(data.json[2]['09:00']);
+                    let saatIcindekiEtkinlikler = data.json[2]['09:00'];
+                    debugger;
+                    let a= JSON.parse(data.json);
+                    console.log(a);
                 }
             });
         }
-
-        {#function bos_saatleri_getir() {#}
-        {#    $.ajax({#}
-        {#        url: "{% url 'calendarapp:getir_bos-saatleri-getir-ajax' %}",#}
-        {#        type: "get",#}
-        {#        dataType: 'json',#}
-        {#        success: function (result) {#}
-        {#            if (result.status == "success") {#}
-        {#                bosSaatler = result.data#}
-        {#                let idler = kortIDleriGetir()#}
-        {#                for (let i = 0; i < idler.length; i++) {#}
-        {#                    let kort_id = idler[i]#}
-        {#                    if (bosSaatler[kort_id].length > 0) {#}
-        {#                        debugger;#}
-        {#                        let button = document.getElementById("kort_" + kort_id);#}
-        {#                        //button appendChild <i>#}
-        {#                        let i = document.createElement("span");#}
-        {#                        i.setAttribute("class", "fa fa-info-circle");#}
-        {#                        i.setAttribute("style", "color: red");#}
-        {#                        button.appendChild(i);#}
-        {#                    }#}
-        {#                }#}
-        {#            } else {#}
-        {#                popupMesajGoster(data.message, data.status);#}
-        {#            }#}
-        {#        }#}
-        {#    });#}
-        {#}#}
-        {##}
-        {#function kortIDleriGetir() {#}
-        {#    let kortIDleri = [];#}
-        {#    {% for kort in kortlar_ilk_alti %}#}
-        {#        kortIDleri.push({{ kort.id }});#}
-        {#    {% endfor %}#}
-        {#    {% if kortlar_ikinci_alti %}#}
-        {#        {% for kort in kortlar_ikinci_alti %}#}
-        {#            kortIDleri.push({{ kort.id }});#}
-        {#        {% endfor %}#}
-        {#    {% endif %}#}
-        {#    return kortIDleri;#}
-        {#}#}
 
         function printDiv() {
             var HTML_Width = $(".html-content").width();
@@ -202,14 +90,6 @@
             });
         }
 
-        function modalDoldur(kort_id) {
-            debugger;
-            let saatListesi = bosSaatler[kort_id];
-            let html = "";
-            for (let i = 0; i < saatListesi.length; i++) {
-                html += "<li>" + saatListesi[i].split('T')[1] + "</li>"
-            }
-            $("#saatListesi").html(html);
-        }
+
     </script>
 {% endblock content %}

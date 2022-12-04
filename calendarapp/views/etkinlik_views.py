@@ -20,16 +20,12 @@ import json
 
 @login_required
 def index(request):
-    etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
+    # etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
     # kortlarin_bos_saatleri = kortlarin_bos_saatlerini_getir(datetime.now())
-    kortlar_ilk_alti = KortModel.objects.all()[:6]
-    kortlar_ikinci_alti = KortModel.objects.all()[6:12]
-    kortlar_ucuncu_alti = KortModel.objects.all()[12:18]
+    kortlar = KortModel.objects.all()
     context = {
-        "kortlar_ilk_alti": kortlar_ilk_alti,
-        "kortlar_ikinci_alti": kortlar_ikinci_alti,
-        "etkinlikler": etkinlikler,
-        "kortlar_ucuncu_alti": kortlar_ucuncu_alti,
+        # "etkinlikler": etkinlikler,
+        "kortlar": kortlar,
         # "kortlarin_bos_saatleri": kortlarin_bos_saatleri
     }
     return render(request, "calendarapp/etkinlik/index.html", context)
@@ -41,34 +37,28 @@ def gunun_etkinlikleri_ajax(request):
     kortlar = KortModel.objects.all()
     dict_kortlar = {}
     for item in kortlar:
-        dict_kortlar[item.adi] = {}
+        dict_kortlar[item.pk] = {}
     for kort in kortlar:
-        print(kort)
         sorgulanacak_saat = datetime.now().replace(hour=9, minute=0, second=0, microsecond=0)
         while sorgulanacak_saat < datetime.now().replace(hour=23, minute=46, second=0, microsecond=0):
             saat_etkinlikleri = etkinlikler.filter(kort=kort, baslangic_tarih_saat=sorgulanacak_saat)
             if saat_etkinlikleri:
-                print(sorgulanacak_saat, "bu saat etkinlikler var")
-                dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")] = {}
-                son_saat = sorgulanacak_saat
+                dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")] = {}
                 for etkinlik in saat_etkinlikleri:
-                    dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk] = {}
+                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk] = {}
                     dk_degeri = (etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60
-                    dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk]["dk_degeri"] = str(int(
+                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk]["dk_degeri"] = str(int(
                         dk_degeri))
-                    dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk]["etkinlik"] = str(etkinlik)
-                if son_saat < etkinlik.bitis_tarih_saat:
-                    son_saat = etkinlik.bitis_tarih_saat
-                    print("yeni sorgulanacak saat", son_saat)
-                sorgulanacak_saat = son_saat
+                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk]["etkinlik"] = str(etkinlik)
+                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk][
+                        "baslangic"] = etkinlik.baslangic_tarih_saat.strftime("%H:%M")
+                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk][
+                        "bitis"] = etkinlik.bitis_tarih_saat.strftime("%H:%M")
             else:
-                # print(sorgulanacak_saat, "bu saatte saat etkinlik yok")
-                dict_kortlar[kort.adi][sorgulanacak_saat.strftime("%H:%M")] = {}
-                sorgulanacak_saat += timedelta(minutes=15)
-                # print("Yeni sorgulanacak saat",sorgulanacak_saat)
-    # print(json.dumps(dict_kortlar))
+                dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")] = {}
+            sorgulanacak_saat += timedelta(minutes=15)
     data = json.loads(json.dumps(dict_kortlar))
-    return JsonResponse(data)
+    return JsonResponse(data={"json": data}, status=200)
 
 
 @login_required(login_url="signup")
