@@ -81,10 +81,10 @@ class GrupModel(BaseAbstract):
             if self.adi is None or self.adi == "":
                 string = ""
                 grup = UyeGrupModel.objects.filter(grup_id=self.id)
-                string += "( " + str(grup.count()) + " Üyeli Grup) "
+                string += "(" + str(grup.count()) + " Üyeli Grup) "
                 for item in grup:
-                    string += str(item.uye.uye_no) + "-" + item.uye.adi + " " + item.uye.soyadi + " / "
-                return string
+                    string += str(item.uye.uye_no) + "-" + item.uye.adi + " " + item.uye.soyadi + "/"
+                return string[:-1]
             else:
                 return self.adi
 

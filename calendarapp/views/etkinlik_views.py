@@ -33,32 +33,28 @@ def index(request):
 
 @login_required
 def gunun_etkinlikleri_ajax(request):
-    etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
+    etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri().order_by("baslangic_tarih_saat")
     kortlar = KortModel.objects.all()
-    dict_kortlar = {}
+    list = []
     for item in kortlar:
-        dict_kortlar[item.pk] = {}
-    for kort in kortlar:
-        sorgulanacak_saat = datetime.now().replace(hour=9, minute=0, second=0, microsecond=0)
-        while sorgulanacak_saat < datetime.now().replace(hour=23, minute=46, second=0, microsecond=0):
-            saat_etkinlikleri = etkinlikler.filter(kort=kort, baslangic_tarih_saat=sorgulanacak_saat)
-            if saat_etkinlikleri:
-                dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")] = {}
-                for etkinlik in saat_etkinlikleri:
-                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk] = {}
-                    dk_degeri = (etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60
-                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk]["dk_degeri"] = str(int(
-                        dk_degeri))
-                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk]["etkinlik"] = str(etkinlik)
-                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk][
-                        "baslangic"] = etkinlik.baslangic_tarih_saat.strftime("%H:%M")
-                    dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")][etkinlik.pk][
-                        "bitis"] = etkinlik.bitis_tarih_saat.strftime("%H:%M")
-            else:
-                dict_kortlar[kort.pk][sorgulanacak_saat.strftime("%H:%M")] = {}
-            sorgulanacak_saat += timedelta(minutes=15)
-    data = json.loads(json.dumps(dict_kortlar))
-    return JsonResponse(data={"json": data}, status=200)
+        list.append({
+            "kort_id": item.id,
+            "kort_adi": item.adi,
+            "etkinlikler": []
+        })
+    print(list)
+    for etkinlik in etkinlikler:
+        for item in list:
+            if etkinlik.kort_id == item["kort_id"]:
+                item["etkinlikler"].append({
+                    "baslangic_saati": etkinlik.baslangic_tarih_saat.strftime("%H:%M"),
+                    "bitis_saati": etkinlik.bitis_tarih_saat.strftime("%H:%M"),
+                    "grup_adi": etkinlik.grup.__str__(),
+                    "grup_id": etkinlik.grup.id,
+                    "etkinlik_id": etkinlik.id,
+                    "sure": (etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60,
+                })
+    return JsonResponse(data={"status": "success", "list": list})
 
 
 @login_required(login_url="signup")

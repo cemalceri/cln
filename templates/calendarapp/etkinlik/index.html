@@ -58,14 +58,46 @@
                 url: "{% url 'calendarapp:gunun_etkinlikleri_ajax' %}",
                 type: "GET",
                 dataType: "json",
-                success: function (data) {
-                    console.log(data.json[2]['09:00']);
-                    let saatIcindekiEtkinlikler = data.json[2]['09:00'];
-                    debugger;
-                    let a= JSON.parse(data.json);
-                    console.log(a);
+                success: function (result) {
+                    for (let i = 0; i < result.list.length; i++) { //her kort için döngü
+                        debugger;
+                        let kortId = result.list[i].kort_id;
+                        let kortunEtkinlikleri = result.list[i].etkinlikler;
+                        for (let t = 1; t < 5; t++) { //her kortun 4 kolonu için döngü
+                            let col = $('#kort_' + kortId + '_col_' + t);
+                            let sorgulacakSaat = new Date("1/1/1900 09:00");
+                            for (let j = 0; j < kortunEtkinlikleri.length; j++) { //her etkinliği döngü
+                                let baslangicSaati = new Date("1/1/1900 " + kortunEtkinlikleri[j].baslangic_saati);
+                                if (baslangicSaati.toTimeString() == sorgulacakSaat.toTimeString()) {
+                                    col.append('<div class="row"><div class="col col-md-12 bg-warning">' + kortunEtkinlikleri[j].baslangic_saati + '</div></div>');
+                                    sorgulacakSaat = new Date("1/1/1900 " + kortunEtkinlikleri[j].bitis_saati);
+                                } else {
+                                    col.append('<div class="row"><div class="col col-md-12 bg-warning">Boş saat</div></div>');
+                                    sorgulacakSaat.setMinutes(sorgulacakSaat.getMinutes() + 15);
+                                }
+                                if (sorgulacakSaat > new Date("1/1/1900 23:30")) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             });
+        }
+
+        function SaatHesapla(sorgulananSaat, sure) {
+            debugger;
+            let sorgulananSaatTime = new Date("1/1/1900 " + sorgulananSaat);
+            let sorgulananSaatString = sorgulananSaatTime.getHours() + ":" + sorgulananSaatTime.getMinutes();
+            if (sure == null) {
+                sorgulananSaatTime.setMinutes(sorgulananSaatTime.getMinutes() + 15);
+                sorgulananSaatString = sorgulananSaatTime.getHours() + ":" + sorgulananSaatTime.getMinutes();
+
+            } else {
+                sorgulananSaatTime.setMinutes(sorgulananSaatTime.getMinutes() + sure);
+                sorgulananSaatString = sorgulananSaatTime.getHours() + ":" + sorgulananSaatTime.getMinutes();
+            }
+            return sorgulananSaatTime.getTime();
         }
 
         function printDiv() {
