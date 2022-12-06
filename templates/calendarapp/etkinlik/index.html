@@ -27,26 +27,142 @@
         </a>
     </div>
     <div class='html-content'>
-        <div class="row">
-            {% for kort in kortlar %}
-                <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
+        {% if ilk_4_kort %}
+            <div class="row">
+                <div class="col-md-1 col-xl-1 col-sm-1">
                     <div class="row">
-                        <div class="container bg-info vertical-align border"
-                             style="height: 50px">
-                            <div class="vertical-align-middle black">
-                                {{ kort.adi }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div id="kort_{{ kort.id }}_col_1" class="col col-md-3 bg-danger">a</div>
-                        <div id="kort_{{ kort.id }}_col_2" class="col col-md-3 bg-dark">b</div>
-                        <div id="kort_{{ kort.id }}_col_3" class="col col-md-3 bg-info">c</div>
-                        <div id="kort_{{ kort.id }}_col_4" class="col col-md-3 bg-success">d</div>
+                        <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
+                             style="height: 60px"></div>
+                        {% for saat in saatler %}
+                            <span class="container bg-indigo-700 black vertical-align vertical-align-middle text-left border-top m-0"
+                                  style="height: 30px;font-size: 1rem;">{{ saat }}:00</span>
+                            <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
+                                  style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>
+                        {% endfor %}
                     </div>
                 </div>
-            {% endfor %}
-        </div>
+                <div class="col-md-11 col-xl-11 col-sm-11">
+                    <div class="row">
+                        {% for kort in ilk_4_kort %}
+                            <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
+                                <div class="row">
+                                    <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
+                                         style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
+                                </div>
+                                <div class="row">
+                                    <div id="kort_{{ kort.id }}_col_1" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_2" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_3" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_4" class="col col-md-3"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if ikinci_4_kort %}
+            <div class="row">
+                <div class="col-md-1 col-xl-1 col-sm-1">
+                    <div class="row">
+                        <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
+                             style="height: 60px"></div>
+                        {% for saat in saatler %}
+                            <span class="container bg-indigo-700 black vertical-align vertical-align-middle text-left border-top m-0"
+                                  style="height: 30px;font-size: 1rem;">{{ saat }}:00</span>
+                            <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
+                                  style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-11 col-xl-11 col-sm-11">
+                    <div class="row">
+                        {% for kort in ikinci_4_kort %}
+                            <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
+                                <div class="row">
+                                    <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
+                                         style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
+                                </div>
+                                <div class="row">
+                                    <div id="kort_{{ kort.id }}_col_1" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_2" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_3" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_4" class="col col-md-3"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if ucuncu_4_kort %}
+            <div class="row">
+                <div class="col-md-1 col-xl-1 col-sm-1">
+                    <div class="row">
+                        <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
+                             style="height: 60px"></div>
+                        {% for saat in saatler %}
+                            <span class="container bg-indigo-700 black vertical-align vertical-align-middle text-left border-top m-0"
+                                  style="height: 30px;font-size: 1rem;">{{ saat }}:00</span>
+                            <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
+                                  style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-11 col-xl-11 col-sm-11">
+                    <div class="row">
+                        {% for kort in ucuncu_4_kort %}
+                            <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
+                                <div class="row">
+                                    <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
+                                         style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
+                                </div>
+                                <div class="row">
+                                    <div id="kort_{{ kort.id }}_col_1" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_2" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_3" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_4" class="col col-md-3"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if dorduncu_4_kort %}
+            <div class="row">
+                <div class="col-md-1 col-xl-1 col-sm-1">
+                    <div class="row">
+                        <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
+                             style="height: 60px"></div>
+                        {% for saat in saatler %}
+                            <span class="container bg-indigo-700 black vertical-align vertical-align-middle text-left border-top m-0"
+                                  style="height: 30px;font-size: 1rem;">{{ saat }}:00</span>
+                            <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
+                                  style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-11 col-xl-11 col-sm-11">
+                    <div class="row">
+                        {% for kort in dorduncu_4_kort %}
+                            <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
+                                <div class="row">
+                                    <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
+                                         style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
+                                </div>
+                                <div class="row">
+                                    <div id="kort_{{ kort.id }}_col_1" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_2" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_3" class="col col-md-3"></div>
+                                    <div id="kort_{{ kort.id }}_col_4" class="col col-md-3"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
     <script>
         $(document).ready(function () {
@@ -60,23 +176,25 @@
                 dataType: "json",
                 success: function (result) {
                     for (let i = 0; i < result.list.length; i++) { //her kort için döngü
-                        debugger;
                         let kortId = result.list[i].kort_id;
                         let kortunEtkinlikleri = result.list[i].etkinlikler;
                         for (let t = 1; t < 5; t++) { //her kortun 4 kolonu için döngü
                             let col = $('#kort_' + kortId + '_col_' + t);
                             let sorgulacakSaat = new Date("1/1/1900 09:00");
-                            for (let j = 0; j < kortunEtkinlikleri.length; j++) { //her etkinliği döngü
-                                let baslangicSaati = new Date("1/1/1900 " + kortunEtkinlikleri[j].baslangic_saati);
-                                if (baslangicSaati.toTimeString() == sorgulacakSaat.toTimeString()) {
-                                    col.append('<div class="row"><div class="col col-md-12 bg-warning">' + kortunEtkinlikleri[j].baslangic_saati + '</div></div>');
-                                    sorgulacakSaat = new Date("1/1/1900 " + kortunEtkinlikleri[j].bitis_saati);
+                            while (sorgulacakSaat <= new Date("1/1/1900 23:45")) {
+                                let etkinlik = kortunEtkinlikleri.find(function (etkinlik) {
+                                    let tarih = new Date("1/1/1900 " + etkinlik.baslangic_saati).toTimeString();
+                                    if (tarih == sorgulacakSaat.toTimeString()) {
+                                        return etkinlik;
+                                    }
+                                });
+                                if (etkinlik != null && etkinlik != undefined) {
+                                    col.append('<div id="' + etkinlik.id + '" class="row doluEtkinlik border black" style="height: ' + etkinlik.sure + 'px;font-size: 0.7rem;background-color: ' + etkinlik.renk + '">' + etkinlik.baslangic_saati + '-' + etkinlik.bitis_saati + '</div>');
+                                    kortunEtkinlikleri.splice(kortunEtkinlikleri.indexOf(etkinlik), 1);
+                                    sorgulacakSaat = new Date("1/1/1900 " + etkinlik.bitis_saati);
                                 } else {
-                                    col.append('<div class="row"><div class="col col-md-12 bg-warning">Boş saat</div></div>');
-                                    sorgulacakSaat.setMinutes(sorgulacakSaat.getMinutes() + 15);
-                                }
-                                if (sorgulacakSaat > new Date("1/1/1900 23:30")) {
-                                    break;
+                                    col.append('<div class="row border bg-secondary black" style="height:30px;font-size: 0.7rem">Boş</div>');
+                                    sorgulacakSaat.setMinutes(sorgulacakSaat.getMinutes() + 30);
                                 }
                             }
                         }
@@ -85,20 +203,30 @@
             });
         }
 
-        function SaatHesapla(sorgulananSaat, sure) {
-            debugger;
-            let sorgulananSaatTime = new Date("1/1/1900 " + sorgulananSaat);
-            let sorgulananSaatString = sorgulananSaatTime.getHours() + ":" + sorgulananSaatTime.getMinutes();
-            if (sure == null) {
-                sorgulananSaatTime.setMinutes(sorgulananSaatTime.getMinutes() + 15);
-                sorgulananSaatString = sorgulananSaatTime.getHours() + ":" + sorgulananSaatTime.getMinutes();
-
-            } else {
-                sorgulananSaatTime.setMinutes(sorgulananSaatTime.getMinutes() + sure);
-                sorgulananSaatString = sorgulananSaatTime.getHours() + ":" + sorgulananSaatTime.getMinutes();
+        //div on click event
+        $(document).on('click', '.doluEtkinlik', function () {
+            let id = $(this).attr('id');
+            if (id != null && id != undefined) {
+                $.ajax({
+                    url: "",
+                    type: "GET",
+                    data: {
+                        'id': id
+                    },
+                    dataType: "json",
+                    success: function (result) {
+                        $('#etkinlik_baslik').text(result.baslik);
+                        $('#etkinlik_baslangic_saati').text(result.baslangic_saati);
+                        $('#etkinlik_bitis_saati').text(result.bitis_saati);
+                        $('#etkinlik_sure').text(result.sure);
+                        $('#etkinlik_renk').text(result.renk);
+                        $('#etkinlik_kort').text(result.kort);
+                        $('#etkinlik_aciklama').text(result.aciklama);
+                        $('#etkinlik_detay_modal').modal('show');
+                    }
+                });
             }
-            return sorgulananSaatTime.getTime();
-        }
+        });
 
         function printDiv() {
             var HTML_Width = $(".html-content").width();

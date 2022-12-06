@@ -20,13 +20,21 @@ import json
 
 @login_required
 def index(request):
-    # etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
-    # kortlarin_bos_saatleri = kortlarin_bos_saatlerini_getir(datetime.now())
-    kortlar = KortModel.objects.all()
+    kortlar = KortModel.objects.all().order_by("id")
+    saatler = []
+    ilk_4_kort = kortlar[:4]
+    ikinci_4_kort = kortlar[4:8]
+    ucuncu_4_kort = kortlar[8:12]
+    dorduncu_4_kort = kortlar[12:16]
+    for i in range(9, 24):
+        saatler.append(i)
     context = {
-        # "etkinlikler": etkinlikler,
+        "saatler": saatler,
         "kortlar": kortlar,
-        # "kortlarin_bos_saatleri": kortlarin_bos_saatleri
+        "ilk_4_kort": ilk_4_kort,
+        "ikinci_4_kort": ikinci_4_kort,
+        "ucuncu_4_kort": ucuncu_4_kort,
+        "dorduncu_4_kort": dorduncu_4_kort,
     }
     return render(request, "calendarapp/etkinlik/index.html", context)
 
@@ -51,8 +59,9 @@ def gunun_etkinlikleri_ajax(request):
                     "bitis_saati": etkinlik.bitis_tarih_saat.strftime("%H:%M"),
                     "grup_adi": etkinlik.grup.__str__(),
                     "grup_id": etkinlik.grup.id,
-                    "etkinlik_id": etkinlik.id,
-                    "sure": (etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60,
+                    "id": etkinlik.id,
+                    "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
+                    "renk": etkinlik.top_rengi,
                 })
     return JsonResponse(data={"status": "success", "list": list})
 
