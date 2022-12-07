@@ -164,6 +164,8 @@
 
     <script>
         $(document).ready(function () {
+            //sorgulanan gun = today
+            var sorgulanan = new Date();
             etkinlikleriGetir();
             kortlarinKolonlariniOlustur();
         });
@@ -178,7 +180,7 @@
                         let kortId = result.list[i].kort_id;
                         let kortunEtkinlikleri = result.list[i].etkinlikler;
                         let kortunMaxEtkinlikSayisi = result.list[i].max_etkinlik_sayisi;
-                        for (let t = 0; t < kortunMaxEtkinlikSayisi; t++) { //her kortun 4 kolonu için döngü
+                        for (let t = 0; t < kortunMaxEtkinlikSayisi; t++) { //her kortun kolonu için döngü
                             let col = $('#kort_' + kortId + '_col_' + t);
                             let sorgulacakSaat = new Date("1/1/1900 09:00");
                             while (sorgulacakSaat <= new Date("1/1/1900 23:45")) {
@@ -189,11 +191,12 @@
                                     }
                                 });
                                 if (etkinlik != null && etkinlik != undefined) {
-                                    col.append('<div id="' + etkinlik.id + '" class="row doluEtkinlik border black" style="height: ' + etkinlik.sure + 'px;font-size: 0.7rem; background-color: ' + etkinlik.renk + '">' + etkinlik.grup_adi+'</div>');
+                                    col.append('<div id="' + etkinlik.id + '" class="row doluEtkinlik border black" style="height: ' + etkinlik.sure + 'px;font-size: 0.7rem; background-color: ' + etkinlik.renk + '">' + etkinlik.grup_adi + '</div>');
                                     kortunEtkinlikleri.splice(kortunEtkinlikleri.indexOf(etkinlik), 1);
                                     sorgulacakSaat = new Date("1/1/1900 " + etkinlik.bitis_saati);
                                 } else {
-                                    col.append('<a href="/takvim/' + kortId + '" target="_blank" div class="row border bg-secondary black" style="height:30px;font-size: 0.7rem">Boş</div></a>');
+                                    col.append('<a onclick="BekleyenListesiGetir(' + sorgulacakSaat.getHours() + ',' + sorgulacakSaat.getMinutes() + ')">' +
+                                        '<div class="row border bg-secondary black" style="height:30px;font-size: 0.7rem">Boş</div></a>');
                                     sorgulacakSaat.setMinutes(sorgulacakSaat.getMinutes() + 30);
                                 }
                             }
@@ -233,6 +236,20 @@
                 });
             }
         });
+
+        function BekleyenListesiGetir(saat, dk) {
+            alert(saat);
+            alert(dk);
+            $.ajax({
+                url: "",
+                type: "GET",
+                dataType: "json",
+                success: function (result) {
+                    $('#modalDiv').html(result.html);
+                    $('#bekleyenModal').modal('show');
+                }
+            });
+        }
 
         function printDiv() {
             var HTML_Width = $(".html-content").width();
