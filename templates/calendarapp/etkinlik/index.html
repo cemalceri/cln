@@ -28,7 +28,7 @@
     </div>
     <div class='html-content'>
         {% if ilk_4_kort %}
-            <div class="row">
+            <div class="row  mb-20">
                 <div class="col-md-1 col-xl-1 col-sm-1">
                     <div class="row">
                         <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
@@ -44,16 +44,12 @@
                 <div class="col-md-11 col-xl-11 col-sm-11">
                     <div class="row">
                         {% for kort in ilk_4_kort %}
-                            <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
+                            <div class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
                                 <div class="row">
                                     <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
                                          style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
                                 </div>
-                                <div class="row">
-                                    <div id="kort_{{ kort.id }}_col_1" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_2" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_3" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_4" class="col col-md-3"></div>
+                                <div id="kort_{{ kort.id }}" class="row">
                                 </div>
                             </div>
                         {% endfor %}
@@ -164,12 +160,15 @@
             </div>
         {% endif %}
     </div>
+    <div id="modalDiv"></div>
+
     <script>
         $(document).ready(function () {
-            etkinlikleri_getir();
+            etkinlikleriGetir();
+            kortlarinKolonlariniOlustur();
         });
 
-        function etkinlikleri_getir() {
+        function etkinlikleriGetir() {
             $.ajax({
                 url: "{% url 'calendarapp:gunun_etkinlikleri_ajax' %}",
                 type: "GET",
@@ -178,7 +177,8 @@
                     for (let i = 0; i < result.list.length; i++) { //her kort için döngü
                         let kortId = result.list[i].kort_id;
                         let kortunEtkinlikleri = result.list[i].etkinlikler;
-                        for (let t = 1; t < 5; t++) { //her kortun 4 kolonu için döngü
+                        let kortunMaxEtkinlikSayisi = result.list[i].max_etkinlik_sayisi;
+                        for (let t = 0; t < kortunMaxEtkinlikSayisi; t++) { //her kortun 4 kolonu için döngü
                             let col = $('#kort_' + kortId + '_col_' + t);
                             let sorgulacakSaat = new Date("1/1/1900 09:00");
                             while (sorgulacakSaat <= new Date("1/1/1900 23:45")) {
@@ -203,26 +203,32 @@
             });
         }
 
+        function kortlarinKolonlariniOlustur() {
+            let max_etkinlik_sayisi = 0;
+            let colAdet = 0;
+            {% for kort in ilk_4_kort %}
+                max_etkinlik_sayisi = {{ kort.max_etkinlik_sayisi }};
+                colAdet = 12 / max_etkinlik_sayisi;
+                for (let i = 0; i < max_etkinlik_sayisi; i++) {
+                    $('#kort_{{ kort.id }}').append('<div id="kort_{{ kort.id }}_col_' + i + '" class="col col-md-' + colAdet + '"></div>');
+                }
+            {% endfor %}
+        }
+
         //div on click event
         $(document).on('click', '.doluEtkinlik', function () {
             let id = $(this).attr('id');
             if (id != null && id != undefined) {
                 $.ajax({
-                    url: "",
+                    url: " {% url 'calendarapp:etkinlik_detay_getir_ajax' %}",
                     type: "GET",
                     data: {
-                        'id': id
+                        'etkinlik_id': id
                     },
                     dataType: "json",
                     success: function (result) {
-                        $('#etkinlik_baslik').text(result.baslik);
-                        $('#etkinlik_baslangic_saati').text(result.baslangic_saati);
-                        $('#etkinlik_bitis_saati').text(result.bitis_saati);
-                        $('#etkinlik_sure').text(result.sure);
-                        $('#etkinlik_renk').text(result.renk);
-                        $('#etkinlik_kort').text(result.kort);
-                        $('#etkinlik_aciklama').text(result.aciklama);
-                        $('#etkinlik_detay_modal').modal('show');
+                        $('#modalDiv').html(result.html);
+                        $('#detayModal').modal('show');
                     }
                 });
             }

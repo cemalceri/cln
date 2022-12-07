@@ -13,7 +13,9 @@ class KortManager(models.Manager):
 
 class KortModel(BaseAbstract):
     adi = models.CharField('Adı', max_length=250, null=False, blank=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="kort", null=True, blank=True,
+    max_etkinlik_sayisi = models.IntegerField('Maksimum Etkinlik Sayısı', null=False, blank=False, default=4)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="kort", null=True,
+                             blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):

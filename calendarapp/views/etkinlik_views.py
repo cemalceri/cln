@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from datetime import timedelta, datetime, date
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
+
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 
 from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum
@@ -48,9 +50,9 @@ def gunun_etkinlikleri_ajax(request):
         list.append({
             "kort_id": item.id,
             "kort_adi": item.adi,
-            "etkinlikler": []
+            "max_etkinlik_sayisi": item.max_etkinlik_sayisi,
+            "etkinlikler": [],
         })
-    print(list)
     for etkinlik in etkinlikler:
         for item in list:
             if etkinlik.kort_id == item["kort_id"]:
@@ -370,23 +372,13 @@ def iptal_geri_al_by_antrenor(request, id):
 
 
 @login_required
-def kortlarin_bos_saatlerini_getir(request):
-    kortlarin_bos_saatleri = {}
-    time_range = range(9, 24)
-    dakikalar = [00, 15, 30, 45]
-    bugunun_etkinlikleri = EtkinlikModel.objects.getir_bugunun_etkinlikleri()
-    kortlar = KortModel.objects.all()
-    for kort in kortlar:
-        kortlarin_bos_saatleri[kort.id] = []
-        for saat in time_range:
-            for dakika in dakikalar:
-                sorgu_saati = datetime.today().replace(hour=saat, minute=dakika, second=0, microsecond=0)
-                etkinlik = bugunun_etkinlikleri.filter(kort_id=kort.id, baslangic_tarih_saat__lte=sorgu_saati,
-                                                       bitis_tarih_saat__gt=sorgu_saati)
-                if not etkinlik.exists():
-                    kortlarin_bos_saatleri[kort.id].append(sorgu_saati)
-    return JsonResponse(
-        data={"status": "success", "messages": "İşlem başarılı", "data": kortlarin_bos_saatleri})
+def etkinlik_detay_getir_ajax(request):
+    etkinlik_id = request.GET.get("etkinlik_id")
+    etkinlik = EtkinlikModel.objects.filter(pk=etkinlik_id).first()
+    if etkinlik:
+        html = render_to_string('calendarapp/etkinlik/_detay_modal.html', {"etkinlik": etkinlik})
+    return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
+
 
 
 def abonelik_olustur(etkinlik):
