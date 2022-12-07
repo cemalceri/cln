@@ -189,11 +189,11 @@
                                     }
                                 });
                                 if (etkinlik != null && etkinlik != undefined) {
-                                    col.append('<div id="' + etkinlik.id + '" class="row doluEtkinlik border black" style="height: ' + etkinlik.sure + 'px;font-size: 0.7rem;background-color: ' + etkinlik.renk + '">' + etkinlik.baslangic_saati + '-' + etkinlik.bitis_saati + '</div>');
+                                    col.append('<div id="' + etkinlik.id + '" class="row doluEtkinlik border black" style="height: ' + etkinlik.sure + 'px;font-size: 0.7rem; background-color: ' + etkinlik.renk + '">' + etkinlik.grup_adi+'</div>');
                                     kortunEtkinlikleri.splice(kortunEtkinlikleri.indexOf(etkinlik), 1);
                                     sorgulacakSaat = new Date("1/1/1900 " + etkinlik.bitis_saati);
                                 } else {
-                                    col.append('<div class="row border bg-secondary black" style="height:30px;font-size: 0.7rem">Boş</div>');
+                                    col.append('<a href="/takvim/' + kortId + '" target="_blank" div class="row border bg-secondary black" style="height:30px;font-size: 0.7rem">Boş</div></a>');
                                     sorgulacakSaat.setMinutes(sorgulacakSaat.getMinutes() + 30);
                                 }
                             }

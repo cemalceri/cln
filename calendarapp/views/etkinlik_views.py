@@ -59,7 +59,7 @@ def gunun_etkinlikleri_ajax(request):
                 item["etkinlikler"].append({
                     "baslangic_saati": etkinlik.baslangic_tarih_saat.strftime("%H:%M"),
                     "bitis_saati": etkinlik.bitis_tarih_saat.strftime("%H:%M"),
-                    "grup_adi": etkinlik.grup.__str__(),
+                    "grup_adi": etkinlik.grup.__str__()[0:15],
                     "grup_id": etkinlik.grup.id,
                     "id": etkinlik.id,
                     "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
@@ -107,14 +107,12 @@ def sil_etkinlik(request, id):
 @login_required(login_url="signup")
 def sil_etkinlik_serisi_ajax(request):
     id = request.GET.get("id")
-    etkinlik = EtkinlikModel.objects.filter(pk=id).first()
     etkinlik_list = EtkinlikModel.objects.filter(
-        Q(pk=id) | Q(pk=etkinlik.ilk_etkinlik_id) | Q(ilk_etkinlik_id=etkinlik.ilk_etkinlik_id,
-                                                      ilk_etkinlik_id__isnull=False) | Q(
-            ilk_etkinlik_id=id, ilk_etkinlik_id__isnull=False))
-    if etkinlik_list:
-        etkinlik_list.delete()
-    return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
+        Q(pk=id) | Q(ilk_etkinlik_id=id, baslangic_tarih_saat__gte=datetime.now().date()))
+    for etkinlik in etkinlik_list:
+        abonelik_sil(etkinlik)
+        etkinlik.delete()
+    return JsonResponse({"status": "success", "message": "Etkinlik serisi silindi."})
 
 
 @login_required
@@ -175,7 +173,7 @@ def etkinlik_kaydi_hata_var_mi(form):
         return JsonResponse(data={"status": "error", "message": mesaj})
     if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
                                      form.data["kort"], form.cleaned_data["pk"]):
-        mesaj = "Seçilen tarih saate başka etkinlik eklenemez."
+        mesaj = "Bu kort aynı saat için maksimimum etkinlik sayısına ulaştı."
         return JsonResponse(data={"status": "error", "message": mesaj})
     if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Paket.value:
         uyeler = paket_uyeligi_olmayan_grup_uyesi(form)
@@ -199,6 +197,7 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
 
 
 def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, etkinlik_id=None):
+    kort = KortModel.objects.get(id=kort_id)
     result = EtkinlikModel.objects.filter(Q(kort_id=kort_id) & (
             Q(baslangic_tarih_saat__lt=baslangic_tarih_saat,
               bitis_tarih_saat__gt=baslangic_tarih_saat) |  # başlangıç saati herhangi bir etkinliğin içinde olan
@@ -209,7 +208,7 @@ def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_i
             Q(baslangic_tarih_saat__gte=baslangic_tarih_saat, bitis_tarih_saat__lte=bitis_tarih_saat))
                                           # balangıç ve bitiş saati bizim etkinliğin arasında olan
                                           ).exclude(id=etkinlik_id)
-    return result.count() > 3
+    return result.count() > kort.max_etkinlik_sayisi - 1
 
 
 # def etkinlik_tekrar_sayisi_kadar_ekle(request, form, etkinlik_id):
@@ -237,7 +236,7 @@ def saat_guncelle_etkinlik_ajax(request):
     bitis_tarih_saat = request.GET.get("bitis_tarih_saat")
     etkinlik = EtkinlikModel.objects.filter(pk=id).first()
     if ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, etkinlik.kort_id, id):
-        return JsonResponse(data={"status": "error", "message": "Seçilen tarih saatlerde başka etkinlik kayıtlı."})
+        return JsonResponse(data={"status": "error", "message": "Bu kort aynı saat için maksimimum etkinlik sayısına ulaştı."})
     etkinlik.baslangic_tarih_saat = baslangic_tarih_saat
     etkinlik.bitis_tarih_saat = bitis_tarih_saat
     etkinlik.save()
@@ -353,24 +352,6 @@ def iptal_geri_al_by_antrenor(request, id):
         return redirect("calendarapp:profil_antrenor")
 
 
-# @login_required
-# def kortlarin_bos_saatlerini_getir(request):
-#     kortlarin_bos_saatleri = {}
-#     time_range = range(9, 24)
-#     dakikalar = [00, 15, 30, 45]
-#     for kort in KortModel.objects.all():
-#         kortlarin_bos_saatleri[kort.id] = []
-#         for saat in time_range:
-#             for dakika in dakikalar:
-#                 sorgu_saati = datetime.today().replace(hour=saat, minute=dakika, second=0, microsecond=0)
-#                 etkinlik = EtkinlikModel.objects.filter(kort_id=kort.id,
-#                                                         baslangic_tarih_saat=sorgu_saati)
-#                 if not etkinlik.exists():
-#                     kortlarin_bos_saatleri[kort.id].append(sorgu_saati)
-#     return JsonResponse(
-#         data={"status": "success", "messages": "İşlem başarılı", "data": kortlarin_bos_saatleri})
-
-
 @login_required
 def etkinlik_detay_getir_ajax(request):
     etkinlik_id = request.GET.get("etkinlik_id")
@@ -380,7 +361,7 @@ def etkinlik_detay_getir_ajax(request):
     return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
 
 
-
+@login_required
 def abonelik_olustur(etkinlik):
     uye_grubu = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
     haftaninin_gunu = etkinlik.baslangic_tarih_saat.weekday()

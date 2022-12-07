@@ -40,10 +40,10 @@ class UyeAbonelikModel(BaseAbstract):
 class UyePaketModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False)
-    baslangic_tarih_saat = models.DateField("Başlangıç Tarihi", null=False, blank=False)
-    bitis_tarih_saat = models.DateField(verbose_name="Bitiş Tarihi", null=False, blank=False)
+    baslangic_tarih = models.DateField("Başlangıç Tarihi", null=False, blank=False)
+    bitis_tarih = models.DateField(verbose_name="Bitiş Tarihi", null=True, blank=True)
     adet = models.IntegerField(verbose_name="Adet", null=False, blank=False)
-    toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=True, blank=True)
+    toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=False, blank=False)
     ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
     aktif_mi = models.BooleanField(default=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
@@ -58,24 +58,8 @@ class UyePaketModel(BaseAbstract):
         verbose_name_plural = "Üyenin Paketleri"
         ordering = ["id"]
 
-
-# class PaketModel(BaseAbstract):
-#     adi = models.CharField(max_length=200, verbose_name="Paket/Abonelik Adı")
-#     tipi = models.SmallIntegerField(verbose_name="Tipi", choices=AbonelikTipiEnum.choices(), blank=False, null=False,
-#                                     default=AbonelikTipiEnum.Üyelik)
-#     adet = models.IntegerField(verbose_name="Adet", null=True, blank=True)
-#     toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=True, blank=True)
-#     ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="paket", null=True,
-#                              blank=True, verbose_name="Ekleyen")
-#
-#     def __str__(self):
-#         return self.adi
-#
-#     class Meta:
-#         verbose_name = "Paket ve Abonelik Çeşitleri"
-#         verbose_name_plural = "Paket ve Abonelik Çeşitleri"
-#         ordering = ["id"]
+    def __str__(self):
+        return str(self.uye) + "-" + str(self.kort) + " - Adet: " + str(self.adet)
 
 
 class PaketKullanimModel(BaseAbstract):
@@ -85,8 +69,7 @@ class PaketKullanimModel(BaseAbstract):
     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
                                  null=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="paket_kullanim",
-                             null=True, blank=True,
-                             verbose_name="Ekleyen")
+                             null=True, blank=True, verbose_name="Ekleyen")
 
     def __str__(self):
         return str(self.etkinlik) + " " + str(self.uye)

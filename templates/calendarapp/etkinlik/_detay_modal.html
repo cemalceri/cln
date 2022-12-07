@@ -1,3 +1,4 @@
+{% load static %}
 <!-- Modal -->
 <div class="modal fade" id="detayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
@@ -23,12 +24,13 @@
                         <label class="form-control-label" for="inputBasicFirstName">Abonelik Tipi:</label>
                     </div>
                     <div class="form-group col-md-9">
-                        <input type="text" class="form-control" disabled value="{{ etkinlik.get_abonelik_tipi_display }}">
+                        <input type="text" class="form-control" disabled
+                               value="{{ etkinlik.get_abonelik_tipi_display }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-group col-md-3">
-                        <label class="form-control-label" for="inputBasicFirstName">Başlangıç saat:</label>
+                        <label class="form-control-label" for="inputBasicFirstName">Başlangıç:</label>
                     </div>
                     <div class="form-group col-md-9">
                         <input type="text" class="form-control" disabled value="{{ etkinlik.baslangic_tarih_saat }}">
@@ -36,7 +38,7 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-md-3">
-                        <label class="form-control-label" for="inputBasicFirstName">Bitiş saat:</label>
+                        <label class="form-control-label" for="inputBasicFirstName">Bitiş:</label>
                     </div>
                     <div class="form-group col-md-9">
                         <input type="text" class="form-control" disabled value="{{ etkinlik.bitis_tarih_saat }}">
@@ -105,8 +107,69 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Kapat</button>
+                <button id="btnSil" onclick="EtkinlikSil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
+                </button>
+                <button id="btnSeriyiSil" onclick="EtkinlikSerisiSil({{ etkinlik.id }})" type="button"
+                        class="btn btn-outline-danger">Seriyi Sil
+                </button>
+
             </div>
         </div>
     </div>
 </div>
+<script>
+    function EtkinlikSil(etkinlik_id) {
+        debugger;
+        if (confirm('Kaydı silmek istediğinize emin misiniz?')) {
+            $.ajax({
+                type: "Get",
+                url: "{% url 'calendarapp:sil_etkinlik_by_ajax' %}",
+                data: {
+                    'id': etkinlik_id
+                },
+                success: function (data) {
+                    if (data.status === 'success') {
+                        $('#detayModal').modal('hide');
+                        popupMesajGoster(data.message, data.status);
+                        //reload page after 1 second
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        popupMesajGoster(data.message, data.status);
+                    }
+                },
+                error: function (data) {
+                    popupMesajGoster(data, 'error');
+                }
+            });
+        }
+    }
+    function EtkinlikSerisiSil(etkinlik_id) {
+        debugger;
+        if (confirm('Kayıtları silmek istediğinize emin misiniz?')) {
+            $.ajax({
+                type: "Get",
+                url: "{% url 'calendarapp:sil_etkinlik_serisi_by_id' %}",
+                data: {
+                    'id': etkinlik_id
+                },
+                success: function (data) {
+                    if (data.status === 'success') {
+                        $('#detayModal').modal('hide');
+                        popupMesajGoster(data.message, data.status);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        popupMesajGoster(data.message, data.status);
+                    }
+                },
+                error: function (data) {
+                    popupMesajGoster(data, 'error');
+                }
+            });
+        }
+    }
+</script>

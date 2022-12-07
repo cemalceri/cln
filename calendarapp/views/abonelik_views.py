@@ -44,7 +44,7 @@ def kaydet_uye_paket(request, uye_id):
             messages.success(request, "Kaydedildi.")
             return redirect("calendarapp:profil_uye", uye_id)
         else:
-            messages.error(request, formErrorsToText(form.errors, AntrenorModel))
+            messages.error(request, formErrorsToText(form.errors, UyePaketModel))
             return render(request, "calendarapp/abonelik/uye_paket_kaydet.html", context={'form': form})
     form = UyePaketKayitForm(initial={'uye': UyeModel.objects.filter(pk=uye_id).first()})
     return render(request, "calendarapp/abonelik/uye_paket_kaydet.html", context={'form': form})

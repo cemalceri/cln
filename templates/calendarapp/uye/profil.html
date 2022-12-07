@@ -356,7 +356,6 @@
                                                                 <th>Başlangıç - Bitiş</th>
                                                                 <th>Süre</th>
                                                                 <th>Aktif Mi</th>
-                                                                <th>İşlemler</th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
@@ -402,6 +401,7 @@
                                                                 <th>Kort</th>
                                                                 <th>Başlangıç - Bitiş</th>
                                                                 <th>Adet</th>
+                                                                <th>Kalan Adet</th>
                                                                 <th>Aktif Mi</th>
                                                                 <th>Özellikler</th>
                                                                 <th>İşlemler</th>
@@ -415,6 +415,7 @@
                                                                     <td>{{ paket.baslangic_tarih_saat| time:'H:i' }}
                                                                         - {{ paket.bitis_tarih_saat| time:'H:i' }}</td>
                                                                     <td>{{ paket.adet }}</td>
+                                                                    <td>{{ paket.kalan_adet }}</td>
                                                                     <td>{{ paket.aktif_mi | yesno:"Evet,Hayır" }}</td>
                                                                     <td>{{ paket.ozellikler | default_if_none:"" }}</td>
                                                                     <td>
@@ -438,7 +439,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                             <div class="tab-pane animation-slide-left" id="odeme" role="tabpanel">

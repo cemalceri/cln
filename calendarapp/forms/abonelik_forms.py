@@ -8,11 +8,11 @@ class UyePaketKayitForm(ModelForm):
         fields = '__all__'
         exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
         widgets = {
-            "baslangic_tarihi": DateInput(
+            "baslangic_tarih": DateInput(
                 attrs={"type": "date", "class": "form-control"},
                 format="%Y-%m-%d",
             ),
-            "bitis_tarihi": DateInput(
+            "bitis_tarih": DateInput(
                 attrs={"type": "date", "class": "form-control"},
                 format="%Y-%m-%d",
             ),
