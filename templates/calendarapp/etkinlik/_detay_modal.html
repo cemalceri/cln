@@ -1,8 +1,8 @@
 {% load static %}
 <!-- Modal -->
-<div class="modal fade" id="detayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade " id="detayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Etkinlik Detayı</h5>
@@ -110,8 +110,13 @@
                 <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Kapat</button>
                 <button id="btnSil" onclick="EtkinlikSil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
                 </button>
-                <button id="btnSeriyiSil" onclick="EtkinlikSerisiSil({{ etkinlik.id }})" type="button"
-                        class="btn btn-outline-danger">Seriyi Sil
+                <button type="button" onclick="EtkinlikSerisiSil({{ etkinlik.id }})" class="btn btn-outline-danger">
+                    Seriyi Sil
+                </button>
+                <button type="button" onclick="etkinlikTamamlandi({{ etkinlik.id }})" class="btn btn-dark"> Tamamlandı
+                </button>
+                <button type="button" onclick="etkinlikTamamlandiGeriAl({{ etkinlik.id }})" class="btn btn-primary">
+                    Tamamlandı İptal
                 </button>
 
             </div>
@@ -146,6 +151,7 @@
             });
         }
     }
+
     function EtkinlikSerisiSil(etkinlik_id) {
         debugger;
         if (confirm('Kayıtları silmek istediğinize emin misiniz?')) {
@@ -171,5 +177,49 @@
                 }
             });
         }
+    }
+
+    function etkinlikTamamlandi(etkinlik_id) {
+        debugger;
+        $.ajax({
+            type: "Get",
+            url: "{% url 'calendarapp:etkinlik_tamamlandi_ajax' %}",
+            data: {
+                'id': etkinlik_id
+            },
+            success: function (data) {
+                if (data.status === 'success') {
+                    $('#detayModal').modal('hide');
+                    popupMesajGoster(data.message, data.status);
+                } else {
+                    popupMesajGoster(data.message, data.status);
+                }
+            },
+            error: function (data) {
+                popupMesajGoster(data, 'error');
+            }
+        });
+    }
+
+    function etkinlikTamamlandiGeriAl(etkinlik_id) {
+        debugger;
+        $.ajax({
+            type: "Get",
+            url: "{% url 'calendarapp:etkinlik_tamamlandi_iptal_ajax' %}",
+            data: {
+                'id': etkinlik_id
+            },
+            success: function (data) {
+                if (data.status === 'success') {
+                    $('#detayModal').modal('hide');
+                    popupMesajGoster(data.message, data.status);
+                } else {
+                    popupMesajGoster(data.message, data.status);
+                }
+            },
+            error: function (data) {
+                popupMesajGoster(data, 'error');
+            }
+        });
     }
 </script>

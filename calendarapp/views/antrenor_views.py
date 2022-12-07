@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from calendarapp.forms.antrenor_forms import AntrenorKayitForm
 from calendarapp.models.Enums import KatilimDurumuEnum
 from calendarapp.models.concrete.antrenor import AntrenorModel
-from calendarapp.models.concrete.etkinlik import EtkinlikModel, EtkinlikKatilimModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel
 from calendarapp.utils import formErrorsToText
 
@@ -43,8 +43,7 @@ def profil(request, id):
     )).order_by('baslangic_tarih_saat')
     yapilan_etkinlikler = EtkinlikModel.objects.filter(antrenor_id=antrenor.id, bitis_tarih_saat__lt=datetime.now(
     )).order_by('-baslangic_tarih_saat')
-    iptal_etkinlik_katilim_idler = EtkinlikKatilimModel.objects.filter(
-        etkinlik__antrenor_id=antrenor.id, katilim_durumu=KatilimDurumuEnum.İptal.value).values('etkinlik')
+    iptal_etkinlik_katilim_idler = None
     iptal_etkinlikler = EtkinlikModel.objects.filter(id__in=iptal_etkinlik_katilim_idler)
     odemeler = ParaHareketiModel.objects.filter(antrenor_id=antrenor.id).order_by('-tarih')
     return render(request, "calendarapp/antrenor/profil.html",

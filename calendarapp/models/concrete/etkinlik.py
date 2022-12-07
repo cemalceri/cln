@@ -133,21 +133,21 @@ class EtkinlikModel(BaseAbstract):
         return f'<a href="{url}"> {self.baslik} </a>'
 
 
-class EtkinlikKatilimModel(BaseAbstract):
-    etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
-                                 null=True, related_name="etkinlik_etkinlikkatilim_relations")
-    uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False,
-                            related_name="uye")
-    katilim_durumu = models.SmallIntegerField('Katılım Durumu', choices=KatilimDurumuEnum.choices(), null=False,
-                                              blank=False, default=KatilimDurumuEnum.Katıldı.value)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik_katilim",
-                             null=True, blank=True,
-                             verbose_name="Ekleyen")
-
-    class Meta:
-        verbose_name = "Etkinlik Katılım"
-        verbose_name_plural = "Etkinlik Katılımları"
-        ordering = ["-id"]
-
-    def __str__(self):
-        return f"{self.etkinlik.baslik} - {self.uye.adi}"
+# class EtkinlikKatilimModel(BaseAbstract):
+#     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
+#                                  null=True, related_name="etkinlik_etkinlikkatilim_relations")
+#     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False,
+#                             related_name="uye")
+#     katilim_durumu = models.SmallIntegerField('Katılım Durumu', choices=KatilimDurumuEnum.choices(), null=False,
+#                                               blank=False, default=KatilimDurumuEnum.Katıldı.value)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik_katilim",
+#                              null=True, blank=True,
+#                              verbose_name="Ekleyen")
+#
+#     class Meta:
+#         verbose_name = "Etkinlik Katılım"
+#         verbose_name_plural = "Etkinlik Katılımları"
+#         ordering = ["-id"]
+#
+#     def __str__(self):
+#         return f"{self.etkinlik.baslik} - {self.uye.adi}"
