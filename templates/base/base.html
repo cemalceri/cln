@@ -164,8 +164,12 @@
                     class="app-menu__label">Anasayfa</span></a>
         </li>
         <li>
-            <a class="app-menu__item" href="{% url 'calendarapp:takvim-getir' %}"><i
+            <a class="app-menu__item" href="{% url 'calendarapp:haftalik_plan_getir' %}"><i
                     class="app-menu__icon fa fa-calendar"></i><span class="app-menu__label">Takvim</span></a>
+        </li>
+        <li>
+            <a class="app-menu__item" href="{% url 'calendarapp:haftalik_plan_getir' %}"><i
+                    class="app-menu__icon fa fa-calendar-check-o"></i><span class="app-menu__label">Haftalık Plan</span></a>
         </li>
         <li>
             <a class="app-menu__item" href="{% url 'calendarapp:index_etkinlik' %}"><i

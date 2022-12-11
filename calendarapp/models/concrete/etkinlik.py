@@ -133,21 +133,28 @@ class EtkinlikModel(BaseAbstract):
         return f'<a href="{url}"> {self.baslik} </a>'
 
 
-# class EtkinlikKatilimModel(BaseAbstract):
-#     etkinlik = models.ForeignKey(EtkinlikModel, verbose_name="Etkinlik", on_delete=models.CASCADE, blank=False,
-#                                  null=True, related_name="etkinlik_etkinlikkatilim_relations")
-#     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False,
-#                             related_name="uye")
-#     katilim_durumu = models.SmallIntegerField('Katılım Durumu', choices=KatilimDurumuEnum.choices(), null=False,
-#                                               blank=False, default=KatilimDurumuEnum.Katıldı.value)
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik_katilim",
-#                              null=True, blank=True,
-#                              verbose_name="Ekleyen")
-#
-#     class Meta:
-#         verbose_name = "Etkinlik Katılım"
-#         verbose_name_plural = "Etkinlik Katılımları"
-#         ordering = ["-id"]
-#
-#     def __str__(self):
-#         return f"{self.etkinlik.baslik} - {self.uye.adi}"
+class HaftalikPlanModel(BaseAbstract):
+    yil = models.IntegerField(verbose_name="Yıl")
+    hafta = models.IntegerField(verbose_name="Hafta")
+    grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
+                             null=False, related_name="haftalikplan_grup_relations")
+    abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.choices(), default=2, verbose_name="Abonelik Tipi")
+    baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
+    bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
+    kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False,
+                             related_name="haftalikplan_kort_relations")
+    antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
+                                 null=True, related_name="haftalikplan_antrenor_relations")
+    top_rengi = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray", null=False, blank=False,
+                                 verbose_name="Top Rengi")
+    aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="haftalikplan_user_relations", null=True,
+                             blank=True, verbose_name="Ekleyen")
+
+    class Meta:
+        verbose_name = "Haftalik Plan"
+        verbose_name_plural = "Haftalik Planlar"
+        ordering = ["-id"]
+
+    def __str__(self):
+        return str(self.grup)

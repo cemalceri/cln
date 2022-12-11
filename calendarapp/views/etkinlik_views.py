@@ -7,11 +7,11 @@ from datetime import timedelta, datetime, date
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 
-from calendarapp.forms.etkinlik_forms import EtkinlikForm
+from calendarapp.forms.etkinlik_forms import EtkinlikForm, HaftalikPlanForm
 
 from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel, UyePaketModel
-from calendarapp.models.concrete.etkinlik import EtkinlikModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
 from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
@@ -26,19 +26,19 @@ def index(request):
     saatler = []
     for i in range(9, 24):
         saatler.append(i)
-    html=""
-    islem= divmod(kortlar.count(),4)
-    bolum= islem[0]
-    kalan= islem[1]
-    baslangic= 0
-    bitis= 4
+    html = ""
+    islem = divmod(kortlar.count(), 4)
+    bolum = islem[0]
+    kalan = islem[1]
+    baslangic = 0
+    bitis = 4
     for i in range(bolum):
-        html += render_to_string('calendarapp/etkinlik/gunluk_plan_icin_kortlar.html',
+        html += render_to_string('calendarapp/etkinlik/partials/_gunluk_plan_icin_kortlar.html',
                                  {'kortlar': kortlar[baslangic:bitis], 'saatler': saatler, })
         baslangic += 4
         bitis += 4
     if kalan > 0:
-        html += render_to_string('calendarapp/etkinlik/gunluk_plan_icin_kortlar.html',
+        html += render_to_string('calendarapp/etkinlik/partials/_gunluk_plan_icin_kortlar.html',
                                  {'kortlar': kortlar[baslangic:], 'saatler': saatler, })
     context = {
         "kortlar": html,
@@ -127,7 +127,6 @@ def takvim_getir(request, kort_id=None):
     form = EtkinlikForm()
     kortlar = KortModel.objects.all().order_by("id")
     events = EtkinlikModel.objects.filter(kort_id=kort_id) if kort_id else []
-    bugunun_etkinlikleri = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler(kort_id=kort_id)
     event_list = []
     # start: '2020-09-16T16:00:00'
     for event in events:
@@ -142,9 +141,51 @@ def takvim_getir(request, kort_id=None):
             }
         )
     context = {"form": form, "etkinlikler": event_list, "kortlar": kortlar,
-               "secili_kort": kort,
-               "bugunun_etkinlikleri": bugunun_etkinlikleri}
+               "secili_kort": kort, }
     return render(request, 'calendarapp/etkinlik/takvim.html', context)
+
+
+@login_required
+def haftalik_plan_getir(request, kort_id=None):
+    kort = KortModel.objects.filter(pk=kort_id).first()
+    form = HaftalikPlanForm()
+    kortlar = KortModel.objects.all().order_by("id")
+    bu_yil = datetime.now().year
+    bu_hafta = datetime.now().isocalendar()[1]
+    event_list = []
+    bu_haftanin_plani = HaftalikPlanModel.objects.filter(yil=bu_yil, hafta=bu_hafta, kort_id=kort_id)
+    if not bu_haftanin_plani:
+        if bu_hafta == 1:
+            gecen_haftanin_plani = HaftalikPlanModel.objects.filter(yil=bu_yil - 1, hafta=52, kort_id=kort_id)
+        else:
+            gecen_haftanin_plani = HaftalikPlanModel.objects.filter(yil=bu_yil, hafta=bu_hafta - 1, kort_id=kort_id)
+        if gecen_haftanin_plani:
+            for item in gecen_haftanin_plani:
+                HaftalikPlanModel.objects.create(
+                    yil=bu_yil,
+                    hafta=bu_hafta + 1,
+                    grup=item.grup,
+                    abonelik_tipi=item.abonelik_tipi,
+                    baslangic_tarih_saat=item.baslangic_tarih_saat + timedelta(days=7),
+                    bitis_tarih_saat=item.bitis_tarih_saat + timedelta(days=7),
+                    kort=item.kort,
+                    antrenor=item.antrenor,
+                    top_rengi=item.top_rengi,
+                )
+        bu_haftanin_plani = HaftalikPlanModel.objects.filter(yil=bu_yil, hafta=bu_hafta, kort_id=kort_id)
+    for event in bu_haftanin_plani:
+        event_list.append(
+            {
+                "id": event.id,
+                "title": event.grup.__str__(),
+                "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
+                "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
+                "backgroundColor": event.antrenor.renk if event.antrenor else "gray",
+            }
+        )
+    context = {"form": form, "etkinlikler": event_list, "kortlar": kortlar,
+               "secili_kort": kort}
+    return render(request, 'calendarapp/etkinlik/haftalık_plan.html', context)
 
 
 @login_required
@@ -381,7 +422,7 @@ def etkinlik_detay_getir_ajax(request):
     etkinlik_id = request.GET.get("etkinlik_id")
     etkinlik = EtkinlikModel.objects.filter(pk=etkinlik_id).first()
     if etkinlik:
-        html = render_to_string('calendarapp/etkinlik/_detay_modal.html', {"etkinlik": etkinlik})
+        html = render_to_string('calendarapp/etkinlik/partials/_detay_modal.html', {"etkinlik": etkinlik})
     return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
 
 

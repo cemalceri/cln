@@ -11,8 +11,10 @@ app_name = "calendarapp"
 
 urlpatterns = [
     # Takvim ve Etkinlikler
-    path("takvim/", etkinlik_views.takvim_getir, name="takvim-getir"),
-    path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim-getir_by_kort_id"),
+    path("takvim/", etkinlik_views.takvim_getir, name="takvim_getir"),
+    path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim_getir_by_kort_id"),
+    path("haftalik-plan/", etkinlik_views.haftalik_plan_getir, name="haftalik_plan_getir"),
+    path("haftalik-plan/<int:kort_id>", etkinlik_views.haftalik_plan_getir, name="haftalik_plan_getir_by_kort_id"),
     path("etkinlik", etkinlik_views.index, name="index_etkinlik"),
     path("gunun_etkinlikleri", etkinlik_views.gunun_etkinlikleri_ajax, name="gunun_etkinlikleri_ajax"),
 
