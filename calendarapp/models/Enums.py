@@ -6,7 +6,7 @@ from django.db import models
 
 class RenkEnum(Enum):
     Kırmızı = "red"
-    Mavi = "blue"
+    Turuncu = "orange"
     Sarı = "yellow"
     Yeşil = "green"
 

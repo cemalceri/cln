@@ -12,96 +12,87 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Katılımcı:</label>
                     </div>
-                    <div class="form-group col-md-9">
+                    <div class="form-group col-md-10">
                         <input type="text" class="form-control" disabled value="{{ etkinlik.grup }}">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-3">
-                        <label class="form-control-label" for="inputBasicFirstName">Abonelik Tipi:</label>
-                    </div>
-                    <div class="form-group col-md-9">
-                        <input type="text" class="form-control" disabled
-                               value="{{ etkinlik.get_abonelik_tipi_display }}">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Başlangıç:</label>
                     </div>
-                    <div class="form-group col-md-9">
-                        <input type="text" class="form-control" disabled value="{{ etkinlik.baslangic_tarih_saat }}">
+                    <div class="form-group col-md-4">
+                        <input type="text" class="form-control" disabled
+                               value="{{ etkinlik.baslangic_tarih_saat }}">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Bitiş:</label>
                     </div>
-                    <div class="form-group col-md-9">
+                    <div class="form-group col-md-4">
                         <input type="text" class="form-control" disabled value="{{ etkinlik.bitis_tarih_saat }}">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
+                        <label class="form-control-label" for="inputBasicFirstName">Abonelik Tipi:</label>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <input type="text" class="form-control" disabled
+                               value="{{ etkinlik.get_abonelik_tipi_display }}">
+                    </div>
+                    <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Antrenör:</label>
                     </div>
-                    <div class="form-group col-md-9">
+                    <div class="form-group col-md-4">
                         <input type="text" class="form-control" disabled
                                value="{{ etkinlik.antrenor |default_if_none:"" }}">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-3">
-                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı (Yönetici):</label>
+                    <div class="form-group col-md-2">
+                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı(Yönetici):</label>
                     </div>
-                    <div class="form-group col-md-9">
+                    <div class="form-group col-md-2">
                         <input type="text" class="form-control" disabled
                                value="{{ etkinlik.tamamlandi_yonetici |yesno:"Evet,Hayır" }}">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı (Antrenör):</label>
+                    <div class="form-group col-md-2">
+                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı(Antrenör):</label>
                     </div>
-                    <div class="form-group col-md-9">
+                    <div class="form-group col-md-2">
                         <input type="text" class="form-control" disabled
                                value="{{ etkinlik.tamamlandi_antrenor |yesno:"Evet,Hayır" }}">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı (Üye):</label>
+                    <div class="form-group col-md-2">
+                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı(Üye):</label>
                     </div>
-                    <div class="form-group col-md-9">
+                    <div class="form-group col-md-2">
                         <input type="text" class="form-control" disabled
                                value="{{ etkinlik.tamamlandi_uye |yesno:"Evet,Hayır" }}">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Açıklama:</label>
                     </div>
-                    <div class="form-group col-md-9">
-                        <input type="text" class="form-control" disabled
-                               value="{{ etkinlik.aciklama |default_if_none:"" }}">
+                    <div class="form-group col-md-10">
+                        <textarea type="text" class="form-control" disabled
+                                  rows="3">{{ etkinlik.aciklama |default_if_none:"" }}</textarea>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Kayıt Eden:</label>
                     </div>
-                    <div class="form-group col-md-9">
+                    <div class="form-group col-md-4">
                         <input type="text" class="form-control" disabled value="{{ etkinlik.user }}">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Kayıt Tarihi:</label>
                     </div>
-                    <div class="form-group col-md-9">
+                    <div class="form-group col-md-4">
                         <input type="text" class="form-control" disabled value="{{ etkinlik.created_at }}">
                     </div>
                 </div>

@@ -24,19 +24,24 @@ import json
 def index(request):
     kortlar = KortModel.objects.all().order_by("id")
     saatler = []
-    ilk_4_kort = kortlar[:4]
-    ikinci_4_kort = kortlar[4:8]
-    ucuncu_4_kort = kortlar[8:12]
-    dorduncu_4_kort = kortlar[12:16]
     for i in range(9, 24):
         saatler.append(i)
+    html=""
+    islem= divmod(kortlar.count(),4)
+    bolum= islem[0]
+    kalan= islem[1]
+    baslangic= 0
+    bitis= 4
+    for i in range(bolum):
+        html += render_to_string('calendarapp/etkinlik/gunluk_plan_icin_kortlar.html',
+                                 {'kortlar': kortlar[baslangic:bitis], 'saatler': saatler, })
+        baslangic += 4
+        bitis += 4
+    if kalan > 0:
+        html += render_to_string('calendarapp/etkinlik/gunluk_plan_icin_kortlar.html',
+                                 {'kortlar': kortlar[baslangic:], 'saatler': saatler, })
     context = {
-        "saatler": saatler,
-        "kortlar": kortlar,
-        "ilk_4_kort": ilk_4_kort,
-        "ikinci_4_kort": ikinci_4_kort,
-        "ucuncu_4_kort": ucuncu_4_kort,
-        "dorduncu_4_kort": dorduncu_4_kort,
+        "kortlar": html,
     }
     return render(request, "calendarapp/etkinlik/index.html", context)
 
@@ -63,7 +68,8 @@ def gunun_etkinlikleri_ajax(request):
                     "grup_id": etkinlik.grup.id,
                     "id": etkinlik.id,
                     "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
-                    "renk": etkinlik.top_rengi,
+                    "renk": etkinlik.antrenor.renk if etkinlik.antrenor else "gray",
+                    "seviye": "(" + etkinlik.top_rengi[0:1].upper() + (")" if etkinlik.top_rengi else "-"),
                 })
     return JsonResponse(data={"status": "success", "list": list})
 
@@ -131,7 +137,7 @@ def takvim_getir(request, kort_id=None):
                 "title": event.grup.__str__(),
                 "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
                 "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                "backgroundColor": event.top_rengi,
+                "backgroundColor": event.antrenor.renk if event.antrenor else "gray",
                 # "eventColor": event.renk,
             }
         )

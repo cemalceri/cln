@@ -39,7 +39,7 @@ class UyeAbonelikModel(BaseAbstract):
 
 class UyePaketModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, verbose_name="Üye", on_delete=models.CASCADE, blank=False, null=False)
-    kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False)
+    grup_mu = models.BooleanField("Grup Paketi Mi?", default=False, blank=False, null=False)
     baslangic_tarih = models.DateField("Başlangıç Tarihi", null=False, blank=False)
     bitis_tarih = models.DateField(verbose_name="Bitiş Tarihi", null=True, blank=True)
     adet = models.IntegerField(verbose_name="Adet", null=False, blank=False)

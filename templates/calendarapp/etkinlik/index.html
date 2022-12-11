@@ -26,148 +26,13 @@
             <i class="fa fa-file-pdf-o"> PDF indir</i>
         </a>
     </div>
-    <div class='html-content'>
-        {% if ilk_4_kort %}
-            <div class="row  mb-20">
-                <div class="col-md-1 col-xl-1 col-sm-1">
-                    <div class="row">
-                        <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
-                             style="height: 60px"></div>
-                        {% for saat in saatler %}
-                            <span class="container bg-indigo-700 black vertical-align vertical-align-middle text-left border-top m-0"
-                                  style="height: 30px;font-size: 1rem;">{{ saat }}:00</span>
-                            <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
-                                  style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-md-11 col-xl-11 col-sm-11">
-                    <div class="row">
-                        {% for kort in ilk_4_kort %}
-                            <div class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
-                                <div class="row">
-                                    <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
-                                         style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
-                                </div>
-                                <div id="kort_{{ kort.id }}" class="row">
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-        {% if ikinci_4_kort %}
-            <div class="row">
-                <div class="col-md-1 col-xl-1 col-sm-1">
-                    <div class="row">
-                        <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
-                             style="height: 60px"></div>
-                        {% for saat in saatler %}
-                            <span class="container bg-indigo-700 black vertical-align vertical-align-middle text-left border-top m-0"
-                                  style="height: 30px;font-size: 1rem;">{{ saat }}:00</span>
-                            <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
-                                  style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-md-11 col-xl-11 col-sm-11">
-                    <div class="row">
-                        {% for kort in ikinci_4_kort %}
-                            <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
-                                <div class="row">
-                                    <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
-                                         style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
-                                </div>
-                                <div class="row">
-                                    <div id="kort_{{ kort.id }}_col_1" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_2" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_3" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_4" class="col col-md-3"></div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-        {% if ucuncu_4_kort %}
-            <div class="row">
-                <div class="col-md-1 col-xl-1 col-sm-1">
-                    <div class="row">
-                        <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
-                             style="height: 60px"></div>
-                        {% for saat in saatler %}
-                            <span class="container bg-indigo-700 black vertical-align vertical-align-middle text-left border-top m-0"
-                                  style="height: 30px;font-size: 1rem;">{{ saat }}:00</span>
-                            <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
-                                  style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-md-11 col-xl-11 col-sm-11">
-                    <div class="row">
-                        {% for kort in ucuncu_4_kort %}
-                            <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
-                                <div class="row">
-                                    <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
-                                         style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
-                                </div>
-                                <div class="row">
-                                    <div id="kort_{{ kort.id }}_col_1" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_2" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_3" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_4" class="col col-md-3"></div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-        {% if dorduncu_4_kort %}
-            <div class="row">
-                <div class="col-md-1 col-xl-1 col-sm-1">
-                    <div class="row">
-                        <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
-                             style="height: 60px"></div>
-                        {% for saat in saatler %}
-                            <span class="container bg-indigo-700 black vertical-align vertical-align-middle text-left border-top m-0"
-                                  style="height: 30px;font-size: 1rem;">{{ saat }}:00</span>
-                            <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
-                                  style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-md-11 col-xl-11 col-sm-11">
-                    <div class="row">
-                        {% for kort in dorduncu_4_kort %}
-                            <div id="kort_{{ kort.id }}" class="col-md-4 col-sm-4 col-xs-4 col-lg-3 m-0 border">
-                                <div class="row">
-                                    <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
-                                         style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
-                                </div>
-                                <div class="row">
-                                    <div id="kort_{{ kort.id }}_col_1" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_2" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_3" class="col col-md-3"></div>
-                                    <div id="kort_{{ kort.id }}_col_4" class="col col-md-3"></div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+    <div id="divContent" class='html-content'>
+        {{ kortlar|safe }}
     </div>
-    <div id="modalDiv"></div>
-
+    <div id="detayModalDiv"></div>
     <script>
         $(document).ready(function () {
-            //sorgulanan gun = today
-            var sorgulanan = new Date();
             etkinlikleriGetir();
-            kortlarinKolonlariniOlustur();
         });
 
         function etkinlikleriGetir() {
@@ -191,12 +56,13 @@
                                     }
                                 });
                                 if (etkinlik != null && etkinlik != undefined) {
-                                    col.append('<div id="' + etkinlik.id + '" class="row doluEtkinlik border black" style="height: ' + etkinlik.sure + 'px;font-size: 0.7rem; background-color: ' + etkinlik.renk + '">' + etkinlik.grup_adi + '</div>');
+                                    col.append('<div id="' + etkinlik.id + '" class="row doluEtkinlik border black" style="height: ' + etkinlik.sure + 'px;font-size: 0.7rem; background-color: ' + etkinlik.renk + '">' +
+                                        etkinlik.grup_adi + etkinlik.seviye + '</div>');
                                     kortunEtkinlikleri.splice(kortunEtkinlikleri.indexOf(etkinlik), 1);
                                     sorgulacakSaat = new Date("1/1/1900 " + etkinlik.bitis_saati);
                                 } else {
                                     col.append('<a onclick="BekleyenListesiGetir(' + sorgulacakSaat.getHours() + ',' + sorgulacakSaat.getMinutes() + ')">' +
-                                        '<div class="row border bg-secondary black" style="height:30px;font-size: 0.7rem">Boş</div></a>');
+                                        '<div class="row border bg-secondary black" style="height:30px;font-size: 0.7rem"></div></a>');
                                     sorgulacakSaat.setMinutes(sorgulacakSaat.getMinutes() + 30);
                                 }
                             }
@@ -205,20 +71,6 @@
                 }
             });
         }
-
-        function kortlarinKolonlariniOlustur() {
-            let max_etkinlik_sayisi = 0;
-            let colAdet = 0;
-            {% for kort in ilk_4_kort %}
-                max_etkinlik_sayisi = {{ kort.max_etkinlik_sayisi }};
-                colAdet = 12 / max_etkinlik_sayisi;
-                for (let i = 0; i < max_etkinlik_sayisi; i++) {
-                    $('#kort_{{ kort.id }}').append('<div id="kort_{{ kort.id }}_col_' + i + '" class="col col-md-' + colAdet + '"></div>');
-                }
-            {% endfor %}
-        }
-
-        //div on click event
         $(document).on('click', '.doluEtkinlik', function () {
             let id = $(this).attr('id');
             if (id != null && id != undefined) {
@@ -230,8 +82,8 @@
                     },
                     dataType: "json",
                     success: function (result) {
-                        $('#modalDiv').html(result.html);
-                        $('#detayModal').modal('show');
+                        $('#detayModalDiv').html(result.html);
+                        $('#detayModalDiv').modal('show');
                     }
                 });
             }
@@ -245,7 +97,7 @@
                 type: "GET",
                 dataType: "json",
                 success: function (result) {
-                    $('#modalDiv').html(result.html);
+                    $('#detayModalDiv').html(result.html);
                     $('#bekleyenModal').modal('show');
                 }
             });
