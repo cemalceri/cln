@@ -134,13 +134,11 @@ class EtkinlikModel(BaseAbstract):
 
 
 class HaftalikPlanModel(BaseAbstract):
-    yil = models.IntegerField(verbose_name="Yıl")
-    hafta = models.IntegerField(verbose_name="Hafta")
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
                              null=False, related_name="haftalikplan_grup_relations")
     abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.choices(), default=2, verbose_name="Abonelik Tipi")
-    baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
-    bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
+    baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat",blank=False,null=False)
+    bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat",blank=False,null=False)
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False,
                              related_name="haftalikplan_kort_relations")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,

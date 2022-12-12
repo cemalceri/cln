@@ -6,6 +6,7 @@ from .views import kort_views
 from .views import antrenor_views
 from .views import grup_views
 from .views import muhasebe_views
+from .views import haftalik_plan_views
 
 app_name = "calendarapp"
 
@@ -13,10 +14,16 @@ urlpatterns = [
     # Takvim ve Etkinlikler
     path("takvim/", etkinlik_views.takvim_getir, name="takvim_getir"),
     path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim_getir_by_kort_id"),
-    path("haftalik-plan/", etkinlik_views.haftalik_plan_getir, name="haftalik_plan_getir"),
-    path("haftalik-plan/<int:kort_id>", etkinlik_views.haftalik_plan_getir, name="haftalik_plan_getir_by_kort_id"),
     path("etkinlik", etkinlik_views.index, name="index_etkinlik"),
     path("gunun_etkinlikleri", etkinlik_views.gunun_etkinlikleri_ajax, name="gunun_etkinlikleri_ajax"),
+    # Haftalık Plan
+
+    path("haftalik-plan/", haftalik_plan_views.haftalik_plan_getir, name="haftalik_plan_getir"),
+    path("haftalik-plan/<int:kort_id>", haftalik_plan_views.haftalik_plan_getir, name="haftalik_plan_getir_by_kort_id"),
+    path("haftalik-plan/kaydet", haftalik_plan_views.kaydet_haftalik_plan_ajax, name="kaydet_haftalik_plan_ajax"),
+    path("haftalik-plan/detay", haftalik_plan_views.getir_haftalik_plan_bilgisi_ajax, name="getir_haftalik_plan_bilgisi_ajax"),
+    path("haftalik-plan/tasi", haftalik_plan_views.haftalik_plan_saat_bilgisi_guncelle_ajax, name="haftalik_plan_saat_bilgisi_guncelle_ajax"),
+    path("plan/sil", haftalik_plan_views.sil_haftalik_plan_ajax, name="sil_haftalik_plan_ajax"),
 
     # Etkinlik
     path("etkinlik/detay", etkinlik_views.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id"),

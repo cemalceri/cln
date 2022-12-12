@@ -398,11 +398,11 @@
                                                             <thead>
                                                             <tr>
                                                                 <th>#</th>
-                                                                <th>Kort</th>
                                                                 <th>Başlangıç - Bitiş</th>
                                                                 <th>Adet</th>
                                                                 <th>Kalan Adet</th>
                                                                 <th>Aktif Mi</th>
+                                                                <th>Grup Paketi Mi</th>
                                                                 <th>Özellikler</th>
                                                                 <th>İşlemler</th>
                                                             </tr>
@@ -411,12 +411,12 @@
                                                             {% for paket in paketler %}
                                                                 <tr>
                                                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                                                    <td>{{ paket.kort }}</td>
-                                                                    <td>{{ paket.baslangic_tarih_saat| time:'H:i' }}
-                                                                        - {{ paket.bitis_tarih_saat| time:'H:i' }}</td>
+                                                                    <td>{{ paket.baslangic_tarih }}
+                                                                        - {{ paket.bitis_tarih}}</td>
                                                                     <td>{{ paket.adet }}</td>
                                                                     <td>{{ paket.kalan_adet }}</td>
                                                                     <td>{{ paket.aktif_mi | yesno:"Evet,Hayır" }}</td>
+                                                                    <td>{{ paket.grup_mu | yesno:"Evet,Hayır" }}</td>
                                                                     <td>{{ paket.ozellikler | default_if_none:"" }}</td>
                                                                     <td>
                                                                         <a class="btn btn-primary btn-circle"

@@ -121,10 +121,6 @@
     <script src="{% static 'calendar/main.js' %}"></script>
     <script>
         let _selectedEvent;
-        let seciliKort;
-        if (seciliKort = 'undefined') {
-            seciliKort = {{secili_kort.id}};
-        }
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
             var today = new Date();
@@ -333,7 +329,7 @@
             document.getElementById("btnYeniKayit").hidden = true;
             document.getElementById("btnTamamlandi").hidden = true;
             document.getElementById("btnTelafiDers").hidden = true;
-            $('#id_kort option[value="' + seciliKort + '"]').prop('selected', true);
+            $('#id_kort option[value="' + {{secili_kort.id}} + '"]').prop('selected', true);
             bekleyenMusteriGetir(tarih_saat);
             document.getElementById('eventModal').style.display = 'block';
         }

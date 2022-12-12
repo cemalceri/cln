@@ -11,6 +11,7 @@ from calendarapp.forms.etkinlik_forms import EtkinlikForm, HaftalikPlanForm
 
 from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel, UyePaketModel
+from calendarapp.models.concrete.commons import gun_adi_getir, to_dict
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
 from django.contrib import messages
 
@@ -82,14 +83,7 @@ def getir_etkinlik_bilgisi_ajax(request):
     return JsonResponse(event_dict)
 
 
-def to_dict(instance):
-    opts = instance._meta
-    data = {}
-    for f in chain(opts.concrete_fields, opts.private_fields):
-        data[f.name] = f.value_from_object(instance)
-    for f in opts.many_to_many:
-        data[f.name] = [i.id for i in f.value_from_object(instance)]
-    return data
+
 
 
 @login_required()
@@ -143,49 +137,6 @@ def takvim_getir(request, kort_id=None):
     context = {"form": form, "etkinlikler": event_list, "kortlar": kortlar,
                "secili_kort": kort, }
     return render(request, 'calendarapp/etkinlik/takvim.html', context)
-
-
-@login_required
-def haftalik_plan_getir(request, kort_id=None):
-    kort = KortModel.objects.filter(pk=kort_id).first()
-    form = HaftalikPlanForm()
-    kortlar = KortModel.objects.all().order_by("id")
-    bu_yil = datetime.now().year
-    bu_hafta = datetime.now().isocalendar()[1]
-    event_list = []
-    bu_haftanin_plani = HaftalikPlanModel.objects.filter(yil=bu_yil, hafta=bu_hafta, kort_id=kort_id)
-    if not bu_haftanin_plani:
-        if bu_hafta == 1:
-            gecen_haftanin_plani = HaftalikPlanModel.objects.filter(yil=bu_yil - 1, hafta=52, kort_id=kort_id)
-        else:
-            gecen_haftanin_plani = HaftalikPlanModel.objects.filter(yil=bu_yil, hafta=bu_hafta - 1, kort_id=kort_id)
-        if gecen_haftanin_plani:
-            for item in gecen_haftanin_plani:
-                HaftalikPlanModel.objects.create(
-                    yil=bu_yil,
-                    hafta=bu_hafta + 1,
-                    grup=item.grup,
-                    abonelik_tipi=item.abonelik_tipi,
-                    baslangic_tarih_saat=item.baslangic_tarih_saat + timedelta(days=7),
-                    bitis_tarih_saat=item.bitis_tarih_saat + timedelta(days=7),
-                    kort=item.kort,
-                    antrenor=item.antrenor,
-                    top_rengi=item.top_rengi,
-                )
-        bu_haftanin_plani = HaftalikPlanModel.objects.filter(yil=bu_yil, hafta=bu_hafta, kort_id=kort_id)
-    for event in bu_haftanin_plani:
-        event_list.append(
-            {
-                "id": event.id,
-                "title": event.grup.__str__(),
-                "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                "backgroundColor": event.antrenor.renk if event.antrenor else "gray",
-            }
-        )
-    context = {"form": form, "etkinlikler": event_list, "kortlar": kortlar,
-               "secili_kort": kort}
-    return render(request, 'calendarapp/etkinlik/haftalık_plan.html', context)
 
 
 @login_required
@@ -257,24 +208,6 @@ def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_i
                                           ).exclude(id=etkinlik_id)
     return result.count() > kort.max_etkinlik_sayisi - 1
 
-
-# def etkinlik_tekrar_sayisi_kadar_ekle(request, form, etkinlik_id):
-#     tekrar_sayisi = form.cleaned_data["tekrar"]
-#     baslangic_tarih_saat = form.cleaned_data["baslangic_tarih_saat"]
-#     bitis_tarih_saat = form.cleaned_data["bitis_tarih_saat"]
-#     baslik = form.cleaned_data["baslik"]
-#     if tekrar_sayisi and tekrar_sayisi > 0:
-#         for i in range(tekrar_sayisi):
-#             form.cleaned_data["baslangic_tarih_saat"] = baslangic_tarih_saat + timedelta(days=7 * (i + 1))
-#             form.cleaned_data["bitis_tarih_saat"] = bitis_tarih_saat + timedelta(days=7 * (i + 1))
-#             form.cleaned_data["baslik"] = baslik + " - Tekrar " + str(i + 1) + ". Hafta"
-#             if not ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"],
-#                                                  form.cleaned_data["bitis_tarih_saat"], form.data["kort"]):
-#                 item = EtkinlikForm(data=form.cleaned_data).save(commit=False)
-#                 item.user = request.user
-#                 item.ilk_etkinlik_id = etkinlik_id
-#                 item.save()
-#
 
 @login_required
 def saat_guncelle_etkinlik_ajax(request):
@@ -498,18 +431,3 @@ def abonelik_sil(etkinlik):
             abonelik.delete()
 
 
-def gun_adi_getir(haftanin_gunu):
-    if haftanin_gunu == 0:
-        return "Pazartesi"
-    elif haftanin_gunu == 1:
-        return "Salı"
-    elif haftanin_gunu == 2:
-        return "Çarşamba"
-    elif haftanin_gunu == 3:
-        return "Perşembe"
-    elif haftanin_gunu == 4:
-        return "Cuma"
-    elif haftanin_gunu == 5:
-        return "Cumartesi"
-    elif haftanin_gunu == 6:
-        return "Pazar"
