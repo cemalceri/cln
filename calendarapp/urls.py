@@ -16,20 +16,21 @@ urlpatterns = [
     path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim_getir_by_kort_id"),
     path("etkinlik", etkinlik_views.index, name="index_etkinlik"),
     path("gunun_etkinlikleri", etkinlik_views.gunun_etkinlikleri_ajax, name="gunun_etkinlikleri_ajax"),
-    # Haftalık Plan
 
+    # Haftalık Plan
     path("haftalik-plan/", haftalik_plan_views.haftalik_plan_getir, name="haftalik_plan_getir"),
     path("haftalik-plan/<int:kort_id>", haftalik_plan_views.haftalik_plan_getir, name="haftalik_plan_getir_by_kort_id"),
     path("haftalik-plan/kaydet", haftalik_plan_views.kaydet_haftalik_plan_ajax, name="kaydet_haftalik_plan_ajax"),
     path("haftalik-plan/detay", haftalik_plan_views.getir_haftalik_plan_bilgisi_ajax, name="getir_haftalik_plan_bilgisi_ajax"),
     path("haftalik-plan/tasi", haftalik_plan_views.haftalik_plan_saat_bilgisi_guncelle_ajax, name="haftalik_plan_saat_bilgisi_guncelle_ajax"),
     path("plan/sil", haftalik_plan_views.sil_haftalik_plan_ajax, name="sil_haftalik_plan_ajax"),
+    path("plan/haftalik-plani-takvime-ekle", haftalik_plan_views.haftalik_plani_takvime_ekle_ajax, name="haftalik_plani_takvime_ekle_ajax"),
 
     # Etkinlik
     path("etkinlik/detay", etkinlik_views.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id"),
     path("etkinlik/sil", etkinlik_views.sil_etkinlik_ajax, name="sil_etkinlik_by_ajax"),
     path("etkinlik/sil/<int:id>", etkinlik_views.sil_etkinlik, name="sil_etkinlik_by_id"),
-    path("etkinlik/serisi-sil", etkinlik_views.sil_etkinlik_serisi_ajax, name="sil_etkinlik_serisi_by_id"),
+    # path("etkinlik/serisi-sil", etkinlik_views.sil_etkinlik_serisi_ajax, name="sil_etkinlik_serisi_by_id"),
     path("etkinlik/kaydet", etkinlik_views.kaydet_etkinlik_ajax, name="kaydet_etkinlik_ajax"),
     path("etkinlik/tasi", etkinlik_views.saat_guncelle_etkinlik_ajax, name="saat_guncelle_etkinlik_ajax"),
     path("etkinlik/tamamlandi", etkinlik_views.etkinlik_tamamlandi_ajax, name="etkinlik_tamamlandi_ajax"),

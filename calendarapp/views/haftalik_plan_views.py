@@ -12,13 +12,10 @@ from calendarapp.forms.etkinlik_forms import EtkinlikForm, HaftalikPlanForm
 from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel, UyePaketModel
 from calendarapp.models.concrete.commons import gun_adi_getir, to_dict
-from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
-from django.contrib import messages
-
+from calendarapp.models.concrete.etkinlik import HaftalikPlanModel, EtkinlikModel
 from calendarapp.models.concrete.kort import KortModel
-from calendarapp.models.concrete.uye import GrupModel, UyeGrupModel
+from calendarapp.models.concrete.uye import UyeGrupModel
 from calendarapp.utils import formErrorsToText
-import json
 
 
 @login_required
@@ -218,3 +215,29 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
     if uyeler != "":
         return uyeler[:-2]
     return False
+
+
+def haftalik_plani_takvime_ekle_ajax(request):
+    kort_id = request.GET.get("kort_id" or None)
+    haftalik_plan = HaftalikPlanModel.objects.filter(kort_id=kort_id) if kort_id else HaftalikPlanModel.objects.all()
+    for plan in haftalik_plan:
+        etkinlik_listesi = EtkinlikModel.objects.filter(plan_kodu=plan.kod)  # Bugünden sonraki etkinlikleri güncelliyoruz
+        print(datetime.now())
+        print(etkinlik_listesi)
+        if etkinlik_listesi.exists():
+            for etkinlik in etkinlik_listesi.filter(baslangic_tarih_saat__gt=datetime.now()):
+                etkinlik.grup = plan.grup
+                etkinlik.abonelik_tipi = plan.abonelik_tipi
+                etkinlik.kort = plan.kort
+                etkinlik.baslangic_tarih_saat = plan.baslangic_tarih_saat
+                etkinlik.bitis_tarih_saat = plan.bitis_tarih_saat
+                etkinlik.antrenor = plan.antrenor
+                etkinlik.top_rengi = plan.top_rengi
+                etkinlik.aciklama = plan.aciklama
+                etkinlik.save()
+        else:
+            EtkinlikModel.objects.create(plan_kodu=plan.kod, grup=plan.grup, abonelik_tipi=plan.abonelik_tipi,
+                                         baslangic_tarih_saat=plan.baslangic_tarih_saat,
+                                         bitis_tarih_saat=plan.bitis_tarih_saat, kort=plan.kort, antrenor=plan.antrenor,
+                                         top_rengi=plan.top_rengi, aciklama=plan.aciklama, user=request.user)
+    return JsonResponse(data={"status": "success", "message": "İşlem başarılı."})

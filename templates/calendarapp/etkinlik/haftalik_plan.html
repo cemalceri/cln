@@ -28,14 +28,11 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-2 col-xl-2 col-sm-2">
-            <btn class="btn btn-primary btn-block" onclick="takvimGetir()">Kort Planı Getir</btn>
+        <div class="col-md-3 col-xl-3 col-sm-3">
+            <a id="btnKortuTakvimeEkle" class="btn btn-info btn-block">Kortu Takvime Ekle</a>
         </div>
-        <div class="col-md-2 col-xl-2 col-sm-2">
-            <btn class="btn btn-info btn-block" onclick="takvimGetir()">Takvime Ekle</btn>
-        </div>
-        <div class="col-md-2 col-xl-2 col-sm-2">
-            <btn class="btn btn-success btn-block" onclick="takvimGetir()">Tümünü Ekle</btn>
+        <div id="btnTumKortlariTakvimeEkle" class="col-md-3 col-xl-3 col-sm-3">
+            <a class="btn btn-success btn-block">Tümünü Takvime Ekle</a>
         </div>
     </div>
     <div class="row">
@@ -117,6 +114,12 @@
     <script src="{% static 'calendar/main.js' %}"></script>
     <script>
         let _selectedEvent;
+        let seciliKort;
+        if ('{{secili_kort}}' == 'None') {
+            document.getElementById('calendar').style.display = 'none';
+        } else {
+            document.getElementById('calendar').style.display = 'block';
+        }
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
             var today = new Date();
@@ -292,7 +295,7 @@
             _selectedEvent = null;
             document.getElementById("btnSil").innerText = "Temizle";
             document.getElementById("btnYeniKayit").hidden = true;
-            $('#id_kort option[value="' + {{secili_kort.id}} +'"]').prop('selected', true);
+            $('#id_kort option[value="' + {{ secili_kort.id }} +'"]').prop('selected', true);
             bekleyenMusteriGetir(tarih_saat);
             document.getElementById('eventModal').style.display = 'block';
         }
@@ -346,14 +349,52 @@
 
         }
 
-        function takvimGetir() {
-            let seciliKortId = $('#cmbKortlar').val();
-            if (seciliKortId != null && seciliKortId != "" && seciliKortId != undefined && seciliKortId != 0) {
+        //cmbKortlar change event
+        $('#cmbKortlar').change(function () {
+            debugger;
+            let seciliKortId = $(this).val();
+            if (seciliKortId != 0) {
                 let url = "/haftalik-plan/" + seciliKortId;
                 window.location.href = url;
             } else {
+                document.getElementById('calendar').style.display = 'none';
                 popupMesajGoster("Lütfen bir kort seçiniz", "error");
             }
+
+        });
+
+
+
+        $('#btnKortuTakvimeEkle').click(function () {
+            debugger;
+            let seciliKortId = $('#cmbKortlar').val();
+            if (seciliKortId != null && seciliKortId != "" && seciliKortId != undefined && seciliKortId != 0) {
+                takvimeEkle(seciliKortId);
+            } else {
+                document.getElementById('calendar').style.display = 'none';
+                popupMesajGoster("Lütfen bir kort seçiniz", "error");
+            }
+        });
+        $('#btnTumKortlariTakvimeEkle').click(function () {
+            takvimeEkle();
+        });
+
+        function takvimeEkle(kort_id = '') {
+            $.ajax({
+                url: '{% url 'calendarapp:haftalik_plani_takvime_ekle_ajax' %}',
+                type: 'GET',
+                data: {
+                    'kort_id': kort_id,
+                },
+                success: function (result) {
+                    if (result.status == "success") {
+                        popupMesajGoster(result.message, result.status);
+                    }
+                },
+                error: function (result) {
+                    popupMesajGoster(result.message, result.status);
+                },
+            });
         }
     </script>
 {% endblock extrascripts %}

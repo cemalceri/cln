@@ -366,7 +366,7 @@
                                                                     <td>{{ abonelik.kort }}</td>
                                                                     <td>{{ abonelik.gun_adi }}</td>
                                                                     <td>{{ abonelik.baslangic_tarih_saat| time:'H:i' }}
-                                                                        - {{ abonelik.bitis_tarih_saat| time:'H:i' }}</td>
+                                                                        - {{ abonelik.bitis_tarih_saat| default_if_none:"" | time:'H:i' }}</td>
                                                                     <td>{{ abonelik.dakika_degeri }}</td>
                                                                     <td>{{ abonelik.aktif_mi | yesno:"Evet,Hayır" }}</td>
                                                                 </tr>
@@ -412,7 +412,7 @@
                                                                 <tr>
                                                                     <td class="sorting_1">{{ forloop.counter }}</td>
                                                                     <td>{{ paket.baslangic_tarih }}
-                                                                        - {{ paket.bitis_tarih}}</td>
+                                                                        - {{ paket.bitis_tarih|default_if_none:"" }}</td>
                                                                     <td>{{ paket.adet }}</td>
                                                                     <td>{{ paket.kalan_adet }}</td>
                                                                     <td>{{ paket.aktif_mi | yesno:"Evet,Hayır" }}</td>

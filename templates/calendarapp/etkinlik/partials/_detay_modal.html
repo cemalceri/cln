@@ -148,7 +148,7 @@
         if (confirm('Kayıtları silmek istediğinize emin misiniz?')) {
             $.ajax({
                 type: "Get",
-                url: "{% url 'calendarapp:sil_etkinlik_serisi_by_id' %}",
+                url: "{% url 'calendarapp:sil_etkinlik_by_ajax' %}",
                 data: {
                     'id': etkinlik_id
                 },
