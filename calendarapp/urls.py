@@ -73,6 +73,8 @@ urlpatterns = [
     path("rezervasyon/sil/<int:id>", rezervasyon_views.sil, name="sil_rezervasyon"),
     path("rezervasyon/bekleyen-musteri", rezervasyon_views.bekleyen_musteri_getir_ajax,
          name="bekleyen_musteri_getir_ajax"),
+    path("rezervasyon/bekleyen-musteri-modal", rezervasyon_views.bekleyen_musteri_modal_getir_ajax,
+         name="bekleyen_musteri_modal_getir_ajax"),
 
     # Telafi Ders
     path("telafi-ders/index", telafi_ders_views.index, name="index_telafi_ders"),

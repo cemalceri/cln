@@ -1,0 +1,34 @@
+{% load static %}
+<!-- Modal -->
+<div class="modal fade " id="bekleyenModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Etkinlik Detayı</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% for bekleyen in list %}
+                <div class="row">{{ bekleyen.adi }}</div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Kapat</button>
+                <button id="btnSil" onclick="EtkinlikSil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
+                </button>
+                <button type="button" onclick="EtkinlikSerisiSil({{ etkinlik.id }})" class="btn btn-outline-danger">
+                    Seriyi Sil
+                </button>
+                <button type="button" onclick="etkinlikTamamlandi({{ etkinlik.id }})" class="btn btn-dark"> Tamamlandı
+                </button>
+                <button type="button" onclick="etkinlikTamamlandiGeriAl({{ etkinlik.id }})" class="btn btn-primary">
+                    Tamamlandı İptal
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>

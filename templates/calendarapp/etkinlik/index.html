@@ -30,8 +30,11 @@
         {{ kortlar|safe }}
     </div>
     <div id="detayModalDiv"></div>
+    <div id="bekleyenModalDiv"></div>
     <script>
+        let sorgulananTarih = new Date();
         $(document).ready(function () {
+            let sorgulananTarih = new Date();
             etkinlikleriGetir();
         });
 
@@ -71,6 +74,7 @@
                 }
             });
         }
+
         $(document).on('click', '.doluEtkinlik', function () {
             let id = $(this).attr('id');
             if (id != null && id != undefined) {
@@ -82,22 +86,27 @@
                     },
                     dataType: "json",
                     success: function (result) {
+                        debugger;
                         $('#detayModalDiv').html(result.html);
-                        $('#detayModalDiv').modal('show');
+                        $('#detayModal').modal('show');
                     }
                 });
             }
         });
 
         function BekleyenListesiGetir(saat, dk) {
-            alert(saat);
-            alert(dk);
+            //sorgulananTarih format 2020-01-01
+            let tarihSaat = sorgulananTarih.getFullYear() + '-' + (sorgulananTarih.getMonth() + 1) + '-' + sorgulananTarih.getDate();
+            tarihSaat += 'T' + saat + ':' + dk + ':00';
             $.ajax({
-                url: "",
+                url: "{% url 'calendarapp:bekleyen_musteri_modal_getir_ajax' %}",
                 type: "GET",
                 dataType: "json",
+                data: {
+                    'tarih_saat': tarihSaat,
+                },
                 success: function (result) {
-                    $('#detayModalDiv').html(result.html);
+                    $('#bekleyenModalDiv').html(result.html);
                     $('#bekleyenModal').modal('show');
                 }
             });

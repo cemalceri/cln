@@ -51,7 +51,21 @@ def sil(request, id):
 
 @login_required
 def bekleyen_musteri_getir_ajax(request):
-    tarih_saat = request.GET.get("tarih_saat")
+    rezervasyonlar = bekleyen_musteri_getir(request.GET.get("tarih_saat"))
+    for rezervasyon in rezervasyonlar:
+        list.append({"id": rezervasyon.id, "adi": rezervasyon.uye.__str__(), "aciklama": rezervasyon.aciklama})
+    return JsonResponse(data={"data": list, "status": "success", "message": "Başarılı"}, safe=False)
+
+
+@login_required
+def bekleyen_musteri_modal_getir_ajax(request):
+    rezervasyonlar = bekleyen_musteri_getir(request.GET.get("tarih_saat"))
+    for rezervasyon in rezervasyonlar:
+        list.append({"id": rezervasyon.id, "adi": rezervasyon.uye.__str__(), "aciklama": rezervasyon.aciklama})
+    return JsonResponse(data={"data": list, "status": "success", "message": "Başarılı"}, safe=False)
+
+
+def bekleyen_musteri_getir(tarih_saat):
     gunun_saati = datetime.strptime(tarih_saat, "%Y-%m-%dT%H:%M:%S").time()
     haftanini_gunu = datetime.strptime(tarih_saat, "%Y-%m-%dT%H:%M:%S").weekday()
     gun = GunlerModel.objects.filter(haftanin_gunu=haftanini_gunu).first()
@@ -61,7 +75,4 @@ def bekleyen_musteri_getir_ajax(request):
         Q(gunler=gun, saatler__isnull=True) |
         Q(gunler__isnull=True, saatler=saat) |
         Q(gunler__isnull=True, saatler__isnull=True))
-    list = []
-    for rezervasyon in rezervasyonlar:
-        list.append({"id": rezervasyon.id, "adi": rezervasyon.uye.__str__(), "aciklama": rezervasyon.aciklama})
-    return JsonResponse(data={"data": list, "status": "success", "message": "Başarılı"}, safe=False)
+    return rezervasyonlar

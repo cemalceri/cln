@@ -163,7 +163,7 @@
                         id = info.event.id;
                         start = info.event.startStr.split('+')[0];
                         end = info.event.endStr.split('+')[0];
-                        let result = etkinlikTasi(id, start, end);
+                        let result = haftalikPlanTasi(id, start, end);
                         if (!result) {
                             info.revert();
                         }
@@ -178,7 +178,7 @@
                         id = info.event.id;
                         start = info.event.startStr.split('+')[0];
                         end = info.event.endStr.split('+')[0];
-                        let result = etkinlikTasi(id, start, end);
+                        let result = haftalikPlanTasi(id, start, end);
                         if (!result) {
                             info.revert();
                         }
@@ -300,7 +300,7 @@
             document.getElementById('eventModal').style.display = 'block';
         }
 
-        function etkinlikTasi(id, start, end) {
+        function haftalikPlanTasi(id, start, end) {
             let retVal = false;
             $.ajax({
                 url: '{% url 'calendarapp:haftalik_plan_saat_bilgisi_guncelle_ajax' %}',
@@ -366,7 +366,6 @@
 
 
         $('#btnKortuTakvimeEkle').click(function () {
-            debugger;
             let seciliKortId = $('#cmbKortlar').val();
             if (seciliKortId > 0) {
                 takvimeEkle(seciliKortId);
