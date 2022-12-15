@@ -9,7 +9,7 @@ class EtkinlikForm(ModelForm):
     class Meta:
         model = EtkinlikModel
         fields = '__all__'
-        exclude = ['tamamlandi_uye', 'tamamlandi_antrenor', 'tamamlandi_yonetici', 'ilk_etkinlik_id', 'plan_kodu',
+        exclude = ['tamamlandi_uye', 'tamamlandi_antrenor', 'tamamlandi_yonetici', 'ilk_etkinlik_id', 'haftalik_plan_kodu',
                    'created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
         # datetime-local is a HTML5 input type
         widgets = {

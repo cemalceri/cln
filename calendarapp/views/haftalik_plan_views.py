@@ -93,8 +93,11 @@ def haftalik_plan_saat_bilgisi_guncelle_ajax(request):
 def sil_haftalik_plan_ajax(request):
     id = request.GET.get("id")
     haftalik_plan = HaftalikPlanModel.objects.filter(pk=id).first()
-    abonelik_sil(haftalik_plan)
-    haftalik_plan.delete()
+    if haftalik_plan:
+        abonelik_sil(haftalik_plan)
+        EtkinlikModel.objects.filter(haftalik_plan_kodu=haftalik_plan.kod,
+                                     baslangic_tarih_saat__gt=datetime.now()).delete()
+        haftalik_plan.delete()
     return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
 
 
@@ -222,8 +225,7 @@ def haftalik_plani_takvime_ekle_ajax(request):
     kort_id = request.GET.get("kort_id" or None)
     haftalik_plan = HaftalikPlanModel.objects.filter(kort_id=kort_id) if kort_id else HaftalikPlanModel.objects.all()
     for plan in haftalik_plan:
-        etkinlik_listesi = EtkinlikModel.objects.filter(
-            plan_kodu=plan.kod)  # Bugünden sonraki etkinlikleri güncelliyoruz
+        etkinlik_listesi = EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod)
         if etkinlik_listesi.exists():
             for etkinlik in etkinlik_listesi.filter(baslangic_tarih_saat__gt=datetime.now()):
                 etkinlik.grup = plan.grup
@@ -236,7 +238,7 @@ def haftalik_plani_takvime_ekle_ajax(request):
                 etkinlik.aciklama = plan.aciklama
                 etkinlik.save()
         else:
-            EtkinlikModel.objects.create(plan_kodu=plan.kod, grup=plan.grup, abonelik_tipi=plan.abonelik_tipi,
+            EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup, abonelik_tipi=plan.abonelik_tipi,
                                          baslangic_tarih_saat=plan.baslangic_tarih_saat,
                                          bitis_tarih_saat=plan.bitis_tarih_saat, kort=plan.kort, antrenor=plan.antrenor,
                                          top_rengi=plan.top_rengi, aciklama=plan.aciklama, user=request.user)
@@ -253,9 +255,9 @@ def haftalik_plan_yeni_haftaya_tasindi_kontrolu():
             eklenecek_gun = 0
             islem = divmod(aradaki_gun_sayisi, 7)
             if islem[0] > 0:
-                eklenecek_gun = islem[0] * 7 #Hafta Sayısı kadar gün ekle
+                eklenecek_gun = islem[0] * 7  # Hafta Sayısı kadar gün ekle
             if islem[1] > 0:
-                eklenecek_gun += 7 # kalan gün varsa bir hafta daha ekle
+                eklenecek_gun += 7  # kalan gün varsa bir hafta daha ekle
             for plan in HaftalikPlanModel.objects.all():
                 plan.baslangic_tarih_saat += timedelta(days=eklenecek_gun)
                 plan.bitis_tarih_saat += timedelta(days=eklenecek_gun)

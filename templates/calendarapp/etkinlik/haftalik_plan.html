@@ -368,7 +368,7 @@
         $('#btnKortuTakvimeEkle').click(function () {
             debugger;
             let seciliKortId = $('#cmbKortlar').val();
-            if (seciliKortId != null && seciliKortId != "" && seciliKortId != undefined && seciliKortId != 0) {
+            if (seciliKortId > 0) {
                 takvimeEkle(seciliKortId);
             } else {
                 document.getElementById('calendar').style.display = 'none';

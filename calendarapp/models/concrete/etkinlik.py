@@ -54,7 +54,7 @@ class EtkinlikManager(models.Manager):
 
 
 class EtkinlikModel(BaseAbstract):
-    plan_kodu = models.CharField(max_length=50, null=True, blank=True)
+    haftalik_plan_kodu = models.CharField(max_length=50, null=True, blank=True)
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
                              null=False, related_name="etkinlik_grup_relations")
     abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.choices(), default=2, verbose_name="Abonelik Tipi")
@@ -135,8 +135,11 @@ class EtkinlikModel(BaseAbstract):
         return f'<a href="{url}"> {self.baslik} </a>'
 
 
+def generate_uuid():
+    return uuid.uuid4()
+
 class HaftalikPlanModel(BaseAbstract):
-    kod = models.CharField(max_length=50, null=False, blank=False, verbose_name="Plan Kodu", default=uuid.uuid1())
+    kod = models.UUIDField(primary_key=False, verbose_name="Plan Kodu", default=generate_uuid, editable=False)
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
                              null=False, related_name="haftalikplan_grup_relations")
     abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.choices(), default=2, verbose_name="Abonelik Tipi")
@@ -160,3 +163,5 @@ class HaftalikPlanModel(BaseAbstract):
 
     def __str__(self):
         return str(self.grup)
+
+

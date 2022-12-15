@@ -86,27 +86,14 @@
                             </div>
                         </div>
                     </form>
-
                 </div>
                 <div class="modal-footer">
-                    <button id="btnTamamlandi" hidden type="button" onclick="etkinlikTamamlandi()" class="btn btn-dark">
-                        Tamamlandı
-                    </button>
-                    <a id="btnTelafiDers" type="button" hidden target="_blank"
-                       class="btn btn-success"> Telafi Ders
-                    </a>
-                    {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
                     <button type="button" hidden id="btnYeniKayit" onclick="clearModalFields()"
                             class="btn btn-info">Yeni Kayıt
                     </button>
-                    {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
                     <button id="btnSil" onclick="EtkinlikSil()" type="button"
                             class="btn btn-danger">Temizle
                     </button>
-                    <button id="btnSeriyiSil" hidden onclick="EtkinlikSerisiSil()" type="button"
-                            class="btn btn-outline-danger">Seriyi Sil
-                    </button>
-                    {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
                     <button id="modalClose2" type="button" class="btn btn-secondary">Kapat</button>
                     <button type="button" id="kaydetBtn" class="btn btn-primary">Kaydet</button>
                 </div>
@@ -132,7 +119,7 @@
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,list',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay',
                 },
                 initialDate: today,
                 navLinks: true, // can click day/week names to navigate views
@@ -154,7 +141,6 @@
                 eventClick: function (arg) {
                     // Etkinlik güncelle
                     document.getElementById("btnSil").innerText = "Sil"
-                    document.getElementById("btnSeriyiSil").hidden = false;
                     openEditModal(arg.event);
                 },
                 eventDragStop: function (arg, event) {
@@ -284,28 +270,6 @@
                 clearModalFields();
         }
 
-        function EtkinlikSerisiSil() {
-            if (_selectedEvent) {
-                if (confirm('Bu etkinlik serisi silinsin mi?')) {
-                    $.ajax({
-                        url: '{% url 'calendarapp:sil_etkinlik_by_ajax' %}',
-                        type: 'GET',
-                        data: {
-                            'id': _selectedEvent.id
-                        },
-                        success: function (result) {
-                            _selectedEvent.remove();
-                            closeModal();
-                            popupMesajGoster(result.message);
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 1500);
-                        }
-                    });
-                }
-            } else
-                clearModalFields();
-        }
 
         function clearModalFields() {
             let elements = document.getElementsByClassName("form-control");
@@ -329,10 +293,7 @@
         function openModal(tarih_saat) {
             _selectedEvent = null;
             document.getElementById("btnSil").innerText = "Temizle";
-            document.getElementById("btnSeriyiSil").hidden = true;
             document.getElementById("btnYeniKayit").hidden = true;
-            document.getElementById("btnTamamlandi").hidden = true;
-            document.getElementById("btnTelafiDers").hidden = true;
             $('#id_kort option[value="' + seciliKort + '"]').prop('selected', true);
             bekleyenMusteriGetir(tarih_saat);
             document.getElementById('eventModal').style.display = 'block';
@@ -382,28 +343,6 @@
                 },
                 error: function () {
                     popupMesajGoster("Seçilen saat için bekleyen rezervasyonları çekerken hata oluştu", "error");
-                },
-            });
-
-        }
-
-        function etkinlikTamamlandi() {
-            $.ajax({
-                url: '{% url 'calendarapp:etkinlik_tamamlandi_ajax' %}',
-                type: 'GET',
-                data: {
-                    'id': _selectedEvent.id,
-                },
-                success: function (result) {
-                    if (result.status == "success") {
-                        popupMesajGoster(result.message, result.status);
-                        closeModal();
-                    } else {
-                        popupMesajGoster(result.message, result.status);
-                    }
-                },
-                error: function () {
-                    popupMesajGoster("Hata oluştu", "error");
                 },
             });
         }

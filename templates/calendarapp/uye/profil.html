@@ -111,10 +111,6 @@
                                                 <div data-role="content" class="scrollable-content">
                                                     {% for etkinlik in yapilacak_etkinlikler %}
                                                         <li class="list-group-item justify-content-between">
-                                                            <a href="{% url 'calendarapp:iptal_et_etkinlik' id=etkinlik.id uye_id=uye.id %}">
-                                                                <small
-                                                                        class="badge badge-round badge-danger float-right">İptal
-                                                                    Et</small></a>
                                                             <p>
                                                                 <span> Kort: {{ etkinlik.kort }} - Antrenör: {{ etkinlik.antrenor |default_if_none:"" }} Tarih: {{ etkinlik.baslangic_tarih_saat }}</span>
                                                             </p>

@@ -168,7 +168,7 @@ def etkinlik_kaydi_hata_var_mi(form):
     if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Paket.value:
         uyeler = paket_uyeligi_olmayan_grup_uyesi(form)
         if uyeler:
-            mesaj = uyeler + " paket kaydı olmadığı için etkinlik eklenemez."
+            mesaj = uyeler + " uygun paket kaydı olmadığı için etkinlik eklenemez."
             return JsonResponse(data={"status": "error", "message": mesaj})
     return False
 
@@ -176,9 +176,10 @@ def etkinlik_kaydi_hata_var_mi(form):
 def paket_uyeligi_olmayan_grup_uyesi(form):
     grup_id = form.data["grup" or None]
     uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
+    grup_paketi_mi = uye_grubu.count() > 1
     uyeler = ""
     for item in uye_grubu:
-        abonelik_paket_listesi = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True)
+        abonelik_paket_listesi = UyePaketModel.objects.filter(uye_id=item.uye_id, grup_mu=grup_paketi_mi, aktif_mi=True)
         if not abonelik_paket_listesi.exists():
             uyeler += str(item.uye) + ", "
     if uyeler != "":
@@ -350,8 +351,6 @@ def etkinlik_detay_getir_ajax(request):
         html = render_to_string('calendarapp/etkinlik/partials/_detay_modal.html', {"etkinlik": etkinlik})
     return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
 
-
-
 #
 # def abonelik_guncelle(yeni_etkinlik_form, eski_etkinlik):
 #     if yeni_etkinlik_form.cleaned_data["grup"] == eski_etkinlik.grup:  # Grup değişmediyse aşağıdaki işlemleri yap
@@ -410,4 +409,3 @@ def etkinlik_detay_getir_ajax(request):
 #             abonelik = abonelik.first()
 #             abonelik.delete()
 #
-
