@@ -31,3 +31,5 @@ class RezervasyonKayitForm(ModelForm):
         misafir = self.cleaned_data.get('misafir')
         if uye is None and misafir is None:
             self.add_error('uye', 'Lütfen bir üye veya misafir seçiniz!')
+        if uye and misafir:
+            self.add_error('uye', 'Lütfen üye veya misafir seçiniz! İki seçenek aynı anda seçilemez!')

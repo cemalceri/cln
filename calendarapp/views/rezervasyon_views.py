@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 
 from calendarapp.forms.rezervasyon_forms import RezervasyonKayitForm
 from calendarapp.models.Enums import GunlerModel, SaatlerModel
@@ -52,17 +53,18 @@ def sil(request, id):
 @login_required
 def bekleyen_musteri_getir_ajax(request):
     rezervasyonlar = bekleyen_musteri_getir(request.GET.get("tarih_saat"))
+    liste = []
+    print(rezervasyonlar)
     for rezervasyon in rezervasyonlar:
-        list.append({"id": rezervasyon.id, "adi": rezervasyon.uye.__str__(), "aciklama": rezervasyon.aciklama})
-    return JsonResponse(data={"data": list, "status": "success", "message": "Başarılı"}, safe=False)
+        liste.append({"id": rezervasyon.id, "adi": str(rezervasyon), "aciklama": rezervasyon.aciklama})
+    return JsonResponse(data={"data": liste, "status": "success", "message": "Başarılı"}, safe=False)
 
 
 @login_required
 def bekleyen_musteri_modal_getir_ajax(request):
     rezervasyonlar = bekleyen_musteri_getir(request.GET.get("tarih_saat"))
-    for rezervasyon in rezervasyonlar:
-        list.append({"id": rezervasyon.id, "adi": rezervasyon.uye.__str__(), "aciklama": rezervasyon.aciklama})
-    return JsonResponse(data={"data": list, "status": "success", "message": "Başarılı"}, safe=False)
+    html = render_to_string("calendarapp/etkinlik/partials/_bekleyen_listesi_modal.html", {"list": rezervasyonlar})
+    return JsonResponse(data={"html": html, "status": "success", "message": "Başarılı"}, safe=False)
 
 
 def bekleyen_musteri_getir(tarih_saat):

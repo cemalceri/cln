@@ -5,29 +5,57 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Etkinlik Detayı</h5>
+                <h3 class="modal-title" id="exampleModalLabel">Bu Saati Üye/Misafir Listesi</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                {% for bekleyen in list %}
-                <div class="row">{{ bekleyen.adi }}</div>
-                {% endfor %}
+                <div class="panel">
+                    <div class="table-responsive h-250" data-plugin="scrollable">
+                        <div data-role="container">
+                            <div data-role="content">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Sıra</th>
+                                        <th>Üye</th>
+                                        <th>Misafir</th>
+                                        <th>Günler</th>
+                                        <th>Saatler</th>
+                                        <th>Önem Derecesi</th>
+                                        <th>Açıklama</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for rezervasyon in list %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ rezervasyon.uye |default_if_none:"" }}</td>
+                                            <td>{{ rezervasyon.misafir |default_if_none:"" }}</td>
+                                            <td>{{ rezervasyon.tercih_edilen_gunler |default_if_none:"" }}</td>
+                                            <td>{{ rezervasyon.tercih_edilen_saatler |default_if_none:"" }}</td>
+                                            <td>{{ rezervasyon.onem_derecesi | default_if_none:"" }}</td>
+                                            <td>{{ rezervasyon.aciklama | default_if_none:"" }}</td>
+                                            {% if  rezervasyon.uye %}
+                                                <td>
+                                                    <a target="_blank" href="{% url 'calendarapp:profil_uye' rezervasyon.uye.id %}"><span
+                                                            class="badge badge-success">Profile Git</span></a>
+                                                </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Kapat</button>
-                <button id="btnSil" onclick="EtkinlikSil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
-                </button>
-                <button type="button" onclick="EtkinlikSerisiSil({{ etkinlik.id }})" class="btn btn-outline-danger">
-                    Seriyi Sil
-                </button>
-                <button type="button" onclick="etkinlikTamamlandi({{ etkinlik.id }})" class="btn btn-dark"> Tamamlandı
-                </button>
-                <button type="button" onclick="etkinlikTamamlandiGeriAl({{ etkinlik.id }})" class="btn btn-primary">
-                    Tamamlandı İptal
-                </button>
-
             </div>
         </div>
     </div>

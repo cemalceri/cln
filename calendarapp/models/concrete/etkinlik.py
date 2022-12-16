@@ -66,7 +66,6 @@ class EtkinlikModel(BaseAbstract):
                                  null=True, related_name="anternor")
     top_rengi = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray", null=False, blank=False,
                                  verbose_name="Top Rengi")
-    ilk_etkinlik_id = models.IntegerField(blank=True, null=True, verbose_name="İlk Etkinlik ID")
     tamamlandi_antrenor = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
     tamamlandi_yonetici = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Yönetici)")
     tamamlandi_uye = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Üye)")
