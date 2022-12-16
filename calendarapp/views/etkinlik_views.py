@@ -23,6 +23,22 @@ import json
 
 @login_required
 def index(request):
+    tarih = datetime.now().date()
+    print(tarih)
+    context = index_sayfasi_icin_context_olustur(request, tarih)
+    return render(request, "calendarapp/etkinlik/index.html", context)
+
+
+@login_required
+def index_getir_by_tarih(request, tarih):
+    context = index_sayfasi_icin_context_olustur(request, tarih)
+    return render(request, "calendarapp/etkinlik/index.html", context)
+
+
+def index_sayfasi_icin_context_olustur(request, tarih):
+    """check tarih is date or string"""
+    if isinstance(tarih, str):
+        tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
     kortlar = KortModel.objects.all().order_by("id")
     saatler = []
     for i in range(9, 24):
@@ -43,13 +59,24 @@ def index(request):
                                  {'kortlar': kortlar[baslangic:], 'saatler': saatler, })
     context = {
         "kortlar": html,
+        "sorgulanan_gun": tarih.strftime("%Y-%m-%d"),
+        "onceki_gun": (tarih - timedelta(days=1)).strftime("%Y-%m-%d"),
+        "sonraki_gun": (tarih + timedelta(days=1)).strftime("%Y-%m-%d"),
+        "sorgulanan_gun_adi": tarih.strftime("%d %B %Y"),
+        "onceki_gun_adi": (tarih - timedelta(days=1)).strftime("%d %B %Y"),
+        "sonraki_gun_adi": (tarih + timedelta(days=1)).strftime("%d %B %Y"),
     }
-    return render(request, "calendarapp/etkinlik/index.html", context)
+    return context
 
 
 @login_required
 def gunun_etkinlikleri_ajax(request):
-    etkinlikler = EtkinlikModel.objects.getir_bugunun_etkinlikleri().order_by("baslangic_tarih_saat")
+    tarih = request.GET.get("tarih")
+    if isinstance(tarih, str):
+        tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
+    sonraki_gun = tarih + timedelta(days=1)
+    etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
+                                               baslangic_tarih_saat__lt=sonraki_gun).order_by("baslangic_tarih_saat")
     kortlar = KortModel.objects.all()
     list = []
     for item in kortlar:
@@ -99,17 +126,6 @@ def sil_etkinlik(request, id):
     return redirect("dashboard")
 
 
-# @login_required(login_url="signup")
-# def sil_etkinlik_serisi_ajax(request):
-#     id = request.GET.get("id")
-#     etkinlik_list = EtkinlikModel.objects.filter(
-#         Q(pk=id) | Q(ilk_etkinlik_id=id, baslangic_tarih_saat__gte=datetime.now().date()))
-#     for etkinlik in etkinlik_list:
-#         abonelik_sil(etkinlik)
-#         etkinlik.delete()
-#     return JsonResponse({"status": "success", "message": "Etkinlik serisi silindi."})
-
-
 @login_required
 def takvim_getir(request, kort_id=None):
     kort = KortModel.objects.filter(pk=kort_id).first()
@@ -136,6 +152,7 @@ def takvim_getir(request, kort_id=None):
 
 @login_required
 def kaydet_etkinlik_ajax(request):
+    print("kaydet_etkinlik_ajax")
     form = EtkinlikForm(request.POST)
     if form.is_valid():
         result = etkinlik_kaydi_hata_var_mi(form)

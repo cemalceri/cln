@@ -11,7 +11,7 @@
 {% endblock %}
 {% block breadcrumb %}
     <div>
-        <h1><i class="fa fa-dashboard"></i> Etkinlikler</h1>
+        <h1><i class="fa fa-dashboard"></i> Etkinlikler - ({{ sorgulanan_gun_adi }})</h1>
         <p>Etkinlik Listesi</p>
     </div>
     <ul class="app-breadcrumb breadcrumb">
@@ -22,9 +22,31 @@
 
 {% block content %}
     <div class="row">
-        <a onclick="printDiv()" class="btn btn-success float-right black" style="margin: auto">
-            <i class="fa fa-file-pdf-o"> PDF indir</i>
-        </a>
+        <div class="col-md-1 col-xl-1 col-sm-1"></div>
+        <div class="col-md-11 col-xl-11 col-sm-11">
+            <div class="row">
+                <div class="col-md-6">
+                    <a id="btnSonrakiGun" href="{% url 'calendarapp:index_getir_by_tarih' sonraki_gun %}"
+                       class="btn btn-success float-right black m-1"
+                       title="Sonraki Gün">{{ sonraki_gun_adi }}
+                        <i class="fa fa-forward"></i>
+                    </a>
+                    <a id="btnBugun" href="{% url 'calendarapp:index_etkinlik' %}"
+                       class="btn btn-primary float-right black m-1" title="Bugün">{{ sorgulanan_gun_adi }}
+
+                    </a>
+                    <a id="btnOncekiGun" href="{% url 'calendarapp:index_getir_by_tarih' onceki_gun %}"
+                       class="btn btn-secondary float-right black m-1" title="Önceki Gün">
+                        <i class="fa fa-backward"></i>{{ onceki_gun_adi }}
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a onclick="printDiv()" class="btn btn-success float-right black" style="margin: auto">
+                        <i class="fa fa-file-pdf-o"> PDF indir</i>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="divContent" class='html-content'>
         {{ kortlar|safe }}
@@ -34,7 +56,6 @@
     <script>
         let sorgulananTarih = new Date();
         $(document).ready(function () {
-            let sorgulananTarih = new Date();
             etkinlikleriGetir();
         });
 
@@ -43,6 +64,9 @@
                 url: "{% url 'calendarapp:gunun_etkinlikleri_ajax' %}",
                 type: "GET",
                 dataType: "json",
+                data: {
+                    'tarih': '{{sorgulanan_gun}}'
+                },
                 success: function (result) {
                     for (let i = 0; i < result.list.length; i++) { //her kort için döngü
                         let kortId = result.list[i].kort_id;
@@ -95,7 +119,6 @@
         });
 
         function BekleyenListesiGetir(saat, dk) {
-            //sorgulananTarih format 2020-01-01
             let tarihSaat = sorgulananTarih.getFullYear() + '-' + (sorgulananTarih.getMonth() + 1) + '-' + sorgulananTarih.getDate();
             tarihSaat += 'T' + saat + ':' + dk + ':00';
             $.ajax({
@@ -133,7 +156,6 @@
                 pdf.save("etkinlikler.pdf");
             });
         }
-
 
     </script>
 {% endblock content %}

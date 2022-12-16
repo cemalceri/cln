@@ -34,7 +34,10 @@ class RezervasyonModel(BaseAbstract):
                              verbose_name="Ekleyen")
 
     def __str__(self):
-        return self.uye
+        if self.uye:
+            return self.uye.adi + " " + self.uye.soyadi
+        else:
+            return self.misafir
 
     objects = RezervasyonManager()
 

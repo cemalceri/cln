@@ -16,6 +16,7 @@ urlpatterns = [
     path("takvim/<int:kort_id>", etkinlik_views.takvim_getir, name="takvim_getir_by_kort_id"),
     path("etkinlik", etkinlik_views.index, name="index_etkinlik"),
     path("gunun_etkinlikleri", etkinlik_views.gunun_etkinlikleri_ajax, name="gunun_etkinlikleri_ajax"),
+    path("etkinlik/index/<str:tarih>", etkinlik_views.index_getir_by_tarih, name="index_getir_by_tarih"),
 
     # Haftalık Plan
     path("haftalik-plan/", haftalik_plan_views.haftalik_plan_getir, name="haftalik_plan_getir"),
