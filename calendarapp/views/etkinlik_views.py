@@ -79,6 +79,37 @@ def gunun_etkinlikleri_ajax(request):
                                                baslangic_tarih_saat__lt=sonraki_gun).order_by("baslangic_tarih_saat")
     kortlar = KortModel.objects.all()
     list = []
+    saatler = []
+    eklenecek_etkinlik = []
+    for i in range(9, 24):
+        saatler.append(i)
+    for kort in kortlar:
+        list.append({
+            "kort_id": kort.id,
+            "kort_adi": kort.adi,
+            "saatler": [
+                {
+                    "saat": saat,
+                    "etkinlikler": [
+                        {
+
+            ],
+        })
+    for kort in kortlar:
+
+    return JsonResponse(data={"status": "success", "list": list})
+
+
+@login_required
+def gunun_etkinlikleri_ajax_eski(request):
+    tarih = request.GET.get("tarih")
+    if isinstance(tarih, str):
+        tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
+    sonraki_gun = tarih + timedelta(days=1)
+    etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
+                                               baslangic_tarih_saat__lt=sonraki_gun).order_by("baslangic_tarih_saat")
+    kortlar = KortModel.objects.all()
+    list = []
     for item in kortlar:
         list.append({
             "kort_id": item.id,
