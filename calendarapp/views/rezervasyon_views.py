@@ -54,7 +54,6 @@ def sil(request, id):
 def bekleyen_musteri_getir_ajax(request):
     rezervasyonlar = bekleyen_musteri_getir(request.GET.get("tarih_saat"))
     liste = []
-    print(rezervasyonlar)
     for rezervasyon in rezervasyonlar:
         liste.append({"id": rezervasyon.id, "adi": str(rezervasyon), "aciklama": rezervasyon.aciklama})
     return JsonResponse(data={"data": liste, "status": "success", "message": "Başarılı"}, safe=False)

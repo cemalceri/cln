@@ -21,24 +21,12 @@
                         <div class="container bg-info black border vertical-align vertical-align-middle text-center m-0"
                              style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
                     </div>
-                    <div id="kort_{{ kort.id }}" class="row">
+                    <div class="row">
+                        <div id="kort_{{ kort.id }}" class="col">
+                        </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        let max_etkinlik_sayisi = 0;
-        let colAdet = 0;
-        {% for kort in kortlar %}
-            max_etkinlik_sayisi = {{ kort.max_etkinlik_sayisi }};
-            colAdet = 12 / max_etkinlik_sayisi;
-            for (let i = 0; i < max_etkinlik_sayisi; i++) {
-                $('#kort_{{ kort.id }}').append('<div id="kort_{{ kort.id }}_col_' + i + '" class="col col-md-' + colAdet + '"></div>');
-            }
-        {% endfor %}
-    });
-
-</script>

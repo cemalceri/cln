@@ -1,5 +1,3 @@
-from itertools import chain
-
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -9,13 +7,14 @@ from django.template.loader import render_to_string
 
 from calendarapp.forms.etkinlik_forms import EtkinlikForm, HaftalikPlanForm
 
-from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum
+from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum, GunlerModel, SaatlerModel
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel, UyePaketModel
 from calendarapp.models.concrete.commons import gun_adi_getir, to_dict
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
 from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
+from calendarapp.models.concrete.rezervasyon import RezervasyonModel
 from calendarapp.models.concrete.uye import GrupModel, UyeGrupModel
 from calendarapp.utils import formErrorsToText
 import json
@@ -78,26 +77,54 @@ def gunun_etkinlikleri_ajax(request):
     etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
                                                baslangic_tarih_saat__lt=sonraki_gun).order_by("baslangic_tarih_saat")
     kortlar = KortModel.objects.all()
-    list = []
+    gunler_list = GunlerModel.objects.all()
+    saatler_list = SaatlerModel.objects.all()
+    bekleyen_list = RezervasyonModel.objects.all()
+    liste = []
     saatler = []
-    eklenecek_etkinlik = []
     for i in range(9, 24):
-        saatler.append(i)
-    for kort in kortlar:
-        list.append({
-            "kort_id": kort.id,
-            "kort_adi": kort.adi,
-            "saatler": [
-                {
-                    "saat": saat,
-                    "etkinlikler": [
-                        {
-
-            ],
+        saatler.append({"saat": i, "etkinlikler": [], "bolunmeSayisi": 5, "bekleyenlerVarmi": False})
+    for item in kortlar:
+        liste.append({
+            "kort_id": item.id,
+            "kort_adi": item.adi,
+            "saatler": saatler,
         })
-    for kort in kortlar:
+    print(liste)
+    for etkinlik in etkinlikler:
+        print(etkinlik.kort.id, etkinlik.baslangic_tarih_saat.hour)
+        """find in liste kort_id = etkinlik.kort.id"""
+        for item in liste:
+            if item["kort_id"] == etkinlik.kort.id:
+                for saat in item["saatler"]:
+                    if saat["saat"] == etkinlik.baslangic_tarih_saat.hour:
+                        saat["etkinlikler"].append({
+                            "baslangic_saati": etkinlik.baslangic_tarih_saat.strftime("%H:%M"),
+                            "bitis_saati": etkinlik.bitis_tarih_saat.strftime("%H:%M"),
+                            "grup_adi": etkinlik.grup.__str__()[0:15],
+                            "grup_id": etkinlik.grup.id,
+                            "id": etkinlik.id,
+                            "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
+                            "renk": etkinlik.antrenor.renk if etkinlik.antrenor else "gray",
+                            "seviye": "(" + etkinlik.top_rengi[0:1].upper() + (")" if etkinlik.top_rengi else "-"), })
+                        # saat["bolunmeSayisi"] = bolunme_sayisi_getir(etkinlik)
+        return JsonResponse(data={"status": "success", "list": liste})
 
-    return JsonResponse(data={"status": "success", "list": list})
+
+def bolunme_sayisi_getir(jsonEtkinlikler):
+    return 5
+
+
+def bu_saati_bekleyen_var_mi(rezervasyon_model_list, gunler_list, saatler_list, tarih_saat):
+    gunun_saati = tarih_saat.time()
+    haftanini_gunu = tarih_saat.weekday()
+    gun = GunlerModel.objects.filter(haftanin_gunu=haftanini_gunu).first()
+    saat = SaatlerModel.objects.filter(baslangic_degeri=gunun_saati).first()
+    return RezervasyonModel.objects.filter(
+        Q(gunler=gun, saatler=saat) |
+        Q(gunler=gun, saatler__isnull=True) |
+        Q(gunler__isnull=True, saatler=saat) |
+        Q(gunler__isnull=True, saatler__isnull=True)).exists()
 
 
 @login_required

@@ -26,18 +26,17 @@
         <div class="col-md-11 col-xl-11 col-sm-11">
             <div class="row">
                 <div class="col-md-6">
-                    <a id="btnSonrakiGun" href="{% url 'calendarapp:index_getir_by_tarih' sonraki_gun %}"
-                       class="btn btn-success float-right black m-1"
-                       title="Sonraki Gün">{{ sonraki_gun_adi }}
-                        <i class="fa fa-forward"></i>
+                    <a id="btnOncekiGun" href="{% url 'calendarapp:index_getir_by_tarih' onceki_gun %}"
+                       class="btn btn-secondary float-left black m-1" title="Önceki Gün">
+                        <i class="fa fa-backward"></i>{{ onceki_gun_adi }}
                     </a>
                     <a id="btnBugun" href="{% url 'calendarapp:index_etkinlik' %}"
-                       class="btn btn-primary float-right black m-1" title="Bugün">{{ sorgulanan_gun_adi }}
-
+                       class="btn btn-primary float-left black m-1" title="Bugün">{{ sorgulanan_gun_adi }}
                     </a>
-                    <a id="btnOncekiGun" href="{% url 'calendarapp:index_getir_by_tarih' onceki_gun %}"
-                       class="btn btn-secondary float-right black m-1" title="Önceki Gün">
-                        <i class="fa fa-backward"></i>{{ onceki_gun_adi }}
+                    <a id="btnSonrakiGun" href="{% url 'calendarapp:index_getir_by_tarih' sonraki_gun %}"
+                       class="btn btn-success float-left black m-1"
+                       title="Sonraki Gün">{{ sonraki_gun_adi }}
+                        <i class="fa fa-forward"></i>
                     </a>
                 </div>
                 <div class="col-md-6">
@@ -69,31 +68,31 @@
                 },
                 success: function (result) {
                     for (let i = 0; i < result.list.length; i++) { //her kort için döngü
-                        console.log(result.list[i]);
+                        debugger;
+                        console.log(result.list);
                         let kortId = result.list[i].kort_id;
-                        let kortunEtkinlikleri = result.list[i].etkinlikler;
-                        let kortunMaxEtkinlikSayisi = result.list[i].max_etkinlik_sayisi;
-                        for (let t = 0; t < kortunMaxEtkinlikSayisi; t++) { //her kortun kolonu için döngü
-                            let col = $('#kort_' + kortId + '_col_' + t);
-                            let sorgulacakSaat = new Date("1/1/1900 09:00");
-                            while (sorgulacakSaat <= new Date("1/1/1900 23:45")) {
-                                let etkinlik = kortunEtkinlikleri.find(function (etkinlik) {
-                                    let tarih = new Date("1/1/1900 " + etkinlik.baslangic_saati).toTimeString();
-                                    if (tarih == sorgulacakSaat.toTimeString()) {
-                                        return etkinlik;
-                                    }
-                                });
-                                if (etkinlik != null && etkinlik != undefined) {
-                                    col.append('<div id="' + etkinlik.id + '" class="row doluEtkinlik border black" style="height: ' + etkinlik.sure + 'px;font-size: 0.7rem; background-color: ' + etkinlik.renk + '">' +
-                                        etkinlik.grup_adi + etkinlik.seviye + '</div>');
-                                    kortunEtkinlikleri.splice(kortunEtkinlikleri.indexOf(etkinlik), 1);
-                                    sorgulacakSaat = new Date("1/1/1900 " + etkinlik.bitis_saati);
-                                } else {
-                                    col.append('<a onclick="BekleyenListesiGetir(' + sorgulacakSaat.getHours() + ',' + sorgulacakSaat.getMinutes() + ')">' +
-                                        '<div class="row border bg-secondary black" style="height:30px;font-size: 0.7rem"></div></a>');
-                                    sorgulacakSaat.setMinutes(sorgulacakSaat.getMinutes() + 30);
-                                }
+                        let kortunSaatleri = result.list[i].saatler;
+                        let kolon = $('#kort_' + kortId);
+                        for (let s = 0; result.list[i].saatler.length; s++) {
+                            let saat = result.list[i].saatler[s].saat;
+                            {#console.log(result.list[i]);#}
+                            let saatDiv = $('<div id="kort_' + kortId + '_saat_' + saat + '" class="row" style="height:60px"></div>');
+                            let etkinlikler = result.list[i].saatler[s].etkinlikler;
+                            let bolunmeSayisi = result.list[i].saatler[s].bolunmeSayisi;
+                            for (let e = 0; e < etkinlikler.length; e++) {
+                                let etkinlik = etkinlikler[e];
+                                let etkinlikDiv = $('<div id="' + etkinlik.id + '" class="col doluEtkinlik border black" ' +
+                                    'style="font-size: 0.7rem; background-color:' + etkinlik.renk + '">' +
+                                    etkinlik.grup_adi + etkinlik.seviye + '</div>');
+                                saatDiv.append(etkinlikDiv);
                             }
+                            let eklenecekBosDivSayisi = bolunmeSayisi - etkinlikler.length;
+                            for (let b = 0; b < eklenecekBosDivSayisi; b++) {
+                                let bgRengi = result.list[i].saatler[s].bekleyenVarMi ? 'bg-danger' : 'bg-secondary';
+                                let bolunmeDiv = $('<div class="col border ' + bgRengi + '"></div>');
+                                saatDiv.append(bolunmeDiv);
+                            }
+                            kolon.append(saatDiv);
                         }
                     }
                 }
