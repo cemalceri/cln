@@ -25,27 +25,27 @@
         <div class="col-md-1 col-xl-1 col-sm-1"></div>
         <div class="col-md-11 col-xl-11 col-sm-11">
             <div class="row">
-                <div class="col-md-6">
-                    <a id="btnOncekiGun" href="{% url 'calendarapp:index_getir_by_tarih' onceki_gun %}"
-                       class="btn btn-secondary float-left black m-1" title="Önceki Gün">
-                        <i class="fa fa-backward"></i>{{ onceki_gun_adi }}
-                    </a>
-                    <a id="btnBugun" href="{% url 'calendarapp:index_etkinlik' %}"
-                       class="btn btn-primary float-left black m-1" title="Bugün">{{ sorgulanan_gun_adi }}
-                    </a>
-                    <a id="btnSonrakiGun" href="{% url 'calendarapp:index_getir_by_tarih' sonraki_gun %}"
-                       class="btn btn-success float-left black m-1"
-                       title="Sonraki Gün">{{ sonraki_gun_adi }}
-                        <i class="fa fa-forward"></i>
-                    </a>
-                </div>
-                <div class="col-md-6">
-                    <a onclick="printDiv()" class="btn btn-success float-right black" style="margin: auto">
-                        <i class="fa fa-file-pdf-o"> PDF indir</i>
-                    </a>
-                </div>
+                {#                <div class="col-md-6">#}
+                {#                    <a id="btnOncekiGun" href="{% url 'calendarapp:index_getir_by_tarih' onceki_gun %}"#}
+                {#                       class="btn btn-secondary float-left black m-1" title="Önceki Gün">#}
+                {#                        <i class="fa fa-backward"></i>{{ onceki_gun_adi }}#}
+                {#                    </a>#}
+                {#                    <a id="btnBugun" href="{% url 'calendarapp:index_etkinlik' %}"#}
+                {#                       class="btn btn-primary float-left black m-1" title="Bugün">{{ sorgulanan_gun_adi }}#}
+                {#                    </a>#}
+                {#                    <a id="btnSonrakiGun" href="{% url 'calendarapp:index_getir_by_tarih' sonraki_gun %}"#}
+                {#                       class="btn btn-success float-left black m-1"#}
+                {#                       title="Sonraki Gün">{{ sonraki_gun_adi }}#}
+                {#                        <i class="fa fa-forward"></i>#}
+                {#                    </a>#}
+            </div>
+            <div class="col-md-6">
+                <a onclick="printDiv()" class="btn btn-success float-right black" style="margin: auto">
+                    <i class="fa fa-file-pdf-o"> PDF indir</i>
+                </a>
             </div>
         </div>
+    </div>
     </div>
     <div id="divContent" class='html-content'>
         {{ kortlar|safe }}
@@ -55,28 +55,29 @@
     <script>
         let sorgulananTarih = new Date();
         $(document).ready(function () {
-            etkinlikleriGetir();
+            {% for gun in haftanin_gunleri %}
+                etkinlikleriGetir('{{ gun }}');
+            {% endfor %}
+            //etkinlikleriGetir();
         });
 
-        function etkinlikleriGetir() {
+        function etkinlikleriGetir(sorgulanan_gun) {
             $.ajax({
                 url: "{% url 'calendarapp:gunun_etkinlikleri_ajax' %}",
                 type: "GET",
                 dataType: "json",
                 data: {
-                    'tarih': '{{sorgulanan_gun}}'
+                    'tarih': sorgulanan_gun
                 },
                 success: function (result) {
                     for (let i = 0; i < result.list.length; i++) { //her kort için döngü
-                        console.log(result.list);
                         let kortId = result.list[i].kort_id;
                         let kortunSaatleri = result.list[i].saatler;
-                        let kolon = $('#kort_' + kortId);
+                        let kolon = $('#' + sorgulanan_gun + '_kort_' + kortId);
                         let saat = "";
                         for (let s = 0; s < kortunSaatleri.length; s++) {
                             saat = kortunSaatleri[s].saat;
-                            console.log(saat);
-                            let saatDiv = $('<div id="kort_' + kortId + '_saat_' + saat + '" class="row" style="height:60px"></div>');
+                            let saatDiv = $('<div id="' + sorgulanan_gun + '_kort_' + kortId + '_saat_' + saat + '" class="row" style="height:60px"></div>');
                             let etkinlikler = result.list[i].saatler[s].etkinlikler;
                             let bolunmeSayisi = result.list[i].saatler[s].bolunmeSayisi;
                             for (let e = 0; e < etkinlikler.length; e++) {
@@ -88,8 +89,10 @@
                             }
                             let eklenecekBosDivSayisi = bolunmeSayisi - etkinlikler.length;
                             for (let b = 0; b < eklenecekBosDivSayisi; b++) {
-                                let bgRengi = result.list[i].saatler[s].bekleyenVarMi ? 'bg-secondary' : 'bg-white';
-                                let bolunmeDiv = $('<div id="' + result.list[i].saatler[s].sorgulananTarihSaat + '" class="col bosEtkinlik border ' + bgRengi + '"></div>');
+                                let bolunmeDiv = $('<div id="' + result.list[i].saatler[s].sorgulananTarihSaat + '" class="col bosEtkinlik border bg-white"></div>');
+                                if (result.list[i].saatler[s].bekleyenVarMi) {
+                                    bolunmeDiv.append('<i class="fa fa-users" style="color:darkred"></i>');
+                                }
                                 saatDiv.append(bolunmeDiv);
                             }
                             kolon.append(saatDiv);

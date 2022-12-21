@@ -1,5 +1,8 @@
 {% load static %}
 <script src="{% static 'js/jquery.js' %}"></script>
+<div class="row">
+    <div class="col col-md-12 text-center"><h1>{{ tarih }}</h1></div>
+</div>
 <div class="row mb-20">
     <div class="col-md-1 col-xl-1 col-sm-1">
         <div class="row">
@@ -8,8 +11,8 @@
             {% for saat in saatler %}
                 <span class="container bg-info black vertical-align vertical-align-middle text-left border-top m-0"
                       style="height: 60px;font-size: 1rem;">{{ saat }}:00</span>
-{#                <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"#}
-{#                      style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>#}
+                {#                <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"#}
+                {#                      style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>#}
             {% endfor %}
         </div>
     </div>
@@ -22,7 +25,7 @@
                              style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
                     </div>
                     <div class="row">
-                        <div id="kort_{{ kort.id }}" class="col">
+                        <div id="{{ tarih_str }}_kort_{{ kort.id }}" class="col">
                         </div>
                     </div>
                 </div>
@@ -30,3 +33,4 @@
         </div>
     </div>
 </div>
+

@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 
 from calendarapp.forms.etkinlik_forms import EtkinlikForm, HaftalikPlanForm
 
-from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum, GunlerModel, SaatlerModel
+from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum, GunlerModel, SaatlerModel, RenkEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel, UyePaketModel
 from calendarapp.models.concrete.commons import gun_adi_getir, to_dict
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
@@ -37,10 +37,15 @@ def index_getir_by_tarih(request, tarih):
 
 
 def index_sayfasi_icin_context_olustur(request, tarih):
-    """check tarih is date or string"""
     if isinstance(tarih, str):
         tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
+    sorgulanan_haftanini_ilk_gunu = tarih - timedelta(days=datetime.now().weekday())
+    haftanin_gunleri = []
+    haftanin_gunleri_strf = []
     kortlar = KortModel.objects.all().order_by("id")
+    for i in range(0, 7):
+        haftanin_gunleri.append(sorgulanan_haftanini_ilk_gunu + timedelta(days=i))
+        haftanin_gunleri_strf.append((sorgulanan_haftanini_ilk_gunu + timedelta(days=i)).strftime("%Y-%m-%d"))
     saatler = []
     for i in range(9, 24):
         saatler.append(i)
@@ -48,24 +53,22 @@ def index_sayfasi_icin_context_olustur(request, tarih):
     islem = divmod(kortlar.count(), 4)
     bolum = islem[0]
     kalan = islem[1]
-    baslangic = 0
-    bitis = 4
-    for i in range(bolum):
-        html += render_to_string('calendarapp/etkinlik/partials/_gunluk_plan_icin_kortlar.html',
-                                 {'kortlar': kortlar[baslangic:bitis], 'saatler': saatler, })
-        baslangic += 4
-        bitis += 4
-    if kalan > 0:
-        html += render_to_string('calendarapp/etkinlik/partials/_gunluk_plan_icin_kortlar.html',
-                                 {'kortlar': kortlar[baslangic:], 'saatler': saatler, })
+    for gun in haftanin_gunleri:
+        baslangic = 0
+        bitis = 4
+        for i in range(bolum):
+            html += render_to_string('calendarapp/etkinlik/partials/_gunluk_plan_icin_kortlar.html',
+                                     {'kortlar': kortlar[baslangic:bitis], 'saatler': saatler, 'tarih': gun,
+                                      'tarih_str': gun.strftime("%Y-%m-%d")})
+            baslangic += 4
+            bitis += 4
+        if kalan > 0:
+            html += render_to_string('calendarapp/etkinlik/partials/_gunluk_plan_icin_kortlar.html',
+                                     {'kortlar': kortlar[baslangic:], 'saatler': saatler, 'tarih': gun,
+                                      'tarih_str': gun.strftime("%Y-%m-%d")})
     context = {
         "kortlar": html,
-        "sorgulanan_gun": tarih.strftime("%Y-%m-%d"),
-        "onceki_gun": (tarih - timedelta(days=1)).strftime("%Y-%m-%d"),
-        "sonraki_gun": (tarih + timedelta(days=1)).strftime("%Y-%m-%d"),
-        "sorgulanan_gun_adi": tarih.strftime("%d %B %Y"),
-        "onceki_gun_adi": (tarih - timedelta(days=1)).strftime("%d %B %Y"),
-        "sonraki_gun_adi": (tarih + timedelta(days=1)).strftime("%d %B %Y"),
+        "haftanin_gunleri": haftanin_gunleri_strf,
     }
     return context
 
@@ -88,6 +91,7 @@ def saatler_ve_etkinlikler_dict_olustur(kort, etkinlikler, tarih, bekleyenler):
                     "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
                     "renk": etkinlik.antrenor.renk if etkinlik.antrenor else "gray",
                     "seviye": "(" + etkinlik.top_rengi[0:1].upper() + (")" if etkinlik.top_rengi else "-"),
+                    "top_rengi": etkinlik.top_rengi,
                 })
             saatler.append({"saat": i,
                             "etkinlikler": etkinlikler_list,
@@ -127,8 +131,12 @@ def gunun_etkinlikleri_ajax(request):
 
 
 def bolunme_sayisi_getir(jsonEtkinlikler):
-    import random
-    return random.randint(1, 5)
+    print(jsonEtkinlikler)
+    for etkinlik in jsonEtkinlikler:
+        if etkinlik["top_rengi"] == RenkEnum.Kırmızı.value:
+            return 5
+        else:
+            return 2
 
 
 def bu_saati_bekleyen_var_mi(tarih_saat, bekleyenler):
@@ -227,7 +235,6 @@ def takvim_getir(request, kort_id=None):
 
 @login_required
 def kaydet_etkinlik_ajax(request):
-    print("kaydet_etkinlik_ajax")
     form = EtkinlikForm(request.POST)
     if form.is_valid():
         result = etkinlik_kaydi_hata_var_mi(form)
