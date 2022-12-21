@@ -68,14 +68,14 @@
                 },
                 success: function (result) {
                     for (let i = 0; i < result.list.length; i++) { //her kort için döngü
-                        debugger;
                         console.log(result.list);
                         let kortId = result.list[i].kort_id;
                         let kortunSaatleri = result.list[i].saatler;
                         let kolon = $('#kort_' + kortId);
-                        for (let s = 0; result.list[i].saatler.length; s++) {
-                            let saat = result.list[i].saatler[s].saat;
-                            {#console.log(result.list[i]);#}
+                        let saat = "";
+                        for (let s = 0; s < kortunSaatleri.length; s++) {
+                            saat = kortunSaatleri[s].saat;
+                            console.log(saat);
                             let saatDiv = $('<div id="kort_' + kortId + '_saat_' + saat + '" class="row" style="height:60px"></div>');
                             let etkinlikler = result.list[i].saatler[s].etkinlikler;
                             let bolunmeSayisi = result.list[i].saatler[s].bolunmeSayisi;
@@ -88,8 +88,8 @@
                             }
                             let eklenecekBosDivSayisi = bolunmeSayisi - etkinlikler.length;
                             for (let b = 0; b < eklenecekBosDivSayisi; b++) {
-                                let bgRengi = result.list[i].saatler[s].bekleyenVarMi ? 'bg-danger' : 'bg-secondary';
-                                let bolunmeDiv = $('<div class="col border ' + bgRengi + '"></div>');
+                                let bgRengi = result.list[i].saatler[s].bekleyenVarMi ? 'bg-secondary' : 'bg-white';
+                                let bolunmeDiv = $('<div id="' + result.list[i].saatler[s].sorgulananTarihSaat + '" class="col bosEtkinlik border ' + bgRengi + '"></div>');
                                 saatDiv.append(bolunmeDiv);
                             }
                             kolon.append(saatDiv);
@@ -118,9 +118,10 @@
             }
         });
 
-        function BekleyenListesiGetir(saat, dk) {
-            let tarihSaat = sorgulananTarih.getFullYear() + '-' + (sorgulananTarih.getMonth() + 1) + '-' + sorgulananTarih.getDate();
-            tarihSaat += 'T' + saat + ':' + dk + ':00';
+        $(document).on('click', '.bosEtkinlik', function () {
+            debugger;
+            let tarihSaat = $(this).attr('id');
+            {#tarihSaat += 'T' + saat + ':' + dk + ':00';#}
             $.ajax({
                 url: "{% url 'calendarapp:bekleyen_musteri_modal_getir_ajax' %}",
                 type: "GET",
@@ -133,7 +134,7 @@
                     $('#bekleyenModal').modal('show');
                 }
             });
-        }
+        });
 
         function printDiv() {
             var HTML_Width = $(".html-content").width();

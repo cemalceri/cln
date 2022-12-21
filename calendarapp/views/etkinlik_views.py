@@ -19,11 +19,13 @@ from calendarapp.models.concrete.uye import GrupModel, UyeGrupModel
 from calendarapp.utils import formErrorsToText
 import json
 
+gunler = GunlerModel.objects.all()
+saatler = SaatlerModel.objects.all()
+
 
 @login_required
 def index(request):
     tarih = datetime.now().date()
-    print(tarih)
     context = index_sayfasi_icin_context_olustur(request, tarih)
     return render(request, "calendarapp/etkinlik/index.html", context)
 
@@ -68,6 +70,41 @@ def index_sayfasi_icin_context_olustur(request, tarih):
     return context
 
 
+def saatler_ve_etkinlikler_dict_olustur(kort, etkinlikler, tarih, bekleyenler):
+    saatler = []
+    for i in range(9, 24):
+        sorgulanan_tarih_saat = datetime.combine(tarih, datetime.min.time()).replace(hour=i)
+        saatin_etkinlikleri = etkinlikler.filter(kort_id=kort.id, baslangic_tarih_saat__lte=sorgulanan_tarih_saat,
+                                                 bitis_tarih_saat__gt=sorgulanan_tarih_saat)
+        if saatin_etkinlikleri.exists():
+            etkinlikler_list = []
+            for etkinlik in saatin_etkinlikleri:
+                etkinlikler_list.append({
+                    "baslangic_saati": etkinlik.baslangic_tarih_saat.strftime("%H:%M"),
+                    "bitis_saati": etkinlik.bitis_tarih_saat.strftime("%H:%M"),
+                    "grup_adi": etkinlik.grup.__str__()[0:15],
+                    "grup_id": etkinlik.grup.id,
+                    "id": etkinlik.id,
+                    "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
+                    "renk": etkinlik.antrenor.renk if etkinlik.antrenor else "gray",
+                    "seviye": "(" + etkinlik.top_rengi[0:1].upper() + (")" if etkinlik.top_rengi else "-"),
+                })
+            saatler.append({"saat": i,
+                            "etkinlikler": etkinlikler_list,
+                            "bolunmeSayisi": bolunme_sayisi_getir(etkinlikler_list),
+                            "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat, bekleyenler),
+                            "sorgulananTarihSaat": sorgulanan_tarih_saat
+                            })
+        else:
+            saatler.append({"saat": i,
+                            "etkinlikler": [],
+                            "bolunmeSayisi": 5,
+                            "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat, bekleyenler),
+                            "sorgulananTarihSaat": sorgulanan_tarih_saat
+                            })
+    return saatler
+
+
 @login_required
 def gunun_etkinlikleri_ajax(request):
     tarih = request.GET.get("tarih")
@@ -75,52 +112,31 @@ def gunun_etkinlikleri_ajax(request):
         tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
     sonraki_gun = tarih + timedelta(days=1)
     etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
-                                               baslangic_tarih_saat__lt=sonraki_gun).order_by("baslangic_tarih_saat")
+                                               baslangic_tarih_saat__lt=sonraki_gun).order_by(
+        "baslangic_tarih_saat")
     kortlar = KortModel.objects.all()
-    gunler_list = GunlerModel.objects.all()
-    saatler_list = SaatlerModel.objects.all()
-    bekleyen_list = RezervasyonModel.objects.all()
+    bekleyenler = RezervasyonModel.objects.all()
     liste = []
-    saatler = []
-    for i in range(9, 24):
-        saatler.append({"saat": i, "etkinlikler": [], "bolunmeSayisi": 5, "bekleyenlerVarmi": False})
-    for item in kortlar:
+    for kort in kortlar:
         liste.append({
-            "kort_id": item.id,
-            "kort_adi": item.adi,
-            "saatler": saatler,
-        })
-    print(liste)
-    for etkinlik in etkinlikler:
-        print(etkinlik.kort.id, etkinlik.baslangic_tarih_saat.hour)
-        """find in liste kort_id = etkinlik.kort.id"""
-        for item in liste:
-            if item["kort_id"] == etkinlik.kort.id:
-                for saat in item["saatler"]:
-                    if saat["saat"] == etkinlik.baslangic_tarih_saat.hour:
-                        saat["etkinlikler"].append({
-                            "baslangic_saati": etkinlik.baslangic_tarih_saat.strftime("%H:%M"),
-                            "bitis_saati": etkinlik.bitis_tarih_saat.strftime("%H:%M"),
-                            "grup_adi": etkinlik.grup.__str__()[0:15],
-                            "grup_id": etkinlik.grup.id,
-                            "id": etkinlik.id,
-                            "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
-                            "renk": etkinlik.antrenor.renk if etkinlik.antrenor else "gray",
-                            "seviye": "(" + etkinlik.top_rengi[0:1].upper() + (")" if etkinlik.top_rengi else "-"), })
-                        # saat["bolunmeSayisi"] = bolunme_sayisi_getir(etkinlik)
-        return JsonResponse(data={"status": "success", "list": liste})
+            "kort_id": kort.id,
+            "kort_adi": kort.adi,
+            "saatler": saatler_ve_etkinlikler_dict_olustur(kort, etkinlikler, tarih, bekleyenler)
+        }),
+    return JsonResponse(data={"status": "success", "list": liste})
 
 
 def bolunme_sayisi_getir(jsonEtkinlikler):
-    return 5
+    import random
+    return random.randint(1, 5)
 
 
-def bu_saati_bekleyen_var_mi(rezervasyon_model_list, gunler_list, saatler_list, tarih_saat):
+def bu_saati_bekleyen_var_mi(tarih_saat, bekleyenler):
     gunun_saati = tarih_saat.time()
     haftanini_gunu = tarih_saat.weekday()
-    gun = GunlerModel.objects.filter(haftanin_gunu=haftanini_gunu).first()
-    saat = SaatlerModel.objects.filter(baslangic_degeri=gunun_saati).first()
-    return RezervasyonModel.objects.filter(
+    gun = gunler.filter(haftanin_gunu=haftanini_gunu).first()
+    saat = saatler.filter(baslangic_degeri=gunun_saati).first()
+    return bekleyenler.filter(
         Q(gunler=gun, saatler=saat) |
         Q(gunler=gun, saatler__isnull=True) |
         Q(gunler__isnull=True, saatler=saat) |
@@ -134,7 +150,8 @@ def gunun_etkinlikleri_ajax_eski(request):
         tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
     sonraki_gun = tarih + timedelta(days=1)
     etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
-                                               baslangic_tarih_saat__lt=sonraki_gun).order_by("baslangic_tarih_saat")
+                                               baslangic_tarih_saat__lt=sonraki_gun).order_by(
+        "baslangic_tarih_saat")
     kortlar = KortModel.objects.all()
     list = []
     for item in kortlar:
@@ -236,7 +253,8 @@ def etkinlik_kaydi_hata_var_mi(form):
     if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
         mesaj = "Etkinlik başlangıç tarihi bitiş tarihinden sonra olamaz."
         return JsonResponse(data={"status": "error", "message": mesaj})
-    if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
+    if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"],
+                                     form.cleaned_data["bitis_tarih_saat"],
                                      form.data["kort"], form.cleaned_data["pk"]):
         mesaj = "Bu kort aynı saat için maksimimum etkinlik sayısına ulaştı."
         return JsonResponse(data={"status": "error", "message": mesaj})
@@ -254,7 +272,8 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
     grup_paketi_mi = uye_grubu.count() > 1
     uyeler = ""
     for item in uye_grubu:
-        abonelik_paket_listesi = UyePaketModel.objects.filter(uye_id=item.uye_id, grup_mu=grup_paketi_mi, aktif_mi=True)
+        abonelik_paket_listesi = UyePaketModel.objects.filter(uye_id=item.uye_id, grup_mu=grup_paketi_mi,
+                                                              aktif_mi=True)
         if not abonelik_paket_listesi.exists():
             uyeler += str(item.uye) + ", "
     if uyeler != "":
@@ -300,12 +319,14 @@ def etkinlik_tamamlandi_ajax(request):
         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
         if etkinlik.bitis_tarih_saat > datetime.now():
             return JsonResponse(
-                data={"status": "error", "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
+                data={"status": "error",
+                      "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
         uye_grup = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
         if etkinlik.abonelik_tipi == AbonelikTipiEnum.Paket.value:
             for item in uye_grup:
                 paket = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True).first()
-                if paket and not PaketKullanimModel.objects.filter(uye_paket_id=paket.id, etkinlik_id=etkinlik.id,
+                if paket and not PaketKullanimModel.objects.filter(uye_paket_id=paket.id,
+                                                                   etkinlik_id=etkinlik.id,
                                                                    uye_id=item.uye_id).exists():
                     PaketKullanimModel.objects.create(uye_paket_id=paket.id, etkinlik_id=etkinlik.id,
                                                       uye_id=item.uye_id, user=request.user)
@@ -358,7 +379,6 @@ def etkinlik_tamamlandi_iptal_ajax(request):
 #         messages.error(request, "Hata oluştu." + e.__str__())
 #         return redirect("calendarapp:profil_uye", uye_id)
 
-
 # @login_required
 # def iptal_et(request, id, uye_id):
 #     try:
@@ -371,7 +391,6 @@ def etkinlik_tamamlandi_iptal_ajax(request):
 #     except Exception as e:
 #         messages.error(request, "Hata oluştu." + e.__str__())
 #         return redirect("calendarapp:profil_uye", uye_id)
-
 
 # @login_required
 # def iptal_et_by_antrenor(request, id):
@@ -386,7 +405,6 @@ def etkinlik_tamamlandi_iptal_ajax(request):
 #     except Exception as e:
 #         messages.error(request, "Hata oluştu." + e.__str__())
 #         return redirect("calendarapp:index_antrenor")
-
 
 # @login_required
 # def iptal_geri_al(request, id, uye_id):
@@ -416,7 +434,6 @@ def etkinlik_tamamlandi_iptal_ajax(request):
 #     except Exception as e:
 #         messages.error(request, "Hata oluştu." + e.__str__())
 #         return redirect("calendarapp:profil_antrenor")
-
 
 @login_required
 def etkinlik_detay_getir_ajax(request):
