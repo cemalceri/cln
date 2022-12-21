@@ -113,7 +113,6 @@
                     },
                     dataType: "json",
                     success: function (result) {
-                        debugger;
                         $('#detayModalDiv').html(result.html);
                         $('#detayModal').modal('show');
                     }
@@ -122,9 +121,11 @@
         });
 
         $(document).on('click', '.bosEtkinlik', function () {
+            bekleyenModalDoldurAc($(this).attr('id'), true);
+        });
+
+        function bekleyenModalDoldurAc(tarihSaat, bosEtkinliktenMi = false) {
             debugger;
-            let tarihSaat = $(this).attr('id');
-            {#tarihSaat += 'T' + saat + ':' + dk + ':00';#}
             $.ajax({
                 url: "{% url 'calendarapp:bekleyen_musteri_modal_getir_ajax' %}",
                 type: "GET",
@@ -133,11 +134,18 @@
                     'tarih_saat': tarihSaat,
                 },
                 success: function (result) {
-                    $('#bekleyenModalDiv').html(result.html);
-                    $('#bekleyenModal').modal('show');
+                    if(bosEtkinliktenMi){
+                        $('#bekleyenModalDiv').html(result.html);
+                        $('#bekleyenModal').modal('show');
+                    }
+                    else{
+                        $('#bekleyenModalDiv').html(result.html);
+                        $('#bekleyenModal').modal('show');
+                    }
+
                 }
             });
-        });
+        }
 
         function printDiv() {
             var HTML_Width = $(".html-content").width();

@@ -55,12 +55,14 @@ def kaydet_haftalik_plan_ajax(request):
                                           "message": "Abonelik tipi güncellenemez. Lütfen etkinliği silerek yenisini oluşturunuz."})
             abonelik_guncelle(form, eski_plan)
             form = HaftalikPlanForm(data=request.POST, instance=eski_plan)
-            form.save()
+            plan = form.save()
+            haftalik_plani_takvimde_guncelle(plan.kort_id)
         else:
             item = form.save(commit=False)
             item.user = request.user
             item.save()
             abonelik_olustur(item)
+            haftalik_plani_takvimde_guncelle(item.kort_id)
         return JsonResponse(data={"status": "success", "message": "Kayıt Edildi."})
     else:
         return JsonResponse(data={"status": "error", "message": formErrorsToText(form.errors, HaftalikPlanModel)})
@@ -86,6 +88,7 @@ def haftalik_plan_saat_bilgisi_guncelle_ajax(request):
     haftalik_plan.baslangic_tarih_saat = baslangic_tarih_saat
     haftalik_plan.bitis_tarih_saat = bitis_tarih_saat
     haftalik_plan.save()
+    haftalik_plani_takvimde_guncelle(haftalik_plan.kort_id)
     return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
 
 
@@ -221,27 +224,32 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
     return False
 
 
-def haftalik_plani_takvime_ekle_ajax(request):
-    kort_id = request.GET.get("kort_id" or None)
+def haftalik_plani_takvimde_guncelle(kort_id):
     haftalik_plan = HaftalikPlanModel.objects.filter(kort_id=kort_id) if kort_id else HaftalikPlanModel.objects.all()
     for plan in haftalik_plan:
-        etkinlik_listesi = EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod)
-        if etkinlik_listesi.exists():
-            for etkinlik in etkinlik_listesi.filter(baslangic_tarih_saat__gt=datetime.now()):
-                etkinlik.grup = plan.grup
-                etkinlik.abonelik_tipi = plan.abonelik_tipi
-                etkinlik.kort = plan.kort
-                etkinlik.baslangic_tarih_saat = plan.baslangic_tarih_saat
-                etkinlik.bitis_tarih_saat = plan.bitis_tarih_saat
-                etkinlik.antrenor = plan.antrenor
-                etkinlik.top_rengi = plan.top_rengi
-                etkinlik.aciklama = plan.aciklama
-                etkinlik.save()
+        if plan.baslangic_tarih_saat > datetime.now():
+            gelecek_etkinlik_listesi = EtkinlikModel.objects.filter(baslangic_tarih_saat__gt=datetime.now())
+            if gelecek_etkinlik_listesi.exists():
+                for etkinlik in gelecek_etkinlik_listesi:
+                    etkinlik.grup = plan.grup
+                    etkinlik.abonelik_tipi = plan.abonelik_tipi
+                    etkinlik.kort = plan.kort
+                    etkinlik.baslangic_tarih_saat = plan.baslangic_tarih_saat
+                    etkinlik.bitis_tarih_saat = plan.bitis_tarih_saat
+                    etkinlik.antrenor = plan.antrenor
+                    etkinlik.top_rengi = plan.top_rengi
+                    etkinlik.aciklama = plan.aciklama
+                    etkinlik.save()
+            else:
+                if EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod).exists():
+                    EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup,
+                                                 abonelik_tipi=plan.abonelik_tipi,
+                                                 baslangic_tarih_saat=plan.baslangic_tarih_saat,
+                                                 bitis_tarih_saat=plan.bitis_tarih_saat, kort=plan.kort,
+                                                 antrenor=plan.antrenor,
+                                                 top_rengi=plan.top_rengi, aciklama=plan.aciklama)
         else:
-            EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup, abonelik_tipi=plan.abonelik_tipi,
-                                         baslangic_tarih_saat=plan.baslangic_tarih_saat,
-                                         bitis_tarih_saat=plan.bitis_tarih_saat, kort=plan.kort, antrenor=plan.antrenor,
-                                         top_rengi=plan.top_rengi, aciklama=plan.aciklama, user=request.user)
+            EtkinlikModel.objects.filter(baslangic_tarih_saat__gt=datetime.now()).delete()
     return JsonResponse(data={"status": "success", "message": "İşlem başarılı."})
 
 

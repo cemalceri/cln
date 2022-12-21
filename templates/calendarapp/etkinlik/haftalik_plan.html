@@ -18,8 +18,8 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-    <div class="row mb-1 bg-gray">
-        <div class="col-md-2 col-xl-2 col-sm-2">
+    <div class="row mb-1">
+        <div class="container col col-md-3 center" style="text-align-last: center">
             <select id="cmbKortlar" class="form-control" name="kortlar">
                 <option value="0">Kort Seçiniz</option>
                 {% for kort in kortlar %}
@@ -27,12 +27,6 @@
                                                                value="{{ kort.id }}">{{ kort.adi }}</option>
                 {% endfor %}
             </select>
-        </div>
-        <div class="col-md-3 col-xl-3 col-sm-3">
-            <a id="btnKortuTakvimeEkle" class="btn btn-info btn-block">Kortu Takvime Ekle</a>
-        </div>
-        <div id="btnTumKortlariTakvimeEkle" class="col-md-3 col-xl-3 col-sm-3">
-            <a class="btn btn-success btn-block">Tümünü Takvime Ekle</a>
         </div>
     </div>
     <div class="row">
@@ -281,7 +275,6 @@
                     continue;
                 else
                     elements[i].value = "";
-
             }
         }
 
@@ -346,10 +339,8 @@
                     popupMesajGoster("Seçilen saat için bekleyen rezervasyonları çekerken hata oluştu", "error");
                 },
             });
-
         }
 
-        //cmbKortlar change event
         $('#cmbKortlar').change(function () {
             debugger;
             let seciliKortId = $(this).val();
@@ -360,40 +351,7 @@
                 document.getElementById('calendar').style.display = 'none';
                 popupMesajGoster("Lütfen bir kort seçiniz", "error");
             }
-
         });
 
-
-
-        $('#btnKortuTakvimeEkle').click(function () {
-            let seciliKortId = $('#cmbKortlar').val();
-            if (seciliKortId > 0) {
-                takvimeEkle(seciliKortId);
-            } else {
-                document.getElementById('calendar').style.display = 'none';
-                popupMesajGoster("Lütfen bir kort seçiniz", "error");
-            }
-        });
-        $('#btnTumKortlariTakvimeEkle').click(function () {
-            takvimeEkle();
-        });
-
-        function takvimeEkle(kort_id = '') {
-            $.ajax({
-                url: '{% url 'calendarapp:haftalik_plani_takvime_ekle_ajax' %}',
-                type: 'GET',
-                data: {
-                    'kort_id': kort_id,
-                },
-                success: function (result) {
-                    if (result.status == "success") {
-                        popupMesajGoster(result.message, result.status);
-                    }
-                },
-                error: function (result) {
-                    popupMesajGoster(result.message, result.status);
-                },
-            });
-        }
     </script>
 {% endblock extrascripts %}

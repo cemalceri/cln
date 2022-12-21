@@ -25,7 +25,7 @@ urlpatterns = [
     path("haftalik-plan/detay", haftalik_plan_views.getir_haftalik_plan_bilgisi_ajax, name="getir_haftalik_plan_bilgisi_ajax"),
     path("haftalik-plan/tasi", haftalik_plan_views.haftalik_plan_saat_bilgisi_guncelle_ajax, name="haftalik_plan_saat_bilgisi_guncelle_ajax"),
     path("plan/sil", haftalik_plan_views.sil_haftalik_plan_ajax, name="sil_haftalik_plan_ajax"),
-    path("plan/haftalik-plani-takvime-ekle", haftalik_plan_views.haftalik_plani_takvime_ekle_ajax, name="haftalik_plani_takvime_ekle_ajax"),
+    # path("plan/haftalik-plani-takvime-ekle", haftalik_plan_views.haftalik_plani_takvime_ekle_ajax, name="haftalik_plani_takvime_ekle_ajax"),
 
     # Etkinlik
     path("etkinlik/detay", etkinlik_views.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id"),
