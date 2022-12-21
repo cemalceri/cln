@@ -76,9 +76,12 @@ def index_sayfasi_icin_context_olustur(request, tarih):
 def saatler_ve_etkinlikler_dict_olustur(kort, etkinlikler, tarih, bekleyenler):
     saatler = []
     for i in range(9, 24):
-        sorgulanan_tarih_saat = datetime.combine(tarih, datetime.min.time()).replace(hour=i)
-        saatin_etkinlikleri = etkinlikler.filter(kort_id=kort.id, baslangic_tarih_saat__lte=sorgulanan_tarih_saat,
-                                                 bitis_tarih_saat__gt=sorgulanan_tarih_saat)
+        sorgulanan_tarih_saat_baslangic = datetime.combine(tarih, datetime.min.time()).replace(hour=i)
+        sorgulanan_tarih_saat_bitis = sorgulanan_tarih_saat_baslangic + timedelta(hours=1)
+        saatin_etkinlikleri = etkinlikler.filter(Q(kort_id=kort.id) & (
+                Q(baslangic_tarih_saat__lte=sorgulanan_tarih_saat_baslangic, bitis_tarih_saat__gt=sorgulanan_tarih_saat_baslangic)
+                | Q(baslangic_tarih_saat__gt=sorgulanan_tarih_saat_baslangic, baslangic_tarih_saat__lt=sorgulanan_tarih_saat_bitis)
+        ))
         if saatin_etkinlikleri.exists():
             etkinlikler_list = []
             for etkinlik in saatin_etkinlikleri:
@@ -96,15 +99,15 @@ def saatler_ve_etkinlikler_dict_olustur(kort, etkinlikler, tarih, bekleyenler):
             saatler.append({"saat": i,
                             "etkinlikler": etkinlikler_list,
                             "bolunmeSayisi": bolunme_sayisi_getir(etkinlikler_list),
-                            "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat, bekleyenler),
-                            "sorgulananTarihSaat": sorgulanan_tarih_saat
+                            "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat_baslangic, bekleyenler),
+                            "sorgulananTarihSaat": sorgulanan_tarih_saat_baslangic
                             })
         else:
             saatler.append({"saat": i,
                             "etkinlikler": [],
                             "bolunmeSayisi": 5,
-                            "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat, bekleyenler),
-                            "sorgulananTarihSaat": sorgulanan_tarih_saat
+                            "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat_baslangic, bekleyenler),
+                            "sorgulananTarihSaat": sorgulanan_tarih_saat_baslangic
                             })
     return saatler
 
