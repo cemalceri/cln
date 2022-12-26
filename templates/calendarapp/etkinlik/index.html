@@ -88,6 +88,9 @@
                                 saatDiv.append(etkinlikDiv);
                             }
                             let eklenecekBosDivSayisi = bolunmeSayisi - etkinlikler.length;
+                            if (bolunmeSayisi == 1) {
+                                console.log(eklenecekBosDivSayisi)
+                            }
                             for (let b = 0; b < eklenecekBosDivSayisi; b++) {
                                 let bolunmeDiv = $('<div id="' + result.list[i].saatler[s].sorgulananTarihSaat + '" class="col bosEtkinlik border bg-white"></div>');
                                 if (result.list[i].saatler[s].bekleyenVarMi) {

@@ -106,7 +106,7 @@ def saatler_ve_etkinlikler_dict_olustur(kort, etkinlikler, tarih, bekleyenler):
                     })
                 saatler.append({"saat": str(i) + ":" + (t),
                                 "etkinlikler": etkinlikler_list,
-                                "bolunmeSayisi": bolunme_sayisi_getir(etkinlikler_list),
+                                "bolunmeSayisi": bolunme_sayisi_getir(etkinlikler_list, kort),
                                 "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat_baslangic, bekleyenler),
                                 "sorgulananTarihSaat": sorgulanan_tarih_saat_baslangic
                                 })
@@ -141,12 +141,12 @@ def gunun_etkinlikleri_ajax(request):
     return JsonResponse(data={"status": "success", "list": liste})
 
 
-def bolunme_sayisi_getir(jsonEtkinlikler):
+def bolunme_sayisi_getir(jsonEtkinlikler, kort):
+    bolunme_sayisi = 0
     for etkinlik in jsonEtkinlikler:
-        if etkinlik["top_rengi"] == RenkEnum.Kırmızı.value:
-            return 5
-        else:
-            return 2
+        bolunme_sayisi = 5 if etkinlik["top_rengi"] == RenkEnum.Kırmızı.value else 2
+        break
+    return kort.max_etkinlik_sayisi if kort.max_etkinlik_sayisi < bolunme_sayisi else bolunme_sayisi
 
 
 def bu_saati_bekleyen_var_mi(tarih_saat, bekleyenler):
