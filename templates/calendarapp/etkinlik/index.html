@@ -77,7 +77,7 @@
                         let saat = "";
                         for (let s = 0; s < kortunSaatleri.length; s++) {
                             saat = kortunSaatleri[s].saat;
-                            let saatDiv = $('<div id="' + sorgulanan_gun + '_kort_' + kortId + '_saat_' + saat + '" class="row" style="height:60px"></div>');
+                            let saatDiv = $('<div id="' + sorgulanan_gun + '_kort_' + kortId + '_saat_' + saat + '" class="row" style="height:30px"></div>');
                             let etkinlikler = result.list[i].saatler[s].etkinlikler;
                             let bolunmeSayisi = result.list[i].saatler[s].bolunmeSayisi;
                             for (let e = 0; e < etkinlikler.length; e++) {
@@ -91,7 +91,7 @@
                             for (let b = 0; b < eklenecekBosDivSayisi; b++) {
                                 let bolunmeDiv = $('<div id="' + result.list[i].saatler[s].sorgulananTarihSaat + '" class="col bosEtkinlik border bg-white"></div>');
                                 if (result.list[i].saatler[s].bekleyenVarMi) {
-                                    bolunmeDiv.append('<i class="fa fa-users" style="color:darkred"></i>');
+                                    bolunmeDiv.append('<i class="fa fa-users ortala" style="color:darkred"></i>');
                                 }
                                 saatDiv.append(bolunmeDiv);
                             }
@@ -134,11 +134,10 @@
                     'tarih_saat': tarihSaat,
                 },
                 success: function (result) {
-                    if(bosEtkinliktenMi){
+                    if (bosEtkinliktenMi) {
                         $('#bekleyenModalDiv').html(result.html);
                         $('#bekleyenModal').modal('show');
-                    }
-                    else{
+                    } else {
                         $('#bekleyenModalDiv').html(result.html);
                         $('#bekleyenModal').modal('show');
                     }

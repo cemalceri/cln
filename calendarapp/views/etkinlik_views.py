@@ -47,8 +47,10 @@ def index_sayfasi_icin_context_olustur(request, tarih):
         haftanin_gunleri.append(sorgulanan_haftanini_ilk_gunu + timedelta(days=i))
         haftanin_gunleri_strf.append((sorgulanan_haftanini_ilk_gunu + timedelta(days=i)).strftime("%Y-%m-%d"))
     saatler = []
+    dakikalar = ["00", "30"]
     for i in range(9, 24):
-        saatler.append(i)
+        for dk in dakikalar:
+            saatler.append(str(i) + ":" + dk)
     html = ""
     islem = divmod(kortlar.count(), 4)
     bolum = islem[0]
@@ -75,40 +77,46 @@ def index_sayfasi_icin_context_olustur(request, tarih):
 
 def saatler_ve_etkinlikler_dict_olustur(kort, etkinlikler, tarih, bekleyenler):
     saatler = []
+    bucukSaatler = ["00", "30"]
     for i in range(9, 24):
-        sorgulanan_tarih_saat_baslangic = datetime.combine(tarih, datetime.min.time()).replace(hour=i)
-        sorgulanan_tarih_saat_bitis = sorgulanan_tarih_saat_baslangic + timedelta(hours=1)
-        saatin_etkinlikleri = etkinlikler.filter(Q(kort_id=kort.id) & (
-                Q(baslangic_tarih_saat__lte=sorgulanan_tarih_saat_baslangic, bitis_tarih_saat__gt=sorgulanan_tarih_saat_baslangic)
-                | Q(baslangic_tarih_saat__gt=sorgulanan_tarih_saat_baslangic, baslangic_tarih_saat__lt=sorgulanan_tarih_saat_bitis)
-        ))
-        if saatin_etkinlikleri.exists():
-            etkinlikler_list = []
-            for etkinlik in saatin_etkinlikleri:
-                etkinlikler_list.append({
-                    "baslangic_saati": etkinlik.baslangic_tarih_saat.strftime("%H:%M"),
-                    "bitis_saati": etkinlik.bitis_tarih_saat.strftime("%H:%M"),
-                    "grup_adi": etkinlik.grup.__str__()[0:15],
-                    "grup_id": etkinlik.grup.id,
-                    "id": etkinlik.id,
-                    "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
-                    "renk": etkinlik.antrenor.renk if etkinlik.antrenor else "gray",
-                    "seviye": "(" + etkinlik.top_rengi[0:1].upper() + (")" if etkinlik.top_rengi else "-"),
-                    "top_rengi": etkinlik.top_rengi,
-                })
-            saatler.append({"saat": i,
-                            "etkinlikler": etkinlikler_list,
-                            "bolunmeSayisi": bolunme_sayisi_getir(etkinlikler_list),
-                            "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat_baslangic, bekleyenler),
-                            "sorgulananTarihSaat": sorgulanan_tarih_saat_baslangic
-                            })
-        else:
-            saatler.append({"saat": i,
-                            "etkinlikler": [],
-                            "bolunmeSayisi": 5,
-                            "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat_baslangic, bekleyenler),
-                            "sorgulananTarihSaat": sorgulanan_tarih_saat_baslangic
-                            })
+        for t in bucukSaatler:
+            sorgulanan_tarih_saat_baslangic = datetime.combine(tarih, datetime.min.time()).replace(hour=i).replace(
+                minute=int(t))
+            # sorgulanan_tarih_saat_bitis = (sorgulanan_tarih_saat_baslangic + timedelta(minutes=30)).replace(
+            #     minute=int(t))
+            saatin_etkinlikleri = etkinlikler.filter(Q(kort_id=kort.id) & (
+                Q(baslangic_tarih_saat__lte=sorgulanan_tarih_saat_baslangic,
+                  bitis_tarih_saat__gt=sorgulanan_tarih_saat_baslangic)
+                # | Q(baslangic_tarih_saat__gt=sorgulanan_tarih_saat_baslangic,
+                #     baslangic_tarih_saat__lt=sorgulanan_tarih_saat_bitis)
+            ))
+            if saatin_etkinlikleri.exists():
+                etkinlikler_list = []
+                for etkinlik in saatin_etkinlikleri:
+                    etkinlikler_list.append({
+                        "baslangic_saati": etkinlik.baslangic_tarih_saat.strftime("%H:%M"),
+                        "bitis_saati": etkinlik.bitis_tarih_saat.strftime("%H:%M"),
+                        "grup_adi": etkinlik.grup.__str__()[0:15],
+                        "grup_id": etkinlik.grup.id,
+                        "id": etkinlik.id,
+                        "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
+                        "renk": etkinlik.antrenor.renk if etkinlik.antrenor else "gray",
+                        "seviye": "(" + etkinlik.top_rengi[0:1].upper() + (")" if etkinlik.top_rengi else "-"),
+                        "top_rengi": etkinlik.top_rengi,
+                    })
+                saatler.append({"saat": str(i) + ":" + (t),
+                                "etkinlikler": etkinlikler_list,
+                                "bolunmeSayisi": bolunme_sayisi_getir(etkinlikler_list),
+                                "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat_baslangic, bekleyenler),
+                                "sorgulananTarihSaat": sorgulanan_tarih_saat_baslangic
+                                })
+            else:
+                saatler.append({"saat": str(i) + ":" + (t),
+                                "etkinlikler": [],
+                                "bolunmeSayisi": kort.max_etkinlik_sayisi,
+                                "bekleyenVarMi": bu_saati_bekleyen_var_mi(sorgulanan_tarih_saat_baslangic, bekleyenler),
+                                "sorgulananTarihSaat": sorgulanan_tarih_saat_baslangic
+                                })
     return saatler
 
 
@@ -120,7 +128,7 @@ def gunun_etkinlikleri_ajax(request):
     sonraki_gun = tarih + timedelta(days=1)
     etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
                                                baslangic_tarih_saat__lt=sonraki_gun).order_by(
-        "baslangic_tarih_saat")
+        "-id")
     kortlar = KortModel.objects.all()
     bekleyenler = RezervasyonModel.objects.all()
     liste = []
@@ -134,7 +142,6 @@ def gunun_etkinlikleri_ajax(request):
 
 
 def bolunme_sayisi_getir(jsonEtkinlikler):
-    print(jsonEtkinlikler)
     for etkinlik in jsonEtkinlikler:
         if etkinlik["top_rengi"] == RenkEnum.Kırmızı.value:
             return 5
@@ -260,6 +267,10 @@ def kaydet_etkinlik_ajax(request):
 
 
 def etkinlik_kaydi_hata_var_mi(form):
+    if form.cleaned_data["baslangic_tarih_saat"].minute % 30 != 0 or form.cleaned_data[
+        "bitis_tarih_saat"].minute % 30 != 0:
+        return JsonResponse(
+            data={"status": "error", "message": "Etkinlik başlangıç ve bitiş saati 30 dakikanın katları olmalıdır."})
     if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
         mesaj = "Etkinlik başlangıç tarihi bitiş tarihinden sonra olamaz."
         return JsonResponse(data={"status": "error", "message": mesaj})
