@@ -228,72 +228,40 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
 def haftalik_plani_takvimde_guncelle(plan):
     haftalik_plana_bagli_etkinlikler = EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod)
     if not haftalik_plana_bagli_etkinlikler.exists():  # Haftalık plana bağlı etkinlik yoksa oluştur
-        if parse_datetime(plan.baslangic_tarih_saat) > datetime.now():
+        baslangic_tarih_saat = plan.baslangic_tarih_saat
+        if isinstance(plan.baslangic_tarih_saat, str):
+            baslangic_tarih_saat = datetime.strptime(plan.baslangic_tarih_saat, "%Y-%m-%dT%H:%M:%S")
+        if baslangic_tarih_saat > datetime.now():
             EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup,
                                          abonelik_tipi=plan.abonelik_tipi,
                                          baslangic_tarih_saat=plan.baslangic_tarih_saat,
                                          bitis_tarih_saat=plan.bitis_tarih_saat, kort=plan.kort,
                                          antrenor=plan.antrenor,
                                          top_rengi=plan.top_rengi, aciklama=plan.aciklama)
-    else:  # Haftalık plana bağlı etkinli varsa bugünden sonrakilerin gün ve saat değişikliğini etkinliğe uygula
-        haftalik_plana_bagli_bugunden_sonraki_etkinlikler = haftalik_plana_bagli_etkinlikler.filter(
-            baslangic_tarih_saat__gt=datetime.now())
-        planin_gunu = parse_datetime(plan.baslangic_tarih_saat).weekday()
-        planin_baslangic_saati = parse_datetime(plan.baslangic_tarih_saat).hour
-        planin_baslangic_dakikasi = parse_datetime(plan.baslangic_tarih_saat).minute
-        planin_bitis_saati = parse_datetime(plan.bitis_tarih_saat).hour
-        planin_bitis_dakikasi = parse_datetime(plan.bitis_tarih_saat).minute
-        print(planin_gunu, planin_baslangic_saati, planin_baslangic_dakikasi)
-        print(planin_bitis_saati, planin_bitis_dakikasi)
-        for etkinlik in haftalik_plana_bagli_bugunden_sonraki_etkinlikler:
-            print(etkinlik)
-            etkinlik.grup = plan.grup
-            etkinlik.abonelik_tipi = plan.abonelik_tipi
-            etkinlik.kort = plan.kort
-            yeni_baslangic_tarihi = datetime.replace(etkinlik.baslangic_tarih_saat, hour=planin_baslangic_saati,
-                                                     minute=planin_baslangic_dakikasi, day=planin_gunu)
-            yeni_bitis_tarihi = datetime.replace(etkinlik.bitis_tarih_saat, hour=planin_bitis_saati,
-                                                 minute=planin_bitis_dakikasi, day=planin_gunu)
-            etkinlik.baslangic_tarih_saat = yeni_baslangic_tarihi
-            etkinlik.bitis_tarih_saat = yeni_bitis_tarihi
-            print(yeni_baslangic_tarihi, yeni_bitis_tarihi)
-            etkinlik.antrenor = plan.antrenor
-            etkinlik.top_rengi = plan.top_rengi
-            etkinlik.aciklama = plan.aciklama
-            etkinlik.save()
-
-
-# if parse_datetime(plan.baslangic_tarih_saat) < datetime.now():  # Eğer haftalık plan bugünden geriye alındıysa bugünden sonraki etkinlik bilgilerini güncelle
-#     if etkinlikler.exists():
-#         for etkinlik in etkinlikler:
-#             etkinlik.grup = plan.grup
-#             etkinlik.abonelik_tipi = plan.abonelik_tipi
-#             etkinlik.kort = plan.kort
-#             etkinlik.baslangic_tarih_saat = plan.baslangic_tarih_saat
-#             etkinlik.bitis_tarih_saat = plan.bitis_tarih_saat
-#             etkinlik.antrenor = plan.antrenor
-#             etkinlik.top_rengi = plan.top_rengi
-#             etkinlik.aciklama = plan.aciklama
-#             etkinlik.save()
-# else:  # Eğer haftalık plan bugünden ileriye alındıysa bugünden sonraki etkinlik bilgilerini güncelle yoksa ekle
-#     if etkinlikler.exists():
-#         for etkinlik in etkinlikler:
-#             etkinlik.grup = plan.grup
-#             etkinlik.abonelik_tipi = plan.abonelik_tipi
-#             etkinlik.kort = plan.kort
-#             etkinlik.baslangic_tarih_saat = plan.baslangic_tarih_saat
-#             etkinlik.bitis_tarih_saat = plan.bitis_tarih_saat
-#             etkinlik.antrenor = plan.antrenor
-#             etkinlik.top_rengi = plan.top_rengi
-#             etkinlik.aciklama = plan.aciklama
-#             etkinlik.save()
-#     else:
-#         EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup,
-#                                      abonelik_tipi=plan.abonelik_tipi,
-#                                      baslangic_tarih_saat=plan.baslangic_tarih_saat,
-#                                      bitis_tarih_saat=plan.bitis_tarih_saat, kort=plan.kort,
-#                                      antrenor=plan.antrenor,
-#                                      top_rengi=plan.top_rengi, aciklama=plan.aciklama)
+    else:  # Haftalık plana bağlı etkinli varsa güncelle
+        plan_haftanin_gunu = parse_datetime(plan.baslangic_tarih_saat).weekday()
+        for etkinlik in haftalik_plana_bagli_etkinlikler:
+            etkinlik_yilin_haftasi = etkinlik.baslangic_tarih_saat.isocalendar()[1]
+            yeni_baslangic_tarih_saat = datetime.now().replace(
+                year=etkinlik.baslangic_tarih_saat.year, month=1, day=1, second=0, microsecond=0,
+                hour=parse_datetime(plan.baslangic_tarih_saat).hour,
+                minute=parse_datetime(plan.baslangic_tarih_saat).minute) + timedelta(
+                days=(etkinlik_yilin_haftasi - 1) * 7) + timedelta(days=plan_haftanin_gunu + 1)
+            yeni_bitis_tarih_saat = datetime.now().replace(
+                year=etkinlik.bitis_tarih_saat.year, month=1, day=1, second=0, microsecond=0,
+                hour=parse_datetime(plan.bitis_tarih_saat).hour,
+                minute=parse_datetime(plan.bitis_tarih_saat).minute) + timedelta(
+                days=(etkinlik_yilin_haftasi - 1) * 7) + timedelta(days=plan_haftanin_gunu + 1)
+            if yeni_baslangic_tarih_saat > datetime.now():  # bugünden sonrakilerin gün ve saat değişikliğini etkinliğe uygula
+                etkinlik.grup = plan.grup
+                etkinlik.abonelik_tipi = plan.abonelik_tipi
+                etkinlik.kort = plan.kort
+                etkinlik.baslangic_tarih_saat = yeni_baslangic_tarih_saat
+                etkinlik.bitis_tarih_saat = yeni_bitis_tarih_saat
+                etkinlik.antrenor = plan.antrenor
+                etkinlik.top_rengi = plan.top_rengi
+                etkinlik.aciklama = plan.aciklama
+                etkinlik.save()
 
 
 def haftalik_plan_yeni_haftaya_tasindi_kontrolu():
