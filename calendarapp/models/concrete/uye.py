@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save, post_delete
 
 from django.conf import settings
-from calendarapp.models.Enums import SeviyeRenkEnum, GrupOdemeSekliEnum
+from calendarapp.models.Enums import SeviyeEnum, GrupOdemeSekliEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 
 
@@ -35,7 +35,7 @@ class UyeModel(BaseAbstract):
     telefon = models.CharField('Telefon', max_length=11, null=True, blank=True)
     email = models.EmailField('E-Mail', max_length=250, null=True, blank=True)
     adres = models.TextField('Adres', max_length=250, null=True, blank=True)
-    seviye_rengi = models.CharField(max_length=20, choices=SeviyeRenkEnum.choices(), default="red",
+    seviye_rengi = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="red",
                                     verbose_name="Seviye Rengi")
     okul = models.ForeignKey('OkulModel', on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
     onaylandi_mi = models.BooleanField('Onay Durumu', default=False)

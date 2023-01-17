@@ -4,26 +4,18 @@ from enum import Enum
 from django.db import models
 
 
-class RenkEnum(Enum):
-    Kırmızı = "red"
-    Turuncu = "orange"
-    Sarı = "yellow"
-    Yeşil = "green"
+class SeviyeEnum(Enum):
+    Kirmizi = "Kırmızı"
+    Turuncu = "Turuncu"
+    Sari = "Sarı"
+    Yesil = "Yeşil"
+    Yetiskin = "Yetişkin"
+    TenisOkulu = "Tenis Okulu"
 
     @classmethod
     def choices(cls):
-        return [(key.value, key.name) for key in cls]
+        return [(key.name, key.value,) for key in cls]
 
-
-class SeviyeRenkEnum(Enum):
-    Kırmızı = "red"
-    Turuncu = "orange"
-    Yeşil = "green"
-    Sarı = "yellow"
-
-    @classmethod
-    def choices(cls):
-        return [(key.name, key.value) for key in cls]
 
 
 class GunlerModel(models.Model):

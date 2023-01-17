@@ -4,10 +4,11 @@ from django.http import JsonResponse
 from datetime import timedelta, datetime, date
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
+from django.utils.dateparse import parse_datetime
 
 from calendarapp.forms.etkinlik_forms import EtkinlikForm, HaftalikPlanForm
 
-from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum, GunlerModel, SaatlerModel, RenkEnum
+from calendarapp.models.Enums import KatilimDurumuEnum, AbonelikTipiEnum, GunEnum, GunlerModel, SaatlerModel, SeviyeEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel, UyePaketModel
 from calendarapp.models.concrete.commons import gun_adi_getir, to_dict
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
@@ -144,8 +145,15 @@ def gunun_etkinlikleri_ajax(request):
 def bolunme_sayisi_getir(jsonEtkinlikler, kort):
     bolunme_sayisi = 0
     for etkinlik in jsonEtkinlikler:
-        bolunme_sayisi = 5 if etkinlik["top_rengi"] == RenkEnum.Kırmızı.value else 2
-        break
+        if etkinlik["top_rengi"] == SeviyeEnum.Yetiskin.name:
+            bolunme_sayisi = 1
+            break
+        elif etkinlik["top_rengi"] == SeviyeEnum.Turuncu.name or etkinlik["top_rengi"] == SeviyeEnum.Sari.name or \
+                etkinlik["top_rengi"] == SeviyeEnum.Yesil.name:
+            bolunme_sayisi = 2
+            break
+        else:
+            bolunme_sayisi = kort.max_etkinlik_sayisi if kort.max_etkinlik_sayisi > 5 else 5
     return kort.max_etkinlik_sayisi if kort.max_etkinlik_sayisi < bolunme_sayisi else bolunme_sayisi
 
 
@@ -245,7 +253,7 @@ def takvim_getir(request, kort_id=None):
 
 @login_required
 def kaydet_etkinlik_ajax(request):
-    form = EtkinlikForm(request.POST)
+    form = EtkinlikForm(request.GET)
     if form.is_valid():
         result = etkinlik_kaydi_hata_var_mi(form)
         if result:
@@ -334,7 +342,7 @@ def saat_guncelle_etkinlik_ajax(request):
 
 @login_required
 def etkinlik_tamamlandi_ajax(request):
-    "TO DO:Burası yetkiler tanımlandığında düzenlecek. İşlemi yapan yönetici ise paket kullanım tablosuna kayıt atılacak."
+    """TO DO:Burası yetkiler tanımlandığında düzenlecek. İşlemi yapan yönetici ise paket kullanım tablosuna kayıt atılacak."""
     try:
         id = request.GET.get("id")
         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
@@ -360,7 +368,7 @@ def etkinlik_tamamlandi_ajax(request):
 
 @login_required
 def etkinlik_tamamlandi_iptal_ajax(request):
-    "TO DO:Burası yetkiler tanımlandığında düzenlecek. İşlemi yapan yönetici ise paket kullanım tablosuna kayıt atılacak."
+    """TO DO:Burası yetkiler tanımlandığında düzenlecek. İşlemi yapan yönetici ise paket kullanım tablosuna kayıt atılacak."""
     try:
         id = request.GET.get("id")
         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
@@ -375,150 +383,21 @@ def etkinlik_tamamlandi_iptal_ajax(request):
         return JsonResponse(data={"status": "error", "message": "Hata oluştu." + e.__str__()})
 
 
-# @login_required
-# def katilim_ekle(request, id, uye_id):
-#     try:
-#         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
-#         if etkinlik.bitis_tarih_saat > datetime.now():
-#             messages.error(request, "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez.")
-#             return redirect("calendarapp:profil_uye", uye_id)
-#         if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye_id=uye_id).exists():
-#             EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye_id=uye_id,
-#                                                 katilim_durumu=KatilimDurumuEnum.Katıldı.value, user=request.user)
-#             # Bütün herkes katılım listesinde varsa etkinlik tamamlandı işaretle
-#             herkes_katildi_mi = True
-#             for uye_grubu in etkinlik.grup.grup_uyegrup_relations.all():
-#                 if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye=uye_grubu.uye).exists():
-#                     herkes_katildi_mi = False
-#                     break
-#             if herkes_katildi_mi:
-#                 etkinlik.tamamlandi_mi = True
-#                 etkinlik.save()
-#             messages.success(request, "İşlem Başarılı.")
-#         return redirect("calendarapp:profil_uye", uye_id)
-#     except Exception as e:
-#         messages.error(request, "Hata oluştu." + e.__str__())
-#         return redirect("calendarapp:profil_uye", uye_id)
-
-# @login_required
-# def iptal_et(request, id, uye_id):
-#     try:
-#         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
-#         if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye_id=uye_id).exists():
-#             EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye_id=uye_id,
-#                                                 katilim_durumu=KatilimDurumuEnum.İptal.value, user=request.user)
-#         messages.success(request, "İşlem Başarılı.")
-#         return redirect("calendarapp:profil_uye", uye_id)
-#     except Exception as e:
-#         messages.error(request, "Hata oluştu." + e.__str__())
-#         return redirect("calendarapp:profil_uye", uye_id)
-
-# @login_required
-# def iptal_et_by_antrenor(request, id):
-#     try:
-#         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
-#         if not EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik).exists():
-#             for item in UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id):
-#                 EtkinlikKatilimModel.objects.create(etkinlik=etkinlik, uye=item.uye,
-#                                                     katilim_durumu=KatilimDurumuEnum.İptal.value, user=request.user)
-#         messages.success(request, "İşlem Başarılı.")
-#         return redirect("calendarapp:profil_antrenor", etkinlik.antrenor_id)
-#     except Exception as e:
-#         messages.error(request, "Hata oluştu." + e.__str__())
-#         return redirect("calendarapp:index_antrenor")
-
-# @login_required
-# def iptal_geri_al(request, id, uye_id):
-#     try:
-#         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
-#         iptal_edilen = EtkinlikKatilimModel.objects.filter(etkinlik=etkinlik, uye_id=uye_id,
-#                                                            katilim_durumu=KatilimDurumuEnum.İptal.value)
-#         if iptal_edilen.exists():
-#             iptal_edilen.delete()
-#         messages.success(request, "İşlem Başarılı.")
-#         return redirect("calendarapp:profil_uye", uye_id)
-#     except Exception as e:
-#         messages.error(request, "Hata oluştu." + e.__str__())
-#         return redirect("calendarapp:profil_uye", uye_id)
-#
-#
-# @login_required
-# def iptal_geri_al_by_antrenor(request, id):
-#     try:
-#         etkinlik = EtkinlikModel.objects.filter(pk=id).first()
-#         iptal_edilen = EtkinlikKatilimModel.objects.filter(etkinlik_id=id,
-#                                                            katilim_durumu=KatilimDurumuEnum.İptal.value)
-#         if iptal_edilen.exists():
-#             iptal_edilen.delete()
-#         messages.success(request, "İşlem Başarılı.")
-#         return redirect("calendarapp:profil_antrenor", etkinlik.antrenor_id)
-#     except Exception as e:
-#         messages.error(request, "Hata oluştu." + e.__str__())
-#         return redirect("calendarapp:profil_antrenor")
-
 @login_required
 def etkinlik_detay_getir_ajax(request):
     etkinlik_id = request.GET.get("etkinlik_id")
     etkinlik = EtkinlikModel.objects.filter(pk=etkinlik_id).first()
     if etkinlik:
-        html = render_to_string('calendarapp/etkinlik/partials/_detay_modal.html', {"etkinlik": etkinlik})
+        html = render_to_string('calendarapp/etkinlik/partials/_etkinlik_detay_modal.html', {"etkinlik": etkinlik})
     return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
 
-#
-# def abonelik_guncelle(yeni_etkinlik_form, eski_etkinlik):
-#     if yeni_etkinlik_form.cleaned_data["grup"] == eski_etkinlik.grup:  # Grup değişmediyse aşağıdaki işlemleri yap
-#         uye_grubu = UyeGrupModel.objects.filter(grup_id=eski_etkinlik.grup_id)
-#         haftaninin_gunu = eski_etkinlik.baslangic_tarih_saat.weekday()
-#         for item in uye_grubu:
-#             abonelik = UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
-#                                                        grup_id=eski_etkinlik.grup_id,
-#                                                        baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat)
-#             if abonelik.exists():  # Grup üyesinin eskidende bu grubun içindeyse zaten abonelik kaydı vardır. O yüzden mevcut kaydı güncelle
-#                 abonelik = abonelik.first()
-#                 abonelik.baslangic_tarih_saat = yeni_etkinlik_form.cleaned_data["baslangic_tarih_saat"]
-#                 abonelik.bitis_tarih_saat = yeni_etkinlik_form.cleaned_data["bitis_tarih_saat"]
-#                 abonelik.kort = yeni_etkinlik_form.cleaned_data["kort"]
-#                 haftaninin_gunu = yeni_etkinlik_form.cleaned_data["baslangic_tarih_saat"].weekday()
-#                 gun_adi = gun_adi_getir(haftaninin_gunu)
-#                 abonelik.gun_adi = gun_adi
-#                 abonelik.save()
-#             else:  # Grup üyesinin eski tarih saatte üyeliği yok ise demek ki yeni gruba eklenmiş. Yeni abonelik kaydı oluştur.
-#                 haftaninin_gunu = yeni_etkinlik_form.cleaned_data["baslangic_tarih_saat"].weekday()
-#                 gun_adi = gun_adi_getir(haftaninin_gunu)
-#                 UyeAbonelikModel.objects.create(uye=item.uye, haftanin_gunu=haftaninin_gunu, gun_adi=gun_adi,
-#                                                 baslangic_tarih_saat=yeni_etkinlik_form.cleaned_data[
-#                                                     "baslangic_tarih_saat"],
-#                                                 grup=yeni_etkinlik_form.cleaned_data["grup"],
-#                                                 bitis_tarih_saat=yeni_etkinlik_form.cleaned_data["bitis_tarih_saat"],
-#                                                 aktif_mi=True, kort=yeni_etkinlik_form.cleaned_data["kort"])
-#     else:  # Grup değiştiyse eski grup üyelerinin aboneliklerini sil, yeni üyelere abonelik oluştur
-#         eski_uye_grubu = UyeGrupModel.objects.filter(grup_id=eski_etkinlik.grup_id)
-#         yeni_uye_grubu = UyeGrupModel.objects.filter(grup_id=yeni_etkinlik_form.cleaned_data["grup"].id)
-#         haftaninin_gunu = eski_etkinlik.baslangic_tarih_saat.weekday()
-#         for item in eski_uye_grubu:
-#             abonelik = UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
-#                                                        grup_id=eski_etkinlik.grup_id,
-#                                                        baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat)
-#             if abonelik.exists():
-#                 abonelik = abonelik.first()
-#                 abonelik.delete()
-#         for item in yeni_uye_grubu:
-#             if not UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
-#                                                    baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat).exists():
-#                 UyeAbonelikModel.objects.create(uye=item.uye, haftanin_gunu=haftaninin_gunu,
-#                                                 baslangic_tarih_saat=eski_etkinlik.baslangic_tarih_saat,
-#                                                 grup=yeni_etkinlik_form.cleaned_data["grup"],
-#                                                 bitis_tarih_saat=eski_etkinlik.bitis_tarih_saat,
-#                                                 aktif_mi=True, kort=eski_etkinlik.kort)
-#
-#
-# def abonelik_sil(etkinlik):
-#     uye_grubu = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
-#     haftaninin_gunu = etkinlik.baslangic_tarih_saat.weekday()
-#     for item in uye_grubu:
-#         abonelik = UyeAbonelikModel.objects.filter(uye=item.uye, haftanin_gunu=haftaninin_gunu,
-#                                                    baslangic_tarih_saat=etkinlik.baslangic_tarih_saat)
-#         if abonelik.exists():
-#             abonelik = abonelik.first()
-#             abonelik.delete()
-#
+
+@login_required
+def etkinlik_kaydet_modal_ajax(request):
+    kort_id = request.GET.get("kort_id")
+    baslangic_tarih_saat = request.GET.get("baslangic_tarih_saat")
+    bitis_tarih_saat = parse_datetime(baslangic_tarih_saat) + timedelta(minutes=30)
+    form = EtkinlikForm(initial={"kort": kort_id, "baslangic_tarih_saat": baslangic_tarih_saat,
+                                 "bitis_tarih_saat": bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M")})
+    html = render_to_string("calendarapp/etkinlik/partials/_etkinlik_kaydet_modal.html", {"form": form})
+    return JsonResponse(data={"status": "success", "html": html})

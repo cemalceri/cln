@@ -1,0 +1,90 @@
+{% load static %}
+
+<div class="modal fade " id="kaydetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exampleModalLabel">Etkinlik Kayıt</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="get" role="form" id="etkinlikForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            {% for field in form %}
+                                <div class="form-group col-md-6 ">
+                                    {% if field.name != 'pk' %}
+                                        <label for="{{ field.name }}"
+                                               class="form-control-label">
+                                            {{ field.label_tag }}
+                                            {% if field.help_text %}
+                                                <i class="fa fa-info-circle"
+                                                   title="{{ field.help_text }}                                                                "></i>
+                                            {% endif %}
+                                        </label>
+                                    {% endif %}
+                                    <div class="">
+                                        {{ field }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" hidden id="btnYeniKayit" onclick="clearModalFields()"
+                        class="btn btn-info">Yeni Kayıt
+                </button>
+                <button id="btnSil" onclick="clearModalFields()" type="button" class="btn btn-danger">Temizle
+                </button>
+                <button type="button" id="kaydetBtn" class="btn btn-primary">Kaydet</button>
+                <button type="button" id="bekleyenBtn" class="btn btn-info">Bekleyen Listesi</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#kaydetBtn').click(function () {
+        let form = $('#etkinlikForm');
+        let data = form.serialize();
+        $.ajax({
+            url: "{% url 'calendarapp:kaydet_etkinlik_ajax' %}",
+            data: data,
+            type: "get",
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == "success") {
+                    popupMesajGoster(data.message, data.status);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2500);
+                } else {
+                    popupMesajGoster(data.message, data.status);
+                }
+            }
+        });
+    });
+    $('#bekleyenBtn').click(function () {
+        let tarih_saat = $('#id_baslangic_tarih_saat').val() + ":00"; // 2023-01-16T09:00:00 formatında olması için eklendi
+        debugger;
+        bekleyenListesiModalDoldurAc($('#id_baslangic_tarih_saat').val() + ":00");
+    });
+
+    function clearModalFields() {
+        let elements = document.getElementsByClassName("form-control");
+        for (let i = 0; i < elements.length; i++) {
+            if (elements[i] == elements.namedItem('baslangic_tarih_saat')
+                || elements[i] == elements.namedItem('bitis_tarih_saat')
+                || elements[i] == elements.namedItem('kort'))
+                continue;
+            else
+                elements[i].value = "";
+
+        }
+    }
+
+</script>

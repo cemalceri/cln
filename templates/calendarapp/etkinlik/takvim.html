@@ -48,8 +48,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="post" action="#" role="form" id="etkinlikForm">
-                        {% csrf_token %}
+                    <form method="get" action="#" role="form" id="etkinlikForm">
                         <div class="modal-body">
                             <div class="row p-2">
                                 <div class="col-md-2 border p-md-2">
@@ -201,7 +200,7 @@
             $.ajax({
                 url: "{% url 'calendarapp:kaydet_etkinlik_ajax' %}",
                 data: data,
-                type: "post",
+                type: "get",
                 dataType: 'json',
                 success: function (data) {
                     if (data.status == "success") {

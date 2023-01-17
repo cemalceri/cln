@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, time
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from calendarapp.models.Enums import RenkEnum, KatilimDurumuEnum, AbonelikTipiEnum
+from calendarapp.models.Enums import SeviyeEnum, KatilimDurumuEnum, AbonelikTipiEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.kort import KortModel
@@ -64,7 +64,7 @@ class EtkinlikModel(BaseAbstract):
                              related_name="kort")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name="anternor")
-    top_rengi = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray", null=False, blank=False,
+    top_rengi = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="Kirmizi", null=False, blank=False,
                                  verbose_name="Top Rengi")
     tamamlandi_antrenor = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
     tamamlandi_yonetici = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Yönetici)")
@@ -148,7 +148,7 @@ class HaftalikPlanModel(BaseAbstract):
                              related_name="haftalikplan_kort_relations")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name="haftalikplan_antrenor_relations")
-    top_rengi = models.CharField(max_length=20, choices=RenkEnum.choices(), default="gray", null=False, blank=False,
+    top_rengi = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="gray", null=False, blank=False,
                                  verbose_name="Top Rengi")
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,

@@ -36,6 +36,7 @@ urlpatterns = [
     path("etkinlik/tamamlandi", etkinlik_views.etkinlik_tamamlandi_ajax, name="etkinlik_tamamlandi_ajax"),
     path("etkinlik/tamamlandi-iptal", etkinlik_views.etkinlik_tamamlandi_iptal_ajax, name="etkinlik_tamamlandi_iptal_ajax"),
     path("etkinlik/modal-detay-getir", etkinlik_views.etkinlik_detay_getir_ajax, name="etkinlik_detay_getir_ajax"),
+    path("etkinlik/modal-etkinlik-kaydet", etkinlik_views.etkinlik_kaydet_modal_ajax, name="etkinlik_kaydet_modal_ajax"),
 
     # Uye
     path("uye/index", uye_views.index, name="index_uye"),
