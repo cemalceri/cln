@@ -128,7 +128,7 @@ def gunun_etkinlikleri_ajax(request):
     sonraki_gun = tarih + timedelta(days=1)
     etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
                                                baslangic_tarih_saat__lt=sonraki_gun).order_by(
-        "-id")
+        "-baslangic_tarih_saat")
     kortlar = KortModel.objects.all()
     bekleyenler = RezervasyonModel.objects.all()
     liste = []
