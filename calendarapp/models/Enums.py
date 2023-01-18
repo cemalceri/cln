@@ -17,7 +17,6 @@ class SeviyeEnum(Enum):
         return [(key.name, key.value,) for key in cls]
 
 
-
 class GunlerModel(models.Model):
     adi = models.CharField(max_length=250, null=False, blank=False)
     haftanin_gunu = models.IntegerField(verbose_name="Haftanın Kaçıncı Günü", null=False, blank=False)
@@ -47,12 +46,24 @@ class SaatlerModel(models.Model):
 
 
 class AbonelikTipiEnum(Enum):
-    Paket = 1
-    Üyelik = 2
+    Paket = "Paket"
+    Uyelik = "Üyelik"
+    Telafi = "Telafi"
+    Demo = "Demo"
+    TekDers = "Tek Ders"
+    Diger = "Diğer"
 
     @classmethod
     def choices(cls):
-        return [(key.value, key.name) for key in cls]
+        return [(key.name,key.value) for key in cls]
+
+    @classmethod
+    def etkinlik_kaydinda_kullanilacaklar(cls):
+        return [(key.name, key.value ) for key in cls if key.name in ["Telafi", "Demo", "TekDers", "Diger"]]
+
+    @classmethod
+    def haftalik_plan_kaydinda_kullanilacaklar(cls):
+        return [(key.name, key.value) for key in cls if key.name in ["Paket", "Uyelik"]]
 
 
 class ParaHareketTuruEnum(Enum):

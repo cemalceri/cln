@@ -146,7 +146,7 @@ def to_dict(instance):
 def son_bir_ayda_odeme_yapilmayan_uyelikler():
     bir_ay_onceki_gun = date.today() - timedelta(days=30)
     son_30_odeme_idler = ParaHareketiModel.objects.filter(hareket_turu=ParaHareketTuruEnum.Giris.value,
-                                                          paket__tipi=AbonelikTipikEnum.Üyelik.value,
+                                                          paket__tipi=AbonelikTipikEnum.Uyelik.value,
                                                           tarih__gte=bir_ay_onceki_gun).values_list("paket_id",
                                                                                                     flat=True)
     result = UyeAbonelikModel.objects.filter(~Q(paket_id__in=son_30_odeme_idler, aktif_mi=True))

@@ -133,7 +133,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('adi', models.CharField(max_length=200, verbose_name='Paket Adı')),
-                ('tipi', models.SmallIntegerField(choices=[(1, 'Paket'), (2, 'Üyelik')], default=calendarapp.models.Enums.AbonelikTipiEnum['Üyelik'], verbose_name='Tipi')),
+                ('tipi', models.SmallIntegerField(choices=[(1, 'Paket'), (2, 'Uyelik')], default=calendarapp.models.Enums.AbonelikTipiEnum['Uyelik'], verbose_name='Tipi')),
                 ('adet', models.IntegerField(blank=True, null=True, verbose_name='Adet')),
                 ('toplam_fiyati', models.IntegerField(blank=True, null=True, verbose_name='Toplam Fiyatı')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='paket', to=settings.AUTH_USER_MODEL, verbose_name='Ekleyen')),

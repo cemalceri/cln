@@ -1,5 +1,4 @@
 {% load static %}
-
 <div class="modal fade " id="kaydetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -71,7 +70,7 @@
     $('#bekleyenBtn').click(function () {
         let tarih_saat = $('#id_baslangic_tarih_saat').val() + ":00"; // 2023-01-16T09:00:00 formatında olması için eklendi
         debugger;
-        bekleyenListesiModalDoldurAc($('#id_baslangic_tarih_saat').val() + ":00");
+        bekleyenListesiModalDoldurAc(tarih_saat);
     });
 
     function clearModalFields() {

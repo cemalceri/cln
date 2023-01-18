@@ -57,7 +57,7 @@ class EtkinlikModel(BaseAbstract):
     haftalik_plan_kodu = models.CharField(max_length=50, null=True, blank=True)
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
                              null=False, related_name="etkinlik_grup_relations")
-    abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.choices(), default=2, verbose_name="Abonelik Tipi")
+    abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.etkinlik_kaydinda_kullanilacaklar(), default=2, verbose_name="Ders Tipi")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat")
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat")
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False,
@@ -84,41 +84,6 @@ class EtkinlikModel(BaseAbstract):
     def __str__(self):
         return str(self.grup)
 
-    def pixel_degeri(self):
-        # start = self.baslangic_tarih_saat
-        # end = self.bitis_tarih_saat
-        # start_hour = start.hour
-        # start_minute = start.minute
-        # end_hour = end.hour
-        # end_minute = end.minute
-        # start_pixel = (start_hour * 60) + start_minute
-        # end_pixel = (end_hour * 60) + end_minute
-        # pixel = end_pixel - start_pixel
-        # print((self.baslangic_tarih_saat -).total_seconds() / 60)
-        pixel = (self.bitis_tarih_saat - self.baslangic_tarih_saat).total_seconds() / 60
-        # print(self.baslangic_tarih_saat, self.bitis_tarih_saat, pixel)
-        return int(pixel)
-
-    # def ayni_gun_kendinden_onceki_etkinlik_ile_arasindaki_dakika(self):
-    #     today = datetime.now().date()
-    #     gecen_dakika = 0
-    #     today_start = datetime.combine(today, time()) + timedelta(minutes=540)
-    #     gunun_etkinlikleri = EtkinlikModel.objects.filter(kort_id=self.kort_id,
-    #                                                       bitis_tarih_saat__gte=today_start).order_by(
-    #         "baslangic_tarih_saat")
-    #     if gunun_etkinlikleri.first().id == self.id:
-    #         gecen_dakika = (self.baslangic_tarih_saat - today_start).total_seconds() / 60
-    #     else:
-    #         start = self.baslangic_tarih_saat
-    #         onceki_etkinlik = EtkinlikModel.objects.filter(kort_id=self.kort_id,
-    #                                                        bitis_tarih_saat__gte=today_start,
-    #                                                        baslangic_tarih_saat__lt=start).order_by(
-    #             "-baslangic_tarih_saat").first()
-    #         if onceki_etkinlik:
-    #             onceki_etkinlik_bitis = onceki_etkinlik.bitis_tarih_saat
-    #             gecen_dakika = (start - onceki_etkinlik_bitis).seconds / 60
-    #     return int(gecen_dakika)
-
     def get_absolute_url(self):
         return reverse("calendarapp:event-detail", args=(self.id))
 
@@ -141,7 +106,7 @@ class HaftalikPlanModel(BaseAbstract):
     kod = models.UUIDField(primary_key=False, verbose_name="Plan Kodu", default=generate_uuid, editable=False)
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
                              null=False, related_name="haftalikplan_grup_relations")
-    abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.choices(), default=2, verbose_name="Abonelik Tipi")
+    abonelik_tipi = models.IntegerField(choices=AbonelikTipiEnum.haftalik_plan_kaydinda_kullanilacaklar(), default=2, verbose_name="Abonelik Tipi")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat", blank=False, null=False)
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat", blank=False, null=False)
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False,
