@@ -113,7 +113,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Kapat</button>
+                <button  onclick="EtkinlikDuzenle({{ etkinlik.id }})" type="button" class="btn btn-success">
+                    Düzenle
+                </button>
                 <button id="btnSil" onclick="EtkinlikSil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
                 </button>
                 <button type="button" onclick="EtkinlikSerisiSil({{ etkinlik.id }})" class="btn btn-outline-danger">
@@ -163,13 +165,13 @@
     }
 
     function EtkinlikSerisiSil(etkinlik_id) {
-        debugger;
-        if (confirm('Kayıtları silmek istediğinize emin misiniz?')) {
+        if (confirm('Silmek istediğinize emin misiniz?')) {
             $.ajax({
                 type: "Get",
                 url: "{% url 'calendarapp:sil_etkinlik_by_ajax' %}",
                 data: {
-                    'id': etkinlik_id
+                    'id': etkinlik_id,
+                    'sonrakiler_silinsin_mi': true
                 },
                 success: function (data) {
                     if (data.status === 'success') {
@@ -212,7 +214,6 @@
     }
 
     function etkinlikTamamlandiGeriAl(etkinlik_id) {
-        debugger;
         $.ajax({
             type: "Get",
             url: "{% url 'calendarapp:etkinlik_tamamlandi_iptal_ajax' %}",
@@ -232,4 +233,28 @@
             }
         });
     }
+
+    function EtkinlikDuzenle(etkinlik_id) {
+        debugger;
+        $.ajax({
+            type: "Get",
+            url: "{% url 'calendarapp:etkinlik_getir_modal_ajax' %}",
+            data: {
+                'etkinlik_id': etkinlik_id
+            },
+            success: function (data) {
+                if (data.status === 'success') {
+                    $('#kaydetModalDiv').html(data.html);
+                    $('#detayModal').modal('hide');
+                    $('#kaydetModal').modal('show');
+                } else {
+                    popupMesajGoster(data.message, data.status);
+                }
+            },
+            error: function (data) {
+                popupMesajGoster(data, 'error');
+            }
+        });
+    }
+
 </script>

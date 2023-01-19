@@ -15,11 +15,11 @@ class EtkinlikForm(ModelForm):
         widgets = {
             "baslangic_tarih_saat": DateInput(
                 attrs={"type": "datetime-local", "class": "form-control"},
-                format="%d-%m-%YT%H:%M",
+                format="%Y-%m-%dT%H:%M",
             ),
             "bitis_tarih_saat": DateInput(
                 attrs={"type": "datetime-local", "class": "form-control"},
-                format="%d-%m-%YT%H:%M",
+                format="%Y-%m-%dT%H:%M",
             ),
         }
         help_texts = {

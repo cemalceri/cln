@@ -214,8 +214,12 @@ def getir_etkinlik_bilgisi_ajax(request):
 @login_required()
 def sil_etkinlik_ajax(request):
     id = request.GET.get("id")
-    etklik = EtkinlikModel.objects.filter(pk=id).first()
-    etklik.delete()
+    sonrakiler_silinsin_mi = request.GET.get("sonrakiler_silinsin_mi")
+    etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+    if sonrakiler_silinsin_mi == "true" and etkinlik.haftalik_plan_kodu:
+        EtkinlikModel.objects.filter(haftalik_plan_kodu=etkinlik.haftalik_plan_kodu,
+                                     baslangic_tarih_saat__gte=etkinlik.baslangic_tarih_saat).delete()
+    etkinlik.delete()
     return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
 
 
@@ -258,12 +262,10 @@ def kaydet_etkinlik_ajax(request):
         result = etkinlik_kaydi_hata_var_mi(form)
         if result:
             return result
+        print("pk", form.cleaned_data["pk"])
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
             eski_etkinlik = EtkinlikModel.objects.get(id=form.cleaned_data["pk"])
-            if form.cleaned_data["abonelik_tipi"] != eski_etkinlik.abonelik_tipi:
-                return JsonResponse(data={"status": "error",
-                                          "message": "Abonelik tipi güncellenemez. Lütfen etkinliği silerek yenisini oluşturunuz."})
-            form = EtkinlikForm(data=request.POST, instance=eski_etkinlik)
+            form = EtkinlikForm(data=request.GET, instance=eski_etkinlik)
             form.save()
         else:
             item = form.save(commit=False)
@@ -287,26 +289,6 @@ def etkinlik_kaydi_hata_var_mi(form):
                                      form.data["kort"], form.cleaned_data["pk"]):
         mesaj = "Bu kort aynı saat için maksimimum etkinlik sayısına ulaştı."
         return JsonResponse(data={"status": "error", "message": mesaj})
-    if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Paket.value:
-        uyeler = paket_uyeligi_olmayan_grup_uyesi(form)
-        if uyeler:
-            mesaj = uyeler + " uygun paket kaydı olmadığı için etkinlik eklenemez."
-            return JsonResponse(data={"status": "error", "message": mesaj})
-    return False
-
-
-def paket_uyeligi_olmayan_grup_uyesi(form):
-    grup_id = form.data["grup" or None]
-    uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
-    grup_paketi_mi = uye_grubu.count() > 1
-    uyeler = ""
-    for item in uye_grubu:
-        abonelik_paket_listesi = UyePaketModel.objects.filter(uye_id=item.uye_id, grup_mu=grup_paketi_mi,
-                                                              aktif_mi=True)
-        if not abonelik_paket_listesi.exists():
-            uyeler += str(item.uye) + ", "
-    if uyeler != "":
-        return uyeler[:-2]
     return False
 
 
@@ -399,5 +381,14 @@ def etkinlik_kaydet_modal_ajax(request):
     bitis_tarih_saat = parse_datetime(baslangic_tarih_saat) + timedelta(minutes=30)
     form = EtkinlikForm(initial={"kort": kort_id, "baslangic_tarih_saat": baslangic_tarih_saat,
                                  "bitis_tarih_saat": bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M")})
+    html = render_to_string("calendarapp/etkinlik/partials/_etkinlik_kaydet_modal.html", {"form": form})
+    return JsonResponse(data={"status": "success", "html": html})
+
+
+@login_required
+def etkinlik_getir_modal_ajax(request):
+    etkinlik_id = request.GET.get("etkinlik_id")
+    etkinlik = EtkinlikModel.objects.filter(pk=etkinlik_id).first()
+    form = EtkinlikForm(instance=etkinlik)
     html = render_to_string("calendarapp/etkinlik/partials/_etkinlik_kaydet_modal.html", {"form": form})
     return JsonResponse(data={"status": "success", "html": html})
