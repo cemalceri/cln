@@ -1,0 +1,195 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Etkinlik Listesi{% endblock title %}
+{% block extracss %}
+    {% include 'base/remark_css.html' %}
+{% endblock extracss %}
+{% block extrascripts %}
+    <script type="text/javascript" src="{% static '/js/jspdf/html2canvas.js' %}"></script>
+    <script type="text/javascript" src="{% static '/js/jspdf/jspdf.min.js' %}"></script>
+{% endblock %}
+{% block breadcrumb %}
+    <div>
+        <h1><i class="fa fa-dashboard"></i> Etkinlikler</h1>
+        <p>Etkinlik Listesi</p>
+    </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="printDiv()"><i class="fa fa-file-pdf-o">İndir</i></a></li>
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
+    </ul>
+{% endblock breadcrumb %}
+
+{% block content %}
+    {#    <div class="row">#}
+    {#        <div class="col-md-1 col-xl-1 col-sm-1"></div>#}
+    {#        <div class="col-md-11 col-xl-11 col-sm-11">#}
+    {#            <div class="row">#}
+    {#                <div class="col-md-6">#}
+    {#                    <a id="btnOncekiGun" href="{% url 'calendarapp:index_getir_by_tarih' onceki_gun %}"#}
+    {#                       class="btn btn-secondary float-left black m-1" title="Önceki Gün">#}
+    {#                        <i class="fa fa-backward"></i>{{ onceki_gun_adi }}#}
+    {#                    </a>#}
+    {#                    <a id="btnBugun" href="{% url 'calendarapp:index_etkinlik' %}"#}
+    {#                       class="btn btn-primary float-left black m-1" title="Bugün">{{ sorgulanan_gun_adi }}#}
+    {#                    </a>#}
+    {#                    <a id="btnSonrakiGun" href="{% url 'calendarapp:index_getir_by_tarih' sonraki_gun %}"#}
+    {#                       class="btn btn-success float-left black m-1"#}
+    {#                       title="Sonraki Gün">{{ sonraki_gun_adi }}#}
+    {#                        <i class="fa fa-forward"></i>#}
+    {#                    </a>#}
+    {#            </div>#}
+    {#            <div class="col-md-6">#}
+    {#                <a onclick="printDiv()" class="btn btn-success float-right black" style="margin: auto">#}
+    {#                    <i class="fa fa-file-pdf-o"> PDF indir</i>#}
+    {#                </a>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
+    </div>
+    <div id="divContent" class='html-content'>
+        {{ kortlar|safe }}
+    </div>
+    <div id="detayModalDiv"></div>
+    <div id="kaydetModalDiv"></div>
+    <div id="bekleyenModalDiv"></div>
+    <script>
+        let sorgulananTarih = new Date();
+        $(document).ready(function () {
+            {% for gun in haftanin_gunleri %}
+                etkinlikleriGetir('{{ gun }}');
+            {% endfor %}
+            //etkinlikleriGetir();
+        });
+
+        function etkinlikleriGetir(sorgulanan_gun) {
+            $.ajax({
+                url: "{% url 'calendarapp:gunun_etkinlikleri_ajax' %}",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    'tarih': sorgulanan_gun
+                },
+                success: function (result) {
+                    for (let i = 0; i < result.list.length; i++) { //her kort için döngü
+                        let kortId = result.list[i].kort_id;
+                        let kortunSaatleri = result.list[i].saatler;
+                        let kolon = $('#' + sorgulanan_gun + '_kort_' + kortId);
+                        let saat = "";
+                        for (let s = 0; s < kortunSaatleri.length; s++) {
+                            saat = kortunSaatleri[s].saat;
+                            let saatDiv = $('<div id="' + sorgulanan_gun + '_kort_' + kortId + '_saat_' + saat + '" class="row" style="height:30px"></div>');
+                            let etkinlikler = result.list[i].saatler[s].etkinlikler;
+                            let bolunmeSayisi = result.list[i].saatler[s].bolunmeSayisi;
+                            let hucreGenisligi = 60 / bolunmeSayisi;
+                            for (let e = 0; e < etkinlikler.length; e++) {
+                                let etkinlik = etkinlikler[e];
+                                let etkinlikDiv = $('<div id="' + etkinlik.id + '" class="col doluEtkinlik border black" ' +
+                                    'style="font-size: 0.7rem; width: ' + hucreGenisligi + 'px; background-color:' + etkinlik.renk + '">' +
+                                    etkinlik.grup_adi + etkinlik.seviye + '</div>');
+                                saatDiv.append(etkinlikDiv);
+                            }
+                            let eklenecekBosDivSayisi = bolunmeSayisi - etkinlikler.length;
+                            for (let b = 0; b < eklenecekBosDivSayisi; b++) {
+                                let bolunmeDiv = $('<div id="' + result.list[i].saatler[s].sorgulananTarihSaat + '" class="col bosEtkinlik border bg-white"></div>');
+                                if (result.list[i].saatler[s].bekleyenVarMi) {
+                                    bolunmeDiv.append('<i class="fa fa-info"></i>');
+                                }
+                                saatDiv.append(bolunmeDiv);
+                            }
+                            kolon.append(saatDiv);
+                        }
+                    }
+                }
+            });
+        }
+
+        $(document).on('click', '.doluEtkinlik', function () {
+            let id = $(this).attr('id');
+            if (id != null && id != undefined) {
+                $.ajax({
+                    url: " {% url 'calendarapp:etkinlik_detay_getir_ajax' %}",
+                    type: "GET",
+                    data: {
+                        'etkinlik_id': id
+                    },
+                    dataType: "json",
+                    success: function (result) {
+                        $('#detayModalDiv').html(result.html);
+                        $('#detayModal').modal('show');
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.bosEtkinlik', function () {
+            let parent_id = $(this).parent().attr('id');
+            let baslangic_tarih = parent_id.split('_')[0];
+            let kort_id = parent_id.split('_')[2];
+            let saat = parent_id.split('_')[4];
+            //parse saat to string and find char count
+
+            if (saat.toString().length == 4) {
+                // db 9:00 gibi bir veriyi set edemediği için 09 olarak set ediyoruz
+                saat = '0' + saat;
+            }
+            let baslangic_tarih_saat = baslangic_tarih + 'T' + saat;
+            kayitModalAc(baslangic_tarih_saat, kort_id)
+        });
+
+        function kayitModalAc(baslangic_tarih_saat, kort_id) {
+            $.ajax({
+                url: "{% url 'calendarapp:etkinlik_kaydet_modal_ajax' %}",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    'baslangic_tarih_saat': baslangic_tarih_saat,
+                    'kort_id': kort_id
+                },
+                success: function (result) {
+                    $('#kaydetModalDiv').html(result.html);
+                    $('#kaydetModal').modal('show');
+                }
+            });
+        }
+
+        function bekleyenListesiModalDoldurAc(tarihSaat) {
+            $.ajax({
+                url: "{% url 'calendarapp:bekleyen_musteri_modal_getir_ajax' %}",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    'tarih_saat': tarihSaat,
+                },
+                success: function (result) {
+                    $('#bekleyenModalDiv').html(result.html);
+                    $('#bekleyenModal').modal('show');
+                }
+            });
+        }
+
+        function printDiv() {
+            var HTML_Width = $(".html-content").width();
+            var HTML_Height = $(".html-content").height();
+            var top_left_margin = 80;
+            var PDF_Width = HTML_Width + (top_left_margin * 2);
+            var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+            var canvas_image_width = HTML_Width;
+            var canvas_image_height = HTML_Height;
+            var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+
+            html2canvas($(".html-content")[0]).then(function (canvas) {
+                var imgData = canvas.toDataURL("image/jpeg", 1.0);
+                var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+                pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+                for (var i = 1; i <= totalPDFPages; i++) {
+                    pdf.addPage(PDF_Width, PDF_Height);
+                    pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+                }
+                pdf.save("etkinlikler.pdf");
+            });
+        }
+
+    </script>
+{% endblock content %}

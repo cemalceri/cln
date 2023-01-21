@@ -70,22 +70,42 @@
                         <label class="form-control-label" for="inputBasicFirstName">Tamamlandı(Yönetici):</label>
                     </div>
                     <div class="form-group col-md-2">
-                        <input type="text" class="form-control" disabled
-                               value="{{ etkinlik.tamamlandi_yonetici |yesno:"Evet,Hayır" }}">
+                        {% if etkinlik.tamamlandi_yonetici %}
+                            <button onclick="etkinlikTamamlandiGeriAl('{{ etkinlik.id }}')" title="Tamamladıyı İptal Et"
+                                    class="btn btn-success"><i class="fa fa-check"></i>
+                            </button>
+                        {% else %}
+                            <button onclick="etkinlikTamamlandi('{{ etkinlik.id }}')" title="Tamamlandı olarak işaretle"
+                                    class="btn btn-danger"><i class="fa fa-ban"></i>
+                            </button>
+                        {% endif %}
                     </div>
                     <div class="form-group col-md-2">
-                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı(Antrenör):</label>
+                        <label class="form-control-label" for="inputBasicFirstName"> Tamamlandı(Antrenör):</label>
                     </div>
                     <div class="form-group col-md-2">
-                        <input type="text" class="form-control" disabled
-                               value="{{ etkinlik.tamamlandi_antrenor |yesno:"Evet,Hayır" }}">
+                        {% if etkinlik.tamamlandi_antrenor %}
+                            <button onclick="etkinlikTamamlandiGeriAl('{{ etkinlik.id }}')" title="Tamamladıyı İptal Et"
+                                    class="btn btn-success"><i class="fa fa-check"></i>
+                            </button>
+                        {% else %}
+                            <button onclick="etkinlikTamamlandi('{{ etkinlik.id }}')" title="Tamamlandı olarak işaretle"
+                                    class="btn btn-danger"><i class="fa fa-ban"></i>
+                            </button>
+                        {% endif %}
                     </div>
                     <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Tamamlandı(Üye):</label>
                     </div>
                     <div class="form-group col-md-2">
-                        <input type="text" class="form-control" disabled
-                               value="{{ etkinlik.tamamlandi_uye |yesno:"Evet,Hayır" }}">
+                        {% if etkinlik.tamamlandi_uye %}
+                            <button disabled
+                                    class="btn btn-success"><i class="fa fa-check"></i>
+                            </button>
+                        {% else %}
+                            <button disabled class="btn btn-danger"><i class="fa fa-ban"></i>
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="row">
@@ -113,7 +133,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button  onclick="EtkinlikDuzenle({{ etkinlik.id }})" type="button" class="btn btn-success">
+                <button onclick="EtkinlikDuzenle({{ etkinlik.id }})" type="button" class="btn btn-success">
                     Düzenle
                 </button>
                 <button id="btnSil" onclick="EtkinlikSil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
@@ -121,16 +141,10 @@
                 <button type="button" onclick="EtkinlikSerisiSil({{ etkinlik.id }})" class="btn btn-outline-danger">
                     Seriyi Sil
                 </button>
-                <button type="button" onclick="etkinlikTamamlandi({{ etkinlik.id }})" class="btn btn-dark"> Tamamlandı
-                </button>
-                <button type="button" onclick="etkinlikTamamlandiGeriAl({{ etkinlik.id }})" class="btn btn-primary">
-                    Tamamlandı İptal
-                </button>
                 <button type="button"
                         onclick="bekleyenListesiModalDoldurAc('{{ etkinlik.baslangic_tarih_saat |date:"Y-m-d" }}T{{ etkinlik.baslangic_tarih_saat |date:"H:i:s" }}')"
                         class="btn btn-info">Bekleyen Listesi
                 </button>
-
             </div>
         </div>
     </div>

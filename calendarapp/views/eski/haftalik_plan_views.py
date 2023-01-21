@@ -39,7 +39,7 @@ def haftalik_plan_getir(request, kort_id=None):
         )
     context = {"form": form, "etkinlikler": event_list, "kortlar": kortlar,
                "secili_kort": kort}
-    return render(request, 'calendarapp/etkinlik/haftalik_plan.html', context)
+    return render(request, 'calendarapp/etkinlik/eski/haftalik_plan.html', context)
 
 
 @login_required

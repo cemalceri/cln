@@ -48,7 +48,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="get" action="#" role="form" id="etkinlikForm">
+                    <form method="post" action="#" role="form" id="etkinlikForm">
+                        {% csrf_token %}
                         <div class="modal-body">
                             <div class="row p-2">
                                 <div class="col-md-2 border p-md-2">
@@ -85,14 +86,27 @@
                             </div>
                         </div>
                     </form>
+
                 </div>
                 <div class="modal-footer">
+                    <button id="btnTamamlandi" hidden type="button" onclick="etkinlikTamamlandi()" class="btn btn-dark">
+                        Tamamlandı
+                    </button>
+                    <a id="btnTelafiDers" type="button" hidden target="_blank"
+                       class="btn btn-success"> Telafi Ders
+                    </a>
+                    {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
                     <button type="button" hidden id="btnYeniKayit" onclick="clearModalFields()"
                             class="btn btn-info">Yeni Kayıt
                     </button>
+                    {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
                     <button id="btnSil" onclick="EtkinlikSil()" type="button"
                             class="btn btn-danger">Temizle
                     </button>
+                    <button id="btnSeriyiSil" hidden onclick="EtkinlikSerisiSil()" type="button"
+                            class="btn btn-outline-danger">Seriyi Sil
+                    </button>
+                    {#                    <div class="border-left border-dark"><span class="border-right"> </span></div>#}
                     <button id="modalClose2" type="button" class="btn btn-secondary">Kapat</button>
                     <button type="button" id="kaydetBtn" class="btn btn-primary">Kaydet</button>
                 </div>
@@ -107,10 +121,6 @@
     <script src="{% static 'calendar/main.js' %}"></script>
     <script>
         let _selectedEvent;
-        let seciliKort;
-        if (seciliKort = 'undefined') {
-            seciliKort = {{secili_kort.id}};
-        }
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
             var today = new Date();
@@ -118,7 +128,7 @@
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,list',
                 },
                 initialDate: today,
                 navLinks: true, // can click day/week names to navigate views
@@ -140,6 +150,7 @@
                 eventClick: function (arg) {
                     // Etkinlik güncelle
                     document.getElementById("btnSil").innerText = "Sil"
+                    document.getElementById("btnSeriyiSil").hidden = false;
                     openEditModal(arg.event);
                 },
                 eventDragStop: function (arg, event) {
@@ -200,7 +211,7 @@
             $.ajax({
                 url: "{% url 'calendarapp:kaydet_etkinlik_ajax' %}",
                 data: data,
-                type: "get",
+                type: "post",
                 dataType: 'json',
                 success: function (data) {
                     if (data.status == "success") {
@@ -221,7 +232,7 @@
             _selectedEvent = event;
             document.getElementById("btnYeniKayit").hidden = false;
             $.ajax({
-                url: '{% url 'calendarapp:getir_etkinlik_by_id' %}',
+                url: '{% url 'calendarapp:getir_etkinlik_by_id_ajax' %}',
                 type: 'GET',
                 data: {
                     'id': event.id
@@ -269,6 +280,28 @@
                 clearModalFields();
         }
 
+        function EtkinlikSerisiSil() {
+            if (_selectedEvent) {
+                if (confirm('Bu etkinlik serisi silinsin mi?')) {
+                    $.ajax({
+                        //url: '{% url 'calendarapp:sil_etkinlik_serisi_by_id' %}',
+                        type: 'GET',
+                        data: {
+                            'id': _selectedEvent.id
+                        },
+                        success: function (result) {
+                            _selectedEvent.remove();
+                            closeModal();
+                            popupMesajGoster(result.message);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    });
+                }
+            } else
+                clearModalFields();
+        }
 
         function clearModalFields() {
             let elements = document.getElementsByClassName("form-control");
@@ -292,8 +325,11 @@
         function openModal(tarih_saat) {
             _selectedEvent = null;
             document.getElementById("btnSil").innerText = "Temizle";
+            document.getElementById("btnSeriyiSil").hidden = true;
             document.getElementById("btnYeniKayit").hidden = true;
-            $('#id_kort option[value="' + seciliKort + '"]').prop('selected', true);
+            document.getElementById("btnTamamlandi").hidden = true;
+            document.getElementById("btnTelafiDers").hidden = true;
+            $('#id_kort option[value="' + {{secili_kort.id}} + '"]').prop('selected', true);
             bekleyenMusteriGetir(tarih_saat);
             document.getElementById('eventModal').style.display = 'block';
         }
@@ -342,6 +378,28 @@
                 },
                 error: function () {
                     popupMesajGoster("Seçilen saat için bekleyen rezervasyonları çekerken hata oluştu", "error");
+                },
+            });
+
+        }
+
+        function etkinlikTamamlandi() {
+            $.ajax({
+                url: '{% url 'calendarapp:etkinlik_tamamlandi_ajax' %}',
+                type: 'GET',
+                data: {
+                    'id': _selectedEvent.id,
+                },
+                success: function (result) {
+                    if (result.status == "success") {
+                        popupMesajGoster(result.message, result.status);
+                        closeModal();
+                    } else {
+                        popupMesajGoster(result.message, result.status);
+                    }
+                },
+                error: function () {
+                    popupMesajGoster("Hata oluştu", "error");
                 },
             });
         }
