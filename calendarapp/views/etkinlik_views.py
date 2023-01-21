@@ -348,7 +348,7 @@ def etkinlik_tamamlandi_ajax(request):
 
 
 @login_required
-def etkinlik_tamamlandi_iptal_ajax(request):
+def tamamlandi_iptal_ajax(request):
     """TO DO:Burası yetkiler tanımlandığında düzenlecek. İşlemi yapan yönetici ise paket kullanım tablosuna kayıt atılacak."""
     try:
         id = request.GET.get("id")
@@ -365,7 +365,7 @@ def etkinlik_tamamlandi_iptal_ajax(request):
 
 
 @login_required
-def etkinlik_detay_getir_ajax(request):
+def detay_modal_ajax(request):
     etkinlik_id = request.GET.get("etkinlik_id")
     etkinlik = EtkinlikModel.objects.filter(pk=etkinlik_id).first()
     if etkinlik:
@@ -374,7 +374,7 @@ def etkinlik_detay_getir_ajax(request):
 
 
 @login_required
-def etkinlik_kaydet_modal_ajax(request):
+def kaydet_modal_ajax(request):
     kort_id = request.GET.get("kort_id")
     baslangic_tarih_saat = request.GET.get("baslangic_tarih_saat")
     bitis_tarih_saat = parse_datetime(baslangic_tarih_saat) + timedelta(minutes=30)
@@ -385,7 +385,7 @@ def etkinlik_kaydet_modal_ajax(request):
 
 
 @login_required
-def etkinlik_getir_modal_ajax(request):
+def duzenle_modal_ajax(request):
     etkinlik_id = request.GET.get("etkinlik_id")
     etkinlik = EtkinlikModel.objects.filter(pk=etkinlik_id).first()
     form = EtkinlikForm(instance=etkinlik)

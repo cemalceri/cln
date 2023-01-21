@@ -4,7 +4,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="exampleModalLabel">Etkinlik Detayı</h3>
+                <h3 class="modal-title" id="exampleModalLabel">Detay Bilgileri</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -67,49 +67,6 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-md-2">
-                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı(Yönetici):</label>
-                    </div>
-                    <div class="form-group col-md-2">
-                        {% if etkinlik.tamamlandi_yonetici %}
-                            <button onclick="etkinlikTamamlandiGeriAl('{{ etkinlik.id }}')" title="Tamamladıyı İptal Et"
-                                    class="btn btn-success"><i class="fa fa-check"></i>
-                            </button>
-                        {% else %}
-                            <button onclick="etkinlikTamamlandi('{{ etkinlik.id }}')" title="Tamamlandı olarak işaretle"
-                                    class="btn btn-danger"><i class="fa fa-ban"></i>
-                            </button>
-                        {% endif %}
-                    </div>
-                    <div class="form-group col-md-2">
-                        <label class="form-control-label" for="inputBasicFirstName"> Tamamlandı(Antrenör):</label>
-                    </div>
-                    <div class="form-group col-md-2">
-                        {% if etkinlik.tamamlandi_antrenor %}
-                            <button onclick="etkinlikTamamlandiGeriAl('{{ etkinlik.id }}')" title="Tamamladıyı İptal Et"
-                                    class="btn btn-success"><i class="fa fa-check"></i>
-                            </button>
-                        {% else %}
-                            <button onclick="etkinlikTamamlandi('{{ etkinlik.id }}')" title="Tamamlandı olarak işaretle"
-                                    class="btn btn-danger"><i class="fa fa-ban"></i>
-                            </button>
-                        {% endif %}
-                    </div>
-                    <div class="form-group col-md-2">
-                        <label class="form-control-label" for="inputBasicFirstName">Tamamlandı(Üye):</label>
-                    </div>
-                    <div class="form-group col-md-2">
-                        {% if etkinlik.tamamlandi_uye %}
-                            <button disabled
-                                    class="btn btn-success"><i class="fa fa-check"></i>
-                            </button>
-                        {% else %}
-                            <button disabled class="btn btn-danger"><i class="fa fa-ban"></i>
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-2">
                         <label class="form-control-label" for="inputBasicFirstName">Açıklama:</label>
                     </div>
                     <div class="form-group col-md-10">
@@ -118,27 +75,27 @@
                     </div>
                 </div>
                 <div class="row">
-                    {#                    <div class="form-group col-md-2">#}
-                    {#                        <label class="form-control-label" for="inputBasicFirstName">Kayıt Eden:</label>#}
-                    {#                    </div>#}
-                    {#                    <div class="form-group col-md-4">#}
-                    {#                        <input type="text" class="form-control" disabled value="{{ etkinlik.user }}">#}
-                    {#                    </div>#}
-                    {#                    <div class="form-group col-md-2">#}
-                    {#                        <label class="form-control-label" for="inputBasicFirstName">Kayıt Tarihi:</label>#}
-                    {#                    </div>#}
-                    {#                    <div class="form-group col-md-4">#}
-                    {#                        <input type="text" class="form-control" disabled value="{{ etkinlik.created_at }}">#}
-                    {#                    </div>#}
+                    <div class="form-group col-md-2">
+                        <label class="form-control-label" for="inputBasicFirstName">Kayıt Eden:</label>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <input type="text" class="form-control" disabled value="{{ etkinlik.user }}">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label class="form-control-label" for="inputBasicFirstName">Kayıt Tarihi:</label>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <input type="text" class="form-control" disabled value="{{ etkinlik.created_at }}">
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button onclick="EtkinlikDuzenle({{ etkinlik.id }})" type="button" class="btn btn-success">
+                <button onclick="Duzenle({{ etkinlik.id }})" type="button" class="btn btn-success">
                     Düzenle
                 </button>
-                <button id="btnSil" onclick="EtkinlikSil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
+                <button id="btnSil" onclick="Sil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
                 </button>
-                <button type="button" onclick="EtkinlikSerisiSil({{ etkinlik.id }})" class="btn btn-outline-danger">
+                <button type="button" onclick="SerisiSil({{ etkinlik.id }})" class="btn btn-outline-danger">
                     Seriyi Sil
                 </button>
                 <button type="button"
@@ -150,20 +107,19 @@
     </div>
 </div>
 <script>
-    function EtkinlikSil(etkinlik_id) {
+    function Sil(id) {
         debugger;
         if (confirm('Kaydı silmek istediğinize emin misiniz?')) {
             $.ajax({
                 type: "Get",
-                url: "{% url 'calendarapp:sil_etkinlik_by_ajax' %}",
+                url: "{% url 'calendarapp:sabit_plan_sil_ajax' %}",
                 data: {
-                    'id': etkinlik_id
+                    'id': id
                 },
                 success: function (data) {
                     if (data.status === 'success') {
                         $('#detayModal').modal('hide');
                         popupMesajGoster(data.message, data.status);
-                        //reload page after 1 second
                         setTimeout(function () {
                             location.reload();
                         }, 2000);
@@ -178,13 +134,13 @@
         }
     }
 
-    function EtkinlikSerisiSil(etkinlik_id) {
+    function SerisiSil(id) {
         if (confirm('Silmek istediğinize emin misiniz?')) {
             $.ajax({
                 type: "Get",
-                url: "{% url 'calendarapp:sil_etkinlik_by_ajax' %}",
+                url: "{% url 'calendarapp:sabit_plan_sil_ajax' %}",
                 data: {
-                    'id': etkinlik_id,
+                    'id': id,
                     'sonrakiler_silinsin_mi': true
                 },
                 success: function (data) {
@@ -205,56 +161,13 @@
         }
     }
 
-    function etkinlikTamamlandi(etkinlik_id) {
+    function Duzenle(id) {
         debugger;
         $.ajax({
             type: "Get",
-            url: "{% url 'calendarapp:etkinlik_tamamlandi_ajax' %}",
+            url: "{% url 'calendarapp:sabit_plan_duzenle_modal_getir_ajax' %}",
             data: {
-                'id': etkinlik_id
-            },
-            success: function (data) {
-                if (data.status === 'success') {
-                    $('#detayModal').modal('hide');
-                    popupMesajGoster(data.message, data.status);
-                } else {
-                    popupMesajGoster(data.message, data.status);
-                }
-            },
-            error: function (data) {
-                popupMesajGoster(data, 'error');
-            }
-        });
-    }
-
-    function etkinlikTamamlandiGeriAl(etkinlik_id) {
-        $.ajax({
-            type: "Get",
-            url: "{% url 'calendarapp:etkinlik_tamamlandi_iptal_ajax' %}",
-            data: {
-                'id': etkinlik_id
-            },
-            success: function (data) {
-                if (data.status === 'success') {
-                    $('#detayModal').modal('hide');
-                    popupMesajGoster(data.message, data.status);
-                } else {
-                    popupMesajGoster(data.message, data.status);
-                }
-            },
-            error: function (data) {
-                popupMesajGoster(data, 'error');
-            }
-        });
-    }
-
-    function EtkinlikDuzenle(etkinlik_id) {
-        debugger;
-        $.ajax({
-            type: "Get",
-            url: "{% url 'calendarapp:etkinlik_duzenle_modal_getir_ajax' %}",
-            data: {
-                'etkinlik_id': etkinlik_id
+                'id': id
             },
             success: function (data) {
                 if (data.status === 'success') {
@@ -270,5 +183,4 @@
             }
         });
     }
-
 </script>

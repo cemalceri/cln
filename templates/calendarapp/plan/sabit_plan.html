@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Etkinlik Listesi{% endblock title %}
+{% block title %}Haftalık Sabit Plan{% endblock title %}
 {% block extracss %}
     {% include 'base/remark_css.html' %}
 {% endblock extracss %}
@@ -12,7 +12,7 @@
 {% block breadcrumb %}
     <div>
         <h1><i class="fa fa-dashboard"></i> Etkinlikler</h1>
-        <p>Etkinlik Listesi</p>
+        <p>Haftalık Sabit Etkinlik Listesi</p>
     </div>
     <ul class="app-breadcrumb breadcrumb">
         <li class="breadcrumb-item"><a href="#" onclick="printDiv()"><i class="fa fa-file-pdf-o">İndir</i></a></li>
@@ -22,32 +22,6 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-    {#    <div class="row">#}
-    {#        <div class="col-md-1 col-xl-1 col-sm-1"></div>#}
-    {#        <div class="col-md-11 col-xl-11 col-sm-11">#}
-    {#            <div class="row">#}
-    {#                <div class="col-md-6">#}
-    {#                    <a id="btnOncekiGun" href="{% url 'calendarapp:index_getir_by_tarih' onceki_gun %}"#}
-    {#                       class="btn btn-secondary float-left black m-1" title="Önceki Gün">#}
-    {#                        <i class="fa fa-backward"></i>{{ onceki_gun_adi }}#}
-    {#                    </a>#}
-    {#                    <a id="btnBugun" href="{% url 'calendarapp:index_etkinlik' %}"#}
-    {#                       class="btn btn-primary float-left black m-1" title="Bugün">{{ sorgulanan_gun_adi }}#}
-    {#                    </a>#}
-    {#                    <a id="btnSonrakiGun" href="{% url 'calendarapp:index_getir_by_tarih' sonraki_gun %}"#}
-    {#                       class="btn btn-success float-left black m-1"#}
-    {#                       title="Sonraki Gün">{{ sonraki_gun_adi }}#}
-    {#                        <i class="fa fa-forward"></i>#}
-    {#                    </a>#}
-    {#            </div>#}
-    {#            <div class="col-md-6">#}
-    {#                <a onclick="printDiv()" class="btn btn-success float-right black" style="margin: auto">#}
-    {#                    <i class="fa fa-file-pdf-o"> PDF indir</i>#}
-    {#                </a>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    </div>#}
-    </div>
     <div id="divContent" class='html-content'>
         {{ kortlar|safe }}
     </div>
@@ -58,14 +32,14 @@
         let sorgulananTarih = new Date();
         $(document).ready(function () {
             {% for gun in haftanin_gunleri %}
-                etkinlikleriGetir('{{ gun }}');
+                sabitPlaniGetir('{{ gun }}');
             {% endfor %}
             //etkinlikleriGetir();
         });
 
-        function etkinlikleriGetir(sorgulanan_gun) {
+        function sabitPlaniGetir(sorgulanan_gun) {
             $.ajax({
-                url: "{% url 'calendarapp:gunun_etkinlikleri_ajax' %}",
+                url: "{% url 'calendarapp:sabit_plan_gunun_etkinlikleri_ajax' %}",
                 type: "GET",
                 dataType: "json",
                 data: {
@@ -109,10 +83,10 @@
             let id = $(this).attr('id');
             if (id != null && id != undefined) {
                 $.ajax({
-                    url: " {% url 'calendarapp:etkinlik_detay_getir_ajax' %}",
+                    url: " {% url 'calendarapp:sabit_plan_detay_modal_getir_ajax' %}",
                     type: "GET",
                     data: {
-                        'etkinlik_id': id
+                        'plan_id': id
                     },
                     dataType: "json",
                     success: function (result) {
@@ -131,7 +105,7 @@
             //parse saat to string and find char count
 
             if (saat.toString().length == 4) {
-                // db 9:00 gibi bir veriyi set edemediği için 09 olarak set ediyoruz
+                // db 9:00 gibi bir algılamadığı için 09 olarak set ediyoruz
                 saat = '0' + saat;
             }
             let baslangic_tarih_saat = baslangic_tarih + 'T' + saat;
@@ -140,7 +114,7 @@
 
         function kayitModalAc(baslangic_tarih_saat, kort_id) {
             $.ajax({
-                url: "{% url 'calendarapp:etkinlik_kaydet_modal_ajax' %}",
+                url: "{% url 'calendarapp:sabit_plan_kaydet_modal__getir_ajax' %}",
                 type: "GET",
                 dataType: "json",
                 data: {

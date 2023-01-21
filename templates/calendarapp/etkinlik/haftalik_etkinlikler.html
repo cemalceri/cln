@@ -109,7 +109,7 @@
             let id = $(this).attr('id');
             if (id != null && id != undefined) {
                 $.ajax({
-                    url: " {% url 'calendarapp:etkinlik_detay_getir_ajax' %}",
+                    url: " {% url 'calendarapp:etkinlik_detay_modal_getir_ajax' %}",
                     type: "GET",
                     data: {
                         'etkinlik_id': id
@@ -140,7 +140,7 @@
 
         function kayitModalAc(baslangic_tarih_saat, kort_id) {
             $.ajax({
-                url: "{% url 'calendarapp:etkinlik_kaydet_modal_ajax' %}",
+                url: "{% url 'calendarapp:etkinlik_kaydet_modal_getir_ajax' %}",
                 type: "GET",
                 dataType: "json",
                 data: {

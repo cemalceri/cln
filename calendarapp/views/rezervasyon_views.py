@@ -62,7 +62,8 @@ def bekleyen_musteri_getir_ajax(request):
 @login_required
 def bekleyen_musteri_modal_getir_ajax(request):
     rezervasyonlar = bekleyen_musteri_getir(request.GET.get("tarih_saat"))
-    html = render_to_string("calendarapp/etkinlik/partials/_bekleyen_listesi_modal.html", {"list": rezervasyonlar})
+    html = render_to_string(
+        "calendarapp/rezervasyon/partials/_bekleyen_listesi_modal.html", {"list": rezervasyonlar})
     return JsonResponse(data={"html": html, "status": "success", "message": "Başarılı"}, safe=False)
 
 

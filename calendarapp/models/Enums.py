@@ -46,8 +46,8 @@ class SaatlerModel(models.Model):
 
 
 class AbonelikTipiEnum(Enum):
-    Paket = "Paket"
     Uyelik = "Üyelik"
+    Paket = "Paket"
     Telafi = "Telafi"
     Demo = "Demo"
     TekDers = "Tek Ders"
