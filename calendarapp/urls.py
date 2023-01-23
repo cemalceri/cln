@@ -15,7 +15,6 @@ urlpatterns = [
     # Takvim ve Etkinlikler -> Eski sayfaların
     path("takvim/", ev.takvim_getir, name="takvim_getir"),
     path("takvim/<int:kort_id>", ev.takvim_getir, name="takvim_getir_by_kort_id"),
-    path("etkinlik", ev.index, name="index_etkinlik"),
     path("gunun_etkinlikleri", ev.gunun_etkinlikleri_ajax, name="gunun_etkinlikleri_ajax"),
     path("etkinlik/index/<str:tarih>", ev.index_getir_by_tarih, name="index_getir_by_tarih"),
 
@@ -30,7 +29,7 @@ urlpatterns = [
     path("plan/sil", haftalik_plan_views.sil_haftalik_plan_ajax, name="sil_haftalik_plan_ajax"),
 
     # Haftalık Sabit Plan
-    path("sabit-plan/", hfsp_views.index, name="index_sabit_plan"),
+    path("sabit-plan", hfsp_views.index, name="index_sabit_plan"),
     path("sabit-plan-ajax", hfsp_views.gunun_planlari_ajax, name="sabit_plan_gunun_etkinlikleri_ajax"),
     path("sabit-plan/kaydet", hfsp_views.kaydet_ajax, name="sabit_plan_kaydet_ajax"),
     path("sabit-plan/kaydet-modal", hfsp_views.kaydet_modal_ajax, name="sabit_plan_kaydet_modal__getir_ajax"),
@@ -39,6 +38,8 @@ urlpatterns = [
     path("sabit-plan/duzenle-modal", hfsp_views.duzenle_modal_ajax, name="sabit_plan_duzenle_modal_getir_ajax"),
 
     # Etkinlik
+    path("etkinlik", ev.index, name="index_etkinlik"),
+    path("etkinlik/<str:tarih>", ev.index_getir_by_tarih, name="index_etkinlik_by_tarih"),
     path("etkinlik/detay", ev.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id_ajax"),
     path("etkinlik/sil", ev.sil_etkinlik_ajax, name="sil_etkinlik_by_ajax"),
     path("etkinlik/sil/<int:id>", ev.sil_etkinlik, name="sil_etkinlik_by_id"),

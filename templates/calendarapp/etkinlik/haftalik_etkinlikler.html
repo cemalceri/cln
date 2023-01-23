@@ -4,50 +4,42 @@
 {% block title %}Etkinlik Listesi{% endblock title %}
 {% block extracss %}
     {% include 'base/remark_css.html' %}
+    <link rel="stylesheet"
+          href="{% static '/template/classic/global/vendor/bootstrap-datepicker/bootstrap-datepicker.css' %}">
 {% endblock extracss %}
 {% block extrascripts %}
     <script type="text/javascript" src="{% static '/js/jspdf/html2canvas.js' %}"></script>
     <script type="text/javascript" src="{% static '/js/jspdf/jspdf.min.js' %}"></script>
+    <script src="{% static '/template/classic/global/vendor/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
 {% endblock %}
 {% block breadcrumb %}
     <div>
         <h1><i class="fa fa-dashboard"></i> Etkinlikler</h1>
         <p>Etkinlik Listesi</p>
     </div>
-    <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="printDiv()"><i class="fa fa-file-pdf-o">İndir</i></a></li>
-        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
-        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
-    </ul>
+    <div class="row bg-white">
+        <div class="btn-group" aria-label="Basic example" role="group">
+            <button type="button" class="btn btn-outline btn-default float-right"><i class="icon wb-pencil"
+                                                                                     aria-hidden="true"></i>Edit
+            </button>
+            <button type="button" class="btn btn-outline btn-default"><i class="icon wb-reply" aria-hidden="true"></i>Reply
+            </button>
+            <div class="input-group">
+                      <span class="input-group-addon">
+                        <i class="icon wb-calendar" aria-hidden="true"></i>
+                      </span>
+                <input id="secilenTarih" type="text" class="form-control" data-plugin="datepicker">
+            </div>
+            <button type="button" class="btn btn-outline btn-default"><i class="icon wb-share"></i>Share
+            </button>
+            <button type="button" class="btn btn-outline btn-default" onclick="printDiv()"><i
+                    class="icon wb-download"></i>İndir
+            </button>
+        </div>
+    </div>
 {% endblock breadcrumb %}
 
 {% block content %}
-    {#    <div class="row">#}
-    {#        <div class="col-md-1 col-xl-1 col-sm-1"></div>#}
-    {#        <div class="col-md-11 col-xl-11 col-sm-11">#}
-    {#            <div class="row">#}
-    {#                <div class="col-md-6">#}
-    {#                    <a id="btnOncekiGun" href="{% url 'calendarapp:index_getir_by_tarih' onceki_gun %}"#}
-    {#                       class="btn btn-secondary float-left black m-1" title="Önceki Gün">#}
-    {#                        <i class="fa fa-backward"></i>{{ onceki_gun_adi }}#}
-    {#                    </a>#}
-    {#                    <a id="btnBugun" href="{% url 'calendarapp:index_etkinlik' %}"#}
-    {#                       class="btn btn-primary float-left black m-1" title="Bugün">{{ sorgulanan_gun_adi }}#}
-    {#                    </a>#}
-    {#                    <a id="btnSonrakiGun" href="{% url 'calendarapp:index_getir_by_tarih' sonraki_gun %}"#}
-    {#                       class="btn btn-success float-left black m-1"#}
-    {#                       title="Sonraki Gün">{{ sonraki_gun_adi }}#}
-    {#                        <i class="fa fa-forward"></i>#}
-    {#                    </a>#}
-    {#            </div>#}
-    {#            <div class="col-md-6">#}
-    {#                <a onclick="printDiv()" class="btn btn-success float-right black" style="margin: auto">#}
-    {#                    <i class="fa fa-file-pdf-o"> PDF indir</i>#}
-    {#                </a>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    </div>#}
-    </div>
     <div id="divContent" class='html-content'>
         {{ kortlar|safe }}
     </div>
@@ -55,12 +47,19 @@
     <div id="kaydetModalDiv"></div>
     <div id="bekleyenModalDiv"></div>
     <script>
-        let sorgulananTarih = new Date();
         $(document).ready(function () {
+            $('#secilenTarih').datepicker({
+                format: 'yyyy.mm.dd',
+                //language: 'tr',
+                autoclose: true,
+                todayHighlight: true,
+            }).on('changeDate', function (e) {
+                let url = "/etkinlik/" + $('#secilenTarih').val();
+                window.location.href = url;
+            }).val('{{ sorgulanan_tarih }}');
             {% for gun in haftanin_gunleri %}
                 etkinlikleriGetir('{{ gun }}');
             {% endfor %}
-            //etkinlikleriGetir();
         });
 
         function etkinlikleriGetir(sorgulanan_gun) {

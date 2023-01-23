@@ -24,19 +24,14 @@ saatler = SaatlerModel.objects.all()
 @login_required
 def index(request):
     tarih = datetime.now().date()
-    context = index_sayfasi_icin_context_olustur(request, tarih)
-    return render(request, "calendarapp/plan/sabit_plan.html", context)
-
-
-@login_required
-def index_getir_by_tarih(request, tarih):
+    haftalik_plan_yeni_haftaya_tasindi_kontrolu()
     context = index_sayfasi_icin_context_olustur(request, tarih)
     return render(request, "calendarapp/plan/sabit_plan.html", context)
 
 
 def index_sayfasi_icin_context_olustur(request, tarih):
     if isinstance(tarih, str):
-        tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
+        tarih = datetime.strptime(tarih, "%Y/%m/%d").date()
     sorgulanan_haftanini_ilk_gunu = tarih - timedelta(days=datetime.now().weekday())
     haftanin_gunleri = []
     haftanin_gunleri_strf = []
@@ -245,6 +240,16 @@ def detay_modal_ajax(request):
     return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
 
 
+def grup_uyesinin_bu_saatte_plan_var_mi(id, baslangic_tarih_saat, grup):
+    if HaftalikPlanModel.objects.filter(grup=grup, baslangic_tarih_saat=baslangic_tarih_saat).exclude(pk=id).exists():
+        return "Bu saat aynı üye/grup için zaten kayıtlı. "
+    grup_uyeleri = UyeGrupModel.objects.filter(grup=grup)
+    for item in grup_uyeleri:
+        if UyeAbonelikModel.objects.filter(uye=item.uye, baslangic_tarih_saat=baslangic_tarih_saat).exists():
+            return "Grupta bulunan " + str(item.uye) + " üyesinin bu saatte abonelik kaydı var."
+    return None
+
+
 def plan_kaydi_icin_hata_var_mi(form):
     if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
         mesaj = "Başlangıç tarihi bitiş tarihinden sonra olamaz."
@@ -257,12 +262,11 @@ def plan_kaydi_icin_hata_var_mi(form):
                                  form.data["kort"], form.cleaned_data["top_rengi"]) is False:
         mesaj = "Top rengi nedeniyle kayıt yapılamaz."
         return JsonResponse(data={"status": "error", "message": mesaj})
-    if HaftalikPlanModel.objects.filter(kort_id=form.data["kort"],
-                                        baslangic_tarih_saat=form.cleaned_data["baslangic_tarih_saat"],
-                                        grup=form.cleaned_data["grup"],
-                                        ).exclude(pk=form.cleaned_data["pk"]).exists():
-        mesaj = "Bu saat aynı üye/grup için zaten kayıtlı."
-        return JsonResponse(data={"status": "error", "message": mesaj})
+    uyelik_var_mi = grup_uyesinin_bu_saatte_plan_var_mi(form.cleaned_data["pk"],
+                                                        form.cleaned_data["baslangic_tarih_saat"],
+                                                        form.cleaned_data["grup"])
+    if uyelik_var_mi:
+        return JsonResponse(data={"status": "error", "message": uyelik_var_mi})
     if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Paket.value:
         uyeler = paket_uyeligi_olmayan_grup_uyesi(form)
         if uyeler:
@@ -411,3 +415,14 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
     if uyeler != "":
         return uyeler[:-2]
     return False
+
+
+def haftalik_plan_yeni_haftaya_tasindi_kontrolu():
+    bu_haftaninin_pazartesi = datetime.now() - timedelta(days=datetime.now().weekday())
+    bu_haftanini_plani = HaftalikPlanModel.objects.filter(baslangic_tarih_saat__gte=bu_haftaninin_pazartesi)
+    # Bu haftanın planı yoksa ve bugün pazartesi ise yeni haftaya taşı
+    if not bu_haftanini_plani.exists() and datetime.now().weekday() == 0:
+        for plan in HaftalikPlanModel.objects.all():
+            plan.baslangic_tarih_saat += timedelta(days=7)
+            plan.bitis_tarih_saat += timedelta(days=7)
+            plan.save()

@@ -14,14 +14,24 @@
         <h1><i class="fa fa-dashboard"></i> Etkinlikler</h1>
         <p>Haftalık Sabit Etkinlik Listesi</p>
     </div>
-    <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="printDiv()"><i class="fa fa-file-pdf-o">İndir</i></a></li>
-        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
-        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
-    </ul>
+    <div class="row bg-white">
+        <div class="btn-group" aria-label="Basic example" role="group">
+            <button type="button" class="btn btn-outline btn-default float-right"><i class="icon wb-pencil"
+                                                                                     aria-hidden="true"></i>Edit
+            </button>
+            <button type="button" class="btn btn-outline btn-default"><i class="icon wb-reply" aria-hidden="true"></i>Reply
+            </button>
+            <button type="button" class="btn btn-outline btn-default"><i class="icon wb-share"></i>Share
+            </button>
+            <button type="button" class="btn btn-outline btn-default" onclick="printDiv()"><i
+                    class="icon wb-download"></i>İndir
+            </button>
+        </div>
+    </div>
 {% endblock breadcrumb %}
 
 {% block content %}
+
     <div id="divContent" class='html-content'>
         {{ kortlar|safe }}
     </div>
@@ -29,12 +39,10 @@
     <div id="kaydetModalDiv"></div>
     <div id="bekleyenModalDiv"></div>
     <script>
-        let sorgulananTarih = new Date();
         $(document).ready(function () {
             {% for gun in haftanin_gunleri %}
                 sabitPlaniGetir('{{ gun }}');
             {% endfor %}
-            //etkinlikleriGetir();
         });
 
         function sabitPlaniGetir(sorgulanan_gun) {

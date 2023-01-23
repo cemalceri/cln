@@ -8,15 +8,15 @@ from django.utils.dateparse import parse_datetime
 
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 
-from calendarapp.models.Enums import  AbonelikTipiEnum,  GunlerModel, SaatlerModel, SeviyeEnum
-from calendarapp.models.concrete.abonelik import  PaketKullanimModel, UyePaketModel
-from calendarapp.models.concrete.commons import  to_dict
+from calendarapp.models.Enums import AbonelikTipiEnum, GunlerModel, SaatlerModel, SeviyeEnum
+from calendarapp.models.concrete.abonelik import PaketKullanimModel, UyePaketModel
+from calendarapp.models.concrete.commons import to_dict
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
 from calendarapp.models.concrete.rezervasyon import RezervasyonModel
-from calendarapp.models.concrete.uye import  UyeGrupModel
+from calendarapp.models.concrete.uye import UyeGrupModel
 from calendarapp.utils import formErrorsToText
 
 gunler = GunlerModel.objects.all()
@@ -32,14 +32,15 @@ def index(request):
 
 @login_required
 def index_getir_by_tarih(request, tarih):
+    tarih = tarih.replace(".", "/")
     context = index_sayfasi_icin_context_olustur(request, tarih)
     return render(request, "calendarapp/etkinlik/haftalik_etkinlikler.html", context)
 
 
 def index_sayfasi_icin_context_olustur(request, tarih):
     if isinstance(tarih, str):
-        tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
-    sorgulanan_haftanini_ilk_gunu = tarih - timedelta(days=datetime.now().weekday())
+        tarih = datetime.strptime(tarih, "%Y/%m/%d").date()
+    sorgulanan_haftanini_ilk_gunu = tarih - timedelta(days=tarih.weekday())
     haftanin_gunleri = []
     haftanin_gunleri_strf = []
     kortlar = KortModel.objects.all().order_by("id")
@@ -71,6 +72,7 @@ def index_sayfasi_icin_context_olustur(request, tarih):
     context = {
         "kortlar": html,
         "haftanin_gunleri": haftanin_gunleri_strf,
+        "sorgulanan_tarih": tarih,
     }
     return context
 
