@@ -53,6 +53,38 @@
     </div>
 </div>
 <script>
+    $(document).ready(function () {
+        $("#id_grup").select2({
+            placeholder: "Üye yada grup Seçiniz",
+            allowClear: true,
+            dropdownParent: $("#kaydetModal"),
+        });
+    });
+
+    //$("#combobox") keyup event
+    $("#id_grup").keyup(function () {
+        var value = $(this).val();
+        if (value.length > 2) {
+            $.ajax({
+                url: "{% url 'calendarapp:grup_ara_ajax' %}",
+                type: "GET",
+                data: {
+                    'q': value
+                },
+                success: function (data) {
+                    debugger;
+                    $("#id_grup").autocomplete({
+                        source: data,
+                        select: function (event, ui) {
+                            $("#id_grup").val(ui.item.label);
+                            $("#id_pk").val(ui.item.value);
+                        }
+                    });
+                }
+            });
+        }
+    });
+
     $('#kaydetBtn').click(function () {
         let form = $('#etkinlikForm');
         let data = form.serialize();

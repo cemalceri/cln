@@ -263,7 +263,6 @@ def kaydet_etkinlik_ajax(request):
         result = etkinlik_kaydi_hata_var_mi(form)
         if result:
             return result
-        print("pk", form.cleaned_data["pk"])
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
             eski_etkinlik = EtkinlikModel.objects.get(id=form.cleaned_data["pk"])
             form = EtkinlikForm(data=request.GET, instance=eski_etkinlik)
@@ -377,9 +376,12 @@ def detay_modal_ajax(request):
 
 @login_required
 def kaydet_modal_ajax(request):
+    print("kaydet_modal_ajax")
     kort_id = request.GET.get("kort_id")
     baslangic_tarih_saat = request.GET.get("baslangic_tarih_saat")
+    print(baslangic_tarih_saat)
     bitis_tarih_saat = parse_datetime(baslangic_tarih_saat) + timedelta(minutes=30)
+    print(bitis_tarih_saat)
     form = EtkinlikForm(initial={"kort": kort_id, "baslangic_tarih_saat": baslangic_tarih_saat,
                                  "bitis_tarih_saat": bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M")})
     html = render_to_string("calendarapp/etkinlik/partials/_etkinlik_kaydet_modal.html", {"form": form})

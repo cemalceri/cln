@@ -75,9 +75,6 @@ def sil_grup_uyesi(request):
 @login_required
 def uyeye_grubun_aboneliklerini_ekle(request, uye_id, grup_id):
     uyelikler = UyeAbonelikModel.objects.filter(grup_id=grup_id)
-    print(grup_id)
-    print(uye_id)
-    print(uyelikler)
     for uyelik in uyelikler:
         if not UyeAbonelikModel.objects.filter(uye_id=uye_id, grup_id=grup_id, haftanin_gunu=uyelik.haftanin_gunu,
                                                baslangic_tarih_saat=uyelik.baslangic_tarih_saat).exists():
@@ -86,6 +83,19 @@ def uyeye_grubun_aboneliklerini_ekle(request, uye_id, grup_id):
                                             baslangic_tarih_saat=uyelik.baslangic_tarih_saat,
                                             bitis_tarih_saat=uyelik.bitis_tarih_saat, aktif_mi=uyelik.aktif_mi,
                                             user=request.user)
+
+
+@login_required
+def ara_ajax(request):
+    aranan = request.GET.get("q")
+    if aranan:
+        grup = GrupModel.objects.filter(adi__icontains=aranan).order_by("adi")[0:10]
+    else:
+        grup = GrupModel.objects.all().order_by("-id")[0:10]
+    liste = []
+    for g in grup:
+        liste.append({"id": g.id, "adi": g.adi})
+    return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "list": liste})
 
 
 def uyeden_grubun_aboneliklerini_sil(uye_id, grup_id):

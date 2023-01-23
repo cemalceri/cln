@@ -16,7 +16,7 @@ urlpatterns = [
     path("takvim/", ev.takvim_getir, name="takvim_getir"),
     path("takvim/<int:kort_id>", ev.takvim_getir, name="takvim_getir_by_kort_id"),
     path("gunun_etkinlikleri", ev.gunun_etkinlikleri_ajax, name="gunun_etkinlikleri_ajax"),
-    path("etkinlik/index/<str:tarih>", ev.index_getir_by_tarih, name="index_getir_by_tarih"),
+    # path("etkinlik/index/<str:tarih>", ev.index_getir_by_tarih, name="index_getir_by_tarih"),
 
     # Haftalık Plan -> Eski sayfaların
     path("haftalik-plan/", haftalik_plan_views.haftalik_plan_getir, name="haftalik_plan_getir"),
@@ -32,14 +32,14 @@ urlpatterns = [
     path("sabit-plan", hfsp_views.index, name="index_sabit_plan"),
     path("sabit-plan-ajax", hfsp_views.gunun_planlari_ajax, name="sabit_plan_gunun_etkinlikleri_ajax"),
     path("sabit-plan/kaydet", hfsp_views.kaydet_ajax, name="sabit_plan_kaydet_ajax"),
-    path("sabit-plan/kaydet-modal", hfsp_views.kaydet_modal_ajax, name="sabit_plan_kaydet_modal__getir_ajax"),
+    path("sabit-plan/kaydet-modal", hfsp_views.kaydet_modal_ajax, name="sabit_plan_kaydet_modal_getir_ajax"),
     path("sabit-plan/detay_modal", hfsp_views.detay_modal_ajax, name="sabit_plan_detay_modal_getir_ajax"),
     path("sabit-plan/sil", hfsp_views.sil_ajax, name="sabit_plan_sil_ajax"),
     path("sabit-plan/duzenle-modal", hfsp_views.duzenle_modal_ajax, name="sabit_plan_duzenle_modal_getir_ajax"),
 
     # Etkinlik
     path("etkinlik", ev.index, name="index_etkinlik"),
-    path("etkinlik/<str:tarih>", ev.index_getir_by_tarih, name="index_etkinlik_by_tarih"),
+    path("etkinlik/index/<str:tarih>", ev.index_getir_by_tarih, name="index_etkinlik_by_tarih"),
     path("etkinlik/detay", ev.getir_etkinlik_bilgisi_ajax, name="getir_etkinlik_by_id_ajax"),
     path("etkinlik/sil", ev.sil_etkinlik_ajax, name="sil_etkinlik_by_ajax"),
     path("etkinlik/sil/<int:id>", ev.sil_etkinlik, name="sil_etkinlik_by_id"),
@@ -47,7 +47,7 @@ urlpatterns = [
     path("etkinlik/tasi", ev.saat_guncelle_etkinlik_ajax, name="saat_guncelle_etkinlik_ajax"),
     path("etkinlik/tamamlandi", ev.etkinlik_tamamlandi_ajax, name="etkinlik_tamamlandi_ajax"),
     path("etkinlik/tamamlandi-iptal", ev.tamamlandi_iptal_ajax, name="etkinlik_tamamlandi_iptal_ajax"),
-    path("etkinlik/datey-modal", ev.detay_modal_ajax, name="etkinlik_detay_modal_getir_ajax"),
+    path("etkinlik/datay-modal", ev.detay_modal_ajax, name="etkinlik_detay_modal_getir_ajax"),
     path("etkinlik/kaydet-modal", ev.kaydet_modal_ajax, name="etkinlik_kaydet_modal_getir_ajax"),
     path("etkinlik/duzenle-modal", ev.duzenle_modal_ajax, name="etkinlik_duzenle_modal_getir_ajax"),
 
@@ -79,6 +79,7 @@ urlpatterns = [
     path("grup/guncelle-grup-adi", grup_views.guncelle_grup_adi, name="guncelle_grup_adi"),
     path("grup/sil/<int:id>", grup_views.sil_grup, name="sil_grup"),
     path("grup/sil", grup_views.sil_grup_uyesi, name="sil_grup_uyesi"),
+    path("grup/ara", grup_views.ara_ajax, name="grup_ara_ajax"),
 
     # Rezervasyon
     path("rezervasyon/index", rv.index, name="index_rezervasyon"),
