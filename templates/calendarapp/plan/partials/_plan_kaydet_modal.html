@@ -53,6 +53,13 @@
     </div>
 </div>
 <script>
+    $(document).ready(function () {
+        $("#id_grup").select2({
+            placeholder: "Üye yada grup Seçiniz",
+            allowClear: true,
+            dropdownParent: $("#kaydetModal"),
+        });
+    });
     $('#kaydetBtn').click(function () {
         let form = $('#etkinlikForm');
         let data = form.serialize();

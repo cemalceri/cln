@@ -66,5 +66,6 @@ class HaftalikPlanForm(ModelForm):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',
             })
+        self.fields["grup"].widget.attrs.update({'class': 'select2' })
         # self.fields["baslangic_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)
         # self.fields["bitis_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)

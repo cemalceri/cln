@@ -62,6 +62,12 @@
         </div>
     </div>
     <script>
+        $(document).ready(function () {
+            $("#seciliUye").select2({
+                placeholder: "Üye Seçiniz",
+                allowClear: true,
+            });
+        });
         {% if grup_id %}
             let grup_id = {{ grup_id }};
         {% else %}

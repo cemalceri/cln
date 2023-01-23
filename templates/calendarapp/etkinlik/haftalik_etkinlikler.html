@@ -4,16 +4,11 @@
 {% block title %}Etkinlik Listesi{% endblock title %}
 {% block extracss %}
     {% include 'base/remark_css.html' %}
-    <link rel="stylesheet"
-          href="{% static '/template/classic/global/vendor/bootstrap-datepicker/bootstrap-datepicker.css' %}">
-    <link rel="stylesheet"
-          href="{% static '/template/classic/global/vendor/select2/select2.css' %}">
 {% endblock extracss %}
 {% block extrascripts %}
     <script type="text/javascript" src="{% static '/js/jspdf/html2canvas.js' %}"></script>
     <script type="text/javascript" src="{% static '/js/jspdf/jspdf.min.js' %}"></script>
     <script src="{% static '/template/classic/global/vendor/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
-    <script src="{% static '/template/classic/global/vendor/select2/select2.js' %}"></script>
 {% endblock %}
 {% block breadcrumb %}
     <div>
@@ -22,10 +17,11 @@
     </div>
     <div class="row bg-white">
         <div class="btn-group" aria-label="Basic example" role="group">
-            <button type="button" class="btn btn-outline btn-default float-right"><i class="icon wb-pencil"
-                                                                                     aria-hidden="true"></i>Edit
-            </button>
-            <button type="button" class="btn btn-outline btn-default"><i class="icon wb-reply" aria-hidden="true"></i>Reply
+            {#            <button type="button" class="btn btn-outline btn-default float-right">#}
+            {#                <i class="icon wb-pencil" aria-hidden="true"></i>Edit#}
+            {#            </button>#}
+            <button id="oncekiHaftayaGit" type="button" class="btn btn-outline btn-default" title="önceki haftaya git">
+                <i class="icon wb-chevron-left" aria-hidden="true"></i>Önceki
             </button>
             <div class="input-group">
                       <span class="input-group-addon">
@@ -33,10 +29,12 @@
                       </span>
                 <input id="secilenTarih" type="text" class="form-control" data-plugin="datepicker">
             </div>
-            <button type="button" class="btn btn-outline btn-default"><i class="icon wb-share"></i>Share
+            <button id="sonrakiHaftayaGit" type="button" class="btn btn-outline btn-default"
+                    title="sonraki haftaya git">Sonraki
+                <i class="icon wb-chevron-right"></i>
             </button>
-            <button type="button" class="btn btn-outline btn-default" onclick="printDiv()"><i
-                    class="icon wb-download"></i>İndir
+            <button type="button" class="btn btn-outline btn-default" onclick="printDiv()" title="pdf olarak indir">
+                <i class="icon wb-download"></i>İndir
             </button>
         </div>
     </div>
@@ -170,6 +168,22 @@
                     $('#bekleyenModal').modal('show');
                 }
             });
+        }
+
+        $('#oncekiHaftayaGit').click(function () {
+            haftayaGit(-7);
+        });
+
+        $('#sonrakiHaftayaGit').click(function () {
+            haftayaGit(7);
+        });
+
+        function haftayaGit(gidilecekGun) {
+            let seciliTarih = '{{sorgulanan_tarih|date:"Y/m/d"}}';
+            let oncekiHaftaTarihi = new Date(seciliTarih.split('/')[0], seciliTarih.split('/')[1] - 1, seciliTarih.split('/')[2]);
+            oncekiHaftaTarihi.setDate(oncekiHaftaTarihi.getDate() + gidilecekGun);
+            let url = "/etkinlik/index/" + oncekiHaftaTarihi.getFullYear() + "." + (oncekiHaftaTarihi.getMonth() + 1) + "." + oncekiHaftaTarihi.getDate();
+            window.location.href = url;
         }
 
         function printDiv() {
