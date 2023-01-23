@@ -244,9 +244,9 @@ def grup_uyesinin_bu_saatte_plan_var_mi(id, baslangic_tarih_saat, grup):
     if HaftalikPlanModel.objects.filter(grup=grup, baslangic_tarih_saat=baslangic_tarih_saat).exclude(pk=id).exists():
         return "Bu saat aynı üye/grup için zaten kayıtlı. "
     grup_uyeleri = UyeGrupModel.objects.filter(grup=grup)
-    for item in grup_uyeleri:
-        if UyeAbonelikModel.objects.filter(uye=item.uye, baslangic_tarih_saat=baslangic_tarih_saat).exists():
-            return "Grupta bulunan " + str(item.uye) + " üyesinin bu saatte abonelik kaydı var."
+    # for item in grup_uyeleri:
+    #     if UyeAbonelikModel.objects.filter(uye=item.uye, baslangic_tarih_saat=baslangic_tarih_saat).exists():
+    #         return "Grupta bulunan " + str(item.uye) + " üyesinin bu saatte abonelik kaydı var."
     return None
 
 
