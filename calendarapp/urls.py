@@ -50,6 +50,8 @@ urlpatterns = [
     path("etkinlik/datay-modal", ev.detay_modal_ajax, name="etkinlik_detay_modal_getir_ajax"),
     path("etkinlik/kaydet-modal", ev.kaydet_modal_ajax, name="etkinlik_kaydet_modal_getir_ajax"),
     path("etkinlik/duzenle-modal", ev.duzenle_modal_ajax, name="etkinlik_duzenle_modal_getir_ajax"),
+    path("etkinlik/haftayi-olustur", ev.haftayi_sabit_plandan_olustur_ajax, name="haftanin_etkinliklerini_sabit_plandan_olustur_ajax"),
+    path("etkinlik/haftayi-sil", ev.haftanin_etkinliklerini_sil_ajax, name="haftanin_etkinliklerini_sil_ajax"),
 
     # Uye
     path("uye/index", uye_views.index, name="index_uye"),

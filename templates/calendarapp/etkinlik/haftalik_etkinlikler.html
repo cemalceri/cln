@@ -17,23 +17,27 @@
     </div>
     <div class="row bg-white">
         <div class="btn-group" aria-label="Basic example" role="group">
-            {#            <button type="button" class="btn btn-outline btn-default float-right">#}
-            {#                <i class="icon wb-pencil" aria-hidden="true"></i>Edit#}
-            {#            </button>#}
-            <button id="oncekiHaftayaGit" type="button" class="btn btn-outline btn-default" title="önceki haftaya git">
+            <button id="haftayiSil" type="button" class="btn btn-outline btn-danger">
+                <i class="icon wb-trash" aria-hidden="true"></i>Haftayı sil
+            </button>
+            <button id="haftayiOlustur" type="button" class="btn btn-outline btn-success">
+                <i class="icon wb-add-file" aria-hidden="true"></i>Haftayı oluştur
+            </button>
+            <button id="oncekiHaftayaGit" type="button" class="btn btn-outline btn-dark"
+                    title="önceki haftaya git">
                 <i class="icon wb-chevron-left" aria-hidden="true"></i>Önceki
             </button>
             <div class="input-group">
                       <span class="input-group-addon">
                         <i class="icon wb-calendar" aria-hidden="true"></i>
                       </span>
-                <input id="secilenTarih" type="text" class="form-control" data-plugin="datepicker">
+                <input id="secilenTarih" type="text" class="form-control black" data-plugin="datepicker">
             </div>
-            <button id="sonrakiHaftayaGit" type="button" class="btn btn-outline btn-default"
+            <button id="sonrakiHaftayaGit" type="button" class="btn btn-outline btn-info"
                     title="sonraki haftaya git">Sonraki
                 <i class="icon wb-chevron-right"></i>
             </button>
-            <button type="button" class="btn btn-outline btn-default" onclick="printDiv()" title="pdf olarak indir">
+            <button type="button" class="btn btn-outline btn-warning" onclick="printDiv()" title="pdf olarak indir">
                 <i class="icon wb-download"></i>İndir
             </button>
         </div>
@@ -49,7 +53,6 @@
     <div id="bekleyenModalDiv"></div>
     <script>
         $(document).ready(function () {
-            debugger;
             $('#secilenTarih').datepicker({
                 format: 'yyyy.mm.dd',
                 //language: 'tr',
@@ -178,11 +181,61 @@
             haftayaGit(7);
         });
 
+
+        $('#haftayiOlustur').click(function () {
+            let tarih = '{{ sorgulanan_tarih |date:"Y/m/d"}}';
+            if (tarih != null && tarih != undefined && tarih != '') {
+                $.ajax({
+                    url: "{% url 'calendarapp:haftanin_etkinliklerini_sabit_plandan_olustur_ajax' %}",
+                    type: "GET",
+                    dataType: "json",
+                    data: {
+                        'tarih': tarih,
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            popupMesajGoster(data.message, data.status);
+                        } else {
+                            popupMesajGoster(data.message, data.status);
+                        }
+                    }
+                });
+            } else {
+                alert('Tarih bulunamadı');
+            }
+        });
+
+        $('#haftayiSil').click(function () {
+            if (confirm('Haftayı silmek istediğinize emin misiniz?')) {
+                let tarih = '{{ sorgulanan_tarih |date:"Y/m/d"}}';
+                if (tarih != null && tarih != undefined && tarih != '') {
+                    $.ajax({
+                        url: "{% url 'calendarapp:haftanin_etkinliklerini_sil_ajax' %}",
+                        type: "GET",
+                        dataType: "json",
+                        data: {
+                            'tarih': tarih,
+                        },
+                        success: function (data) {
+                            if (data.success) {
+                                popupMesajGoster(data.message, data.status);
+                            } else {
+                                popupMesajGoster(data.message, data.status);
+                            }
+                        }
+                    });
+                } else {
+                    alert('Tarih bulunamadı');
+                }
+            }
+        });
+
         function haftayaGit(gidilecekGun) {
+            debugger;
             let seciliTarih = '{{sorgulanan_tarih|date:"Y/m/d"}}';
-            let oncekiHaftaTarihi = new Date(seciliTarih.split('/')[0], seciliTarih.split('/')[1] - 1, seciliTarih.split('/')[2]);
-            oncekiHaftaTarihi.setDate(oncekiHaftaTarihi.getDate() + gidilecekGun);
-            let url = "/etkinlik/index/" + oncekiHaftaTarihi.getFullYear() + "." + (oncekiHaftaTarihi.getMonth() + 1) + "." + oncekiHaftaTarihi.getDate();
+            let haftaTarihi = new Date(seciliTarih.split('/')[0], seciliTarih.split('/')[1] - 1, seciliTarih.split('/')[2]);
+            haftaTarihi.setDate(haftaTarihi.getDate() + gidilecekGun);
+            let url = "/etkinlik/index/" + haftaTarihi.getFullYear() + "." + (haftaTarihi.getMonth() + 1) + "." + haftaTarihi.getDate();
             window.location.href = url;
         }
 

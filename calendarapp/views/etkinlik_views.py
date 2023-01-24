@@ -4,14 +4,14 @@ from django.http import JsonResponse
 from datetime import timedelta, datetime
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
-from django.utils.dateparse import parse_datetime
+from django.utils.dateparse import parse_datetime, parse_date
 
 from calendarapp.forms.etkinlik_forms import EtkinlikForm
 
 from calendarapp.models.Enums import AbonelikTipiEnum, GunlerModel, SaatlerModel, SeviyeEnum
 from calendarapp.models.concrete.abonelik import PaketKullanimModel, UyePaketModel
 from calendarapp.models.concrete.commons import to_dict
-from calendarapp.models.concrete.etkinlik import EtkinlikModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
 from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
@@ -281,8 +281,9 @@ def etkinlik_kaydi_hata_var_mi(form):
         "bitis_tarih_saat"].minute % 30 != 0:
         return JsonResponse(
             data={"status": "error", "message": "Etkinlik başlangıç ve bitiş saati 30 dakikanın katları olmalıdır."})
-    if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
-        mesaj = "Etkinlik başlangıç tarihi bitiş tarihinden sonra olamaz."
+    if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"] or \
+            form.cleaned_data["baslangic_tarih_saat"] == form.cleaned_data["bitis_tarih_saat"]:
+        mesaj = "Etkinlik başlangıç - bitiş tarihi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
     if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"],
                                      form.cleaned_data["bitis_tarih_saat"],
@@ -334,9 +335,10 @@ def etkinlik_tamamlandi_ajax(request):
                       "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
         uye_grup = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
         if etkinlik.abonelik_tipi == AbonelikTipiEnum.Paket.value:
+            grup_mu = uye_grup.count() > 1
             for item in uye_grup:
                 paket = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True).first()
-                if paket and not PaketKullanimModel.objects.filter(uye_paket_id=paket.id,
+                if paket and not PaketKullanimModel.objects.filter(uye_paket_id=paket.id, grup_mu=grup_mu,
                                                                    etkinlik_id=etkinlik.id,
                                                                    uye_id=item.uye_id).exists():
                     PaketKullanimModel.objects.create(uye_paket_id=paket.id, etkinlik_id=etkinlik.id,
@@ -376,12 +378,9 @@ def detay_modal_ajax(request):
 
 @login_required
 def kaydet_modal_ajax(request):
-    print("kaydet_modal_ajax")
     kort_id = request.GET.get("kort_id")
     baslangic_tarih_saat = request.GET.get("baslangic_tarih_saat")
-    print(baslangic_tarih_saat)
     bitis_tarih_saat = parse_datetime(baslangic_tarih_saat) + timedelta(minutes=30)
-    print(bitis_tarih_saat)
     form = EtkinlikForm(initial={"kort": kort_id, "baslangic_tarih_saat": baslangic_tarih_saat,
                                  "bitis_tarih_saat": bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M")})
     html = render_to_string("calendarapp/etkinlik/partials/_etkinlik_kaydet_modal.html", {"form": form})
@@ -395,3 +394,42 @@ def duzenle_modal_ajax(request):
     form = EtkinlikForm(instance=etkinlik)
     html = render_to_string("calendarapp/etkinlik/partials/_etkinlik_kaydet_modal.html", {"form": form})
     return JsonResponse(data={"status": "success", "html": html})
+
+
+@login_required
+def haftayi_sabit_plandan_olustur_ajax(request):
+    tarih = request.GET.get("tarih")
+    tarih = datetime.strptime(tarih, "%Y/%m/%d").date()
+    pazartesi = tarih - timedelta(days=tarih.weekday())
+    if pazartesi < datetime.now().date():
+        return JsonResponse(data={"status": "error", "message": "Geçmiş tarihler için işlem yapılamaz."})
+    haftanin_etkinlikleri = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=pazartesi,
+                                                         haftalik_plan_kodu__isnull=False,
+                                                         baslangic_tarih_saat__lt=pazartesi + timedelta(days=7))
+    if haftanin_etkinlikleri.exists():
+        return JsonResponse(data={"status": "error", "message": "Bu hafta için etkinlikler zaten oluşturulmuş."})
+    sabit_planlar = HaftalikPlanModel.objects.all().order_by("baslangic_tarih_saat")
+    gun_farki = (pazartesi - sabit_planlar.first().baslangic_tarih_saat.date()).days
+    for plan in sabit_planlar:
+        EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup,
+                                     abonelik_tipi=plan.abonelik_tipi,
+                                     baslangic_tarih_saat=plan.baslangic_tarih_saat + timedelta(days=gun_farki),
+                                     bitis_tarih_saat=plan.bitis_tarih_saat + timedelta(days=gun_farki), kort=plan.kort,
+                                     antrenor=plan.antrenor, top_rengi=plan.top_rengi, aciklama=plan.aciklama)
+    return JsonResponse(data={"status": "success", "message": "İşlem başarılı."})
+
+
+@login_required
+def haftanin_etkinliklerini_sil_ajax(request):
+    tarih = request.GET.get("tarih")
+    tarih = datetime.strptime(tarih, "%Y/%m/%d").date()
+    pazartesi = tarih - timedelta(days=tarih.weekday())
+    if pazartesi < datetime.now().date():
+        return JsonResponse(data={"status": "error", "message": "Geçmiş tarihler için işlem yapılamaz."})
+    haftanin_etkinlikleri = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=pazartesi,
+                                                         haftalik_plan_kodu__isnull=False,
+                                                         baslangic_tarih_saat__lt=pazartesi + timedelta(days=7))
+    if haftanin_etkinlikleri.exists():
+        haftanin_etkinlikleri.delete()
+        return JsonResponse(data={"status": "success", "message": "İşlem başarılı."})
+    return JsonResponse(data={"status": "error", "message": "Bu haftada kayıtlı etkinlik yok."})

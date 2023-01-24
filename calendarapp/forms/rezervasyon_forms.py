@@ -25,6 +25,10 @@ class RezervasyonKayitForm(ModelForm):
             })
         self.fields['uye'].help_text = "*Bekleyen üye ise seçiniz."
         self.fields['misafir'].help_text = "*Bekleyen üye değil ise misafir adını giriniz."
+        self.fields['uye'].widget.attrs.update({
+            'class': ' form-control',
+            'autocomplete': 'nope'
+        })
 
     def clean(self):
         uye = self.cleaned_data.get('uye')

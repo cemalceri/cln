@@ -251,8 +251,9 @@ def grup_uyesinin_bu_saatte_plan_var_mi(id, baslangic_tarih_saat, grup):
 
 
 def plan_kaydi_icin_hata_var_mi(form):
-    if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"]:
-        mesaj = "Başlangıç tarihi bitiş tarihinden sonra olamaz."
+    if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"] or form.cleaned_data[
+        "baslangic_tarih_saat"] == form.cleaned_data["bitis_tarih_saat"]:
+        mesaj = "Başlangıç tarihi bitiş tarihi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
     if form.cleaned_data["baslangic_tarih_saat"].minute % 30 != 0 or form.cleaned_data[
         "bitis_tarih_saat"].minute % 30 != 0:

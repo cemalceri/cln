@@ -16,6 +16,14 @@ class SeviyeEnum(Enum):
     def choices(cls):
         return [(key.name, key.value,) for key in cls]
 
+class AntrenorRenkEnum(Enum):
+    red = "Kırmızı"
+    orange = "Turuncu"
+    yellow = "Sarı"
+
+    @classmethod
+    def choices(cls):
+        return [(key.name, key.value,) for key in cls]
 
 class GunlerModel(models.Model):
     adi = models.CharField(max_length=250, null=False, blank=False)
