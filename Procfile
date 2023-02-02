@@ -1,2 +1,2 @@
-release: python manage.py migrate
-web: gunicorn eventcalendar.wsgi
+# Modify this Procfile to fit your needs
+web: gunicorn server:eventcalendar.wsgi
