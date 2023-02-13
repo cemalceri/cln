@@ -403,19 +403,23 @@ def haftayi_sabit_plandan_olustur_ajax(request):
     pazartesi = tarih - timedelta(days=tarih.weekday())
     if pazartesi < datetime.now().date():
         return JsonResponse(data={"status": "error", "message": "Geçmiş tarihler için işlem yapılamaz."})
-    haftanin_etkinlikleri = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=pazartesi,
-                                                         haftalik_plan_kodu__isnull=False,
-                                                         baslangic_tarih_saat__lt=pazartesi + timedelta(days=7))
-    if haftanin_etkinlikleri.exists():
-        return JsonResponse(data={"status": "error", "message": "Bu hafta için etkinlikler zaten oluşturulmuş."})
     sabit_planlar = HaftalikPlanModel.objects.all().order_by("baslangic_tarih_saat")
     gun_farki = (pazartesi - sabit_planlar.first().baslangic_tarih_saat.date()).days
     for plan in sabit_planlar:
-        EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup,
-                                     abonelik_tipi=plan.abonelik_tipi,
-                                     baslangic_tarih_saat=plan.baslangic_tarih_saat + timedelta(days=gun_farki),
-                                     bitis_tarih_saat=plan.bitis_tarih_saat + timedelta(days=gun_farki), kort=plan.kort,
-                                     antrenor=plan.antrenor, top_rengi=plan.top_rengi, aciklama=plan.aciklama)
+        if plan.ders_baslangic_tarihi:
+            kayda_baslanacak_tarih = plan.baslangic_tarih_saat.date() + timedelta(days=gun_farki)
+            tarih_kontrolu = True if kayda_baslanacak_tarih >= plan.ders_baslangic_tarihi else False
+        else:
+            tarih_kontrolu = True
+        if not EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod, grup=plan.grup,
+                                            baslangic_tarih_saat=plan.baslangic_tarih_saat + timedelta(days=gun_farki),
+                                            ).exists() and tarih_kontrolu:  # Belirlenen günden önce etkinlik tablosuna otomatik kayıt oluşturulmaması için
+            EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup,
+                                         abonelik_tipi=plan.abonelik_tipi,
+                                         baslangic_tarih_saat=plan.baslangic_tarih_saat + timedelta(days=gun_farki),
+                                         bitis_tarih_saat=plan.bitis_tarih_saat + timedelta(days=gun_farki),
+                                         kort=plan.kort,
+                                         antrenor=plan.antrenor, top_rengi=plan.top_rengi, aciklama=plan.aciklama)
     return JsonResponse(data={"status": "success", "message": "İşlem başarılı."})
 
 

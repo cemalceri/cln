@@ -55,6 +55,10 @@ class HaftalikPlanForm(ModelForm):
                 attrs={"type": "datetime-local", "class": "form-control"},
                 format="%Y-%m-%dT%H:%M",
             ),
+            "ders_baslangic_tarihi": DateInput(
+                attrs={"type": "date", "class": "form-control"},
+                format="%Y-%m-%d",
+            ),
         }
         help_texts = {
             # "tekrar": '*Girilen sayı kadar sonraki haftalara kayıt oluşturulur.',
@@ -66,6 +70,6 @@ class HaftalikPlanForm(ModelForm):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',
             })
-        self.fields["grup"].widget.attrs.update({'class': 'select2' })
+        self.fields["grup"].widget.attrs.update({'class': 'select2'})
         # self.fields["baslangic_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)
         # self.fields["bitis_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)

@@ -113,6 +113,7 @@ class HaftalikPlanModel(BaseAbstract):
                                      default=AbonelikTipiEnum.Uyelik, verbose_name="Abonelik Tipi")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat", blank=False, null=False)
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat", blank=False, null=False)
+    ders_baslangic_tarihi = models.DateField(verbose_name="İlk Ders Başlangıç Tarihi", blank=True, null=True)
     kort = models.ForeignKey(KortModel, verbose_name="Kort", on_delete=models.CASCADE, blank=False, null=False,
                              related_name="haftalikplan_kort_relations")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,

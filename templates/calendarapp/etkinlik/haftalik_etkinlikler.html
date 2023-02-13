@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Etkinlik Listesi{% endblock title %}
+{% block title %}Haftalık Program{% endblock title %}
 {% block extracss %}
     {% include 'base/remark_css.html' %}
 {% endblock extracss %}
@@ -12,7 +12,7 @@
 {% endblock %}
 {% block breadcrumb %}
     <div>
-        <h1><i class="fa fa-dashboard"></i> Etkinlikler</h1>
+        <h1><i class="fa fa-dashboard"></i> Haftalık Program</h1>
         <p>Etkinlik Listesi</p>
     </div>
     <div class="row bg-white">
@@ -91,7 +91,7 @@
                                 let etkinlik = etkinlikler[e];
                                 let etkinlikDiv = $('<div id="' + etkinlik.id + '" class="col doluEtkinlik border black" ' +
                                     'style="font-size: 0.7rem; width: ' + hucreGenisligi + 'px; background-color:' + etkinlik.renk + '">' +
-                                    etkinlik.grup_adi + etkinlik.seviye + '</div>');
+                                     etkinlik.seviye + '</div>');
                                 saatDiv.append(etkinlikDiv);
                             }
                             let eklenecekBosDivSayisi = bolunmeSayisi - etkinlikler.length;

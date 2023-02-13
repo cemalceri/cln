@@ -1,7 +1,7 @@
 {% load static %}
 <script src="{% static 'js/jquery.js' %}"></script>
 <div class="row">
-    <div class="col col-md-12 text-center"><h1>{{ tarih }}</h1></div>
+    <div class="col col-md-12 text-center"><h1>{{ tarih | date:'d F (l)'}}</h1></div>
 </div>
 <div class="row mb-20">
     <div class="col-md-1 col-xl-1 col-sm-1">

@@ -52,13 +52,13 @@ def index_sayfasi_icin_context_olustur(request, tarih):
         baslangic = 0
         bitis = 4
         for i in range(bolum):
-            html += render_to_string('calendarapp/etkinlik/partials/_gunluk_plan_icin_kortlar.html',
+            html += render_to_string('calendarapp/plan/partials/_haftalik_plan_icin_kortlar.html',
                                      {'kortlar': kortlar[baslangic:bitis], 'saatler': saatler, 'tarih': gun,
                                       'tarih_str': gun.strftime("%Y-%m-%d")})
             baslangic += 4
             bitis += 4
         if kalan > 0:
-            html += render_to_string('calendarapp/etkinlik/partials/_gunluk_plan_icin_kortlar.html',
+            html += render_to_string('calendarapp/plan/partials/_haftalik_plan_icin_kortlar.html',
                                      {'kortlar': kortlar[baslangic:], 'saatler': saatler, 'tarih': gun,
                                       'tarih_str': gun.strftime("%Y-%m-%d")})
     context = {
@@ -162,13 +162,16 @@ def bu_saati_bekleyen_var_mi(tarih_saat, bekleyenler):
 @login_required()
 def sil_ajax(request):
     id = request.GET.get("id")
-    sonrakiler_silinsin_mi = request.GET.get("sonrakiler_silinsin_mi" or None)
+    etkinlikleri_silinecegi_tarih = request.GET.get("etkinlikleri_silinecegi_tarih" or None)
     plan = HaftalikPlanModel.objects.filter(pk=id).first()
     if plan:
         abonelik_sil(plan)
-        if sonrakiler_silinsin_mi:
+        if etkinlikleri_silinecegi_tarih:
+            tarih = datetime.strptime(etkinlikleri_silinecegi_tarih, "%Y-%m-%d").date()
             EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod,
-                                         baslangic_tarih_saat__gt=datetime.now()).delete()
+                                         baslangic_tarih_saat__gt=tarih).delete()
+        else:
+            EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod, baslangic_tarih_saat__gt=datetime.now()).delete()
         plan.delete()
     return JsonResponse({"status": "success", "message": "İşlem başarılı."})
 

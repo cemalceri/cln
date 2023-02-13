@@ -21,6 +21,7 @@ class RezervasyonModel(BaseAbstract):
                             null=True, blank=True)
     misafir = models.CharField(max_length=100, verbose_name="Misafir", null=True, blank=True)
     onem_derecesi = models.IntegerField('Önem Derecesi', null=True, blank=True, default=0)
+    referans = models.CharField('Referans', max_length=100, null=True, blank=True)
     gunler = models.ManyToManyField(GunlerModel, verbose_name='Günler', blank=True, null=True,
                                     related_name='gunler_rezervasyon_tablosu')
     saatler = models.ManyToManyField(SaatlerModel, verbose_name='Saatler', blank=True, null=True,

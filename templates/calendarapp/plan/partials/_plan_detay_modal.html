@@ -51,19 +51,29 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-md-2">
-                        <label class="form-control-label" for="inputBasicFirstName">Top Rengi:</label>
+                        <label class="form-control-label" for="inputBasicFirstName">İlk Ders Başlangıç Tarihi:</label>
                     </div>
                     <div class="form-group col-md-4">
+                        <input type="text" class="form-control" disabled
+                               value=" {{ etkinlik.ders_baslangic_tarihi |default_if_none:"" }}"/>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label class="form-control-label" for="inputBasicFirstName">Top Rengi:</label>
+                    </div>
+                    <div class="form-group col-md-2">
                         <input type="text" class="form-control" disabled
                                value="{{ etkinlik.get_top_rengi_display }}">
                     </div>
-                    <div class="form-group col-md-2">
+                    <div class="form-group col-md-1">
                         <label class="form-control-label" for="inputBasicFirstName">Kort:</label>
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-2">
                         <input type="text" class="form-control" disabled
                                value="{{ etkinlik.kort }}">
                     </div>
+                </div>
+                <div class="row">
+
                 </div>
                 <div class="row">
                     <div class="form-group col-md-2">
@@ -93,10 +103,7 @@
                 <button onclick="Duzenle({{ etkinlik.id }})" type="button" class="btn btn-success">
                     Düzenle
                 </button>
-                <button id="btnSil" onclick="Sil({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
-                </button>
-                <button type="button" onclick="SerisiSil({{ etkinlik.id }})" class="btn btn-outline-danger">
-                    Seriyi Sil
+                <button id="btnSil" onclick="SilModalAc({{ etkinlik.id }})" type="button" class="btn btn-danger">Sil
                 </button>
                 <button type="button"
                         onclick="bekleyenListesiModalDoldurAc('{{ etkinlik.baslangic_tarih_saat |date:"Y-m-d" }}T{{ etkinlik.baslangic_tarih_saat |date:"H:i:s" }}')"
@@ -106,59 +113,64 @@
         </div>
     </div>
 </div>
+
+<div class="modal" id="silModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Silme Onay</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>* Bu sabit programa bağlı etkinliklerin hangi tarihten sonrakileri silinecek, seçiniz.</p>
+                <p>* <b>Örnek:</b> 01.01.2023 tarihi ve sonrasını silmek istiyorsanız 01.01.2023 giriniz.</p>
+                <p class="text-danger">* Tarih seçilmezse bugünden sonraki bütün etkinlikler silinecektir. Bu işlem
+                    geri alınamaz!</p>
+                <input type="date" class="form-control" id="etkinliklerinSilinecegiTarih">
+            </div>
+            <div class="modal-footer">
+                <button type="btnTarihliSil" onclick="Sil()" class="btn btn-danger">Sil</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    function Sil(id) {
-        debugger;
-        if (confirm('Kaydı silmek istediğinize emin misiniz?')) {
-            $.ajax({
-                type: "Get",
-                url: "{% url 'calendarapp:sabit_plan_sil_ajax' %}",
-                data: {
-                    'id': id
-                },
-                success: function (data) {
-                    if (data.status === 'success') {
-                        $('#detayModal').modal('hide');
-                        popupMesajGoster(data.message, data.status);
-                        setTimeout(function () {
-                            location.reload();
-                        }, 2000);
-                    } else {
-                        popupMesajGoster(data.message, data.status);
-                    }
-                },
-                error: function (data) {
-                    popupMesajGoster(data, 'error');
-                }
-            });
-        }
+    let silinecekPlanId;
+
+    function SilModalAc(id) {
+        silinecekPlanId = id;
+        $('#silModal').modal('show');
     }
 
-    function SerisiSil(id) {
-        if (confirm('Silmek istediğinize emin misiniz?')) {
-            $.ajax({
-                type: "Get",
-                url: "{% url 'calendarapp:sabit_plan_sil_ajax' %}",
-                data: {
-                    'id': id,
-                    'sonrakiler_silinsin_mi': true
-                },
-                success: function (data) {
-                    if (data.status === 'success') {
-                        $('#detayModal').modal('hide');
-                        popupMesajGoster(data.message, data.status);
-                        setTimeout(function () {
-                            location.reload();
-                        }, 2000);
-                    } else {
-                        popupMesajGoster(data.message, data.status);
-                    }
-                },
-                error: function (data) {
-                    popupMesajGoster(data, 'error');
+    function Sil() {
+        debugger;
+        let tarih = $('#etkinliklerinSilinecegiTarih').val();
+        $.ajax({
+            type: "Get",
+            url: "{% url 'calendarapp:sabit_plan_sil_ajax' %}",
+            data: {
+                'id': silinecekPlanId,
+                'etkinlikleri_silinecegi_tarih': tarih
+            },
+            success: function (data) {
+                if (data.status === 'success') {
+                    $('#detayModal').modal('hide');
+                    popupMesajGoster(data.message, data.status);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    popupMesajGoster(data.message, data.status);
                 }
-            });
-        }
+            },
+            error: function (data) {
+                popupMesajGoster(data, 'error');
+            }
+        });
     }
 
     function Duzenle(id) {
