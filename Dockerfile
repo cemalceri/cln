@@ -10,16 +10,16 @@ RUN mkdir -p /code
 
 WORKDIR /code
 
-COPY requirements.txt /tmp/requirments.txt
+COPY requirements.txt /tmp/requirements.txt
 
 RUN set -ex && \
     pip install --upgrade pip && \
-    pip install -r /tmp/requirments.txt && \
+    pip install -r /tmp/requirements.txt && \
     rm -rf /root/.cache/
 
 COPY . /code/
 
-RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput --no-post-process
 
 EXPOSE 8000
 
