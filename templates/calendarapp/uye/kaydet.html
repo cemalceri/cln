@@ -14,25 +14,47 @@
     </ul>
 {% endblock breadcrumb %}
 
+{% block extracss %}
+    {% include 'base/remark_css.html' %}
+{% endblock extracss %}
+{% block extrascripts %}
+    {#    <script type="text/javascript" src="{% static '/js/jspdf/html2canvas.js' %}"></script>#}
+    {#    <script type="text/javascript" src="{% static '/js/jspdf/jspdf.min.js' %}"></script>#}
+{% endblock %}
+
 {% block content %}
-    <div class="page-content">
-        <div class="panel">
+    <div class="row mb-10">
+        {% if not duzenleme_mi %}
+            <div class="col-md-6">
+                <a class="btn btn-success btn-block" href="{% url 'calendarapp:kaydet_uye' uye_tipi=1 %}">Yetişkin
+                    Kayıt</a>
+            </div>
+            <div class="col-md-6">
+                <a class="btn btn-info btn-block" href="{% url 'calendarapp:kaydet_uye'  uye_tipi=2 %}">Genç Kayıt</a>
+            </div>
+        {% endif %}
+    </div>
+    {% if form %}
+        <div class="panel bg-blue-grey-300">
+        <div class="panel-heading">
+            <h2 class="panel-title">{% if uye_tipi == 1 %}Yetişkin Üye {% else %} Genç Üye {% endif %} Kayıt</h2>
             <div class="panel-body">
                 <form autocomplete="nope" method="post"
                         {% if form.instance.id %}
                       action="{% url 'calendarapp:guncelle_uye' form.instance.id %}">
                         {% else %}
-                            action="{% url 'calendarapp:kaydet_uye' %}">
+                            action="{% url 'calendarapp:kaydet_post' %}">
                         {% endif %}
                 {% csrf_token %}
+                <input type="hidden" name="uye_tipi" value="{{ uye_tipi }}">
                 <div class="row ">
                     {% for field in form %}
-                        <div class="col-md-4 offset-md-4">
+                        <div class="col-md-6 offset-md-3">
                             <div class="form-group row">
-                                <div class="col-md-2">
+                                <div class="col-md-4">
                                     {{ field.label_tag }}
                                 </div>
-                                <div class="col-md-10">
+                                <div class="col-md-8">
                                     {{ field }}
                                     {% if field.errors %}
                                         {% for error in field.errors %}
@@ -54,6 +76,5 @@
                 </form>
             </div>
         </div>
-    </div>
-
+    {% endif %}
 {% endblock content %}

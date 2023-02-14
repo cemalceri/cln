@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import Enum
+from enum import Enum, IntEnum
 
 from django.db import models
 
@@ -11,6 +11,14 @@ class SeviyeEnum(Enum):
     Yesil = "Yeşil"
     Yetiskin = "Yetişkin"
     TenisOkulu = "Tenis Okulu"
+
+    @classmethod
+    def choices(cls):
+        return [(key.name, key.value,) for key in cls]
+
+class UyeTipiEnum(IntEnum):
+    Yetişkin = 1
+    Genç = 2
 
     @classmethod
     def choices(cls):

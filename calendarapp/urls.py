@@ -55,7 +55,8 @@ urlpatterns = [
 
     # Uye
     path("uye/index", uye_views.index, name="index_uye"),
-    path("uye/kaydet", uye_views.kaydet, name="kaydet_uye"),
+    path("uye/kaydet-post", uye_views.kaydet, name="kaydet_post"),
+    path("uye/kaydet/<int:uye_tipi>", uye_views.kaydet, name="kaydet_uye"),
     path("uye/guncelle/<int:id>", uye_views.kaydet, name="guncelle_uye"),
     path("uye/sil/<int:id>", uye_views.sil, name="sil_uye"),
     path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),

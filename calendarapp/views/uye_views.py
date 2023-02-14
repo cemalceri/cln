@@ -4,8 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from calendarapp.forms.uye_forms import UyeKayitForm
-from calendarapp.models.Enums import KatilimDurumuEnum
+from calendarapp.forms.uye_forms import UyeKayitForm, GencUyeKayitForm
+from calendarapp.models.Enums import KatilimDurumuEnum, UyeTipiEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, UyePaketModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel
@@ -20,10 +20,13 @@ def index(request):
 
 
 @login_required
-def kaydet(request, id=None):
+def kaydet(request, id=None, uye_tipi=None):
     if request.method == 'POST':
         entity = UyeModel.objects.filter(pk=id).first()
-        form = UyeKayitForm(request.POST, instance=entity)
+        uye_tipi = request.POST.get("uye_tipi")
+        form = UyeKayitForm(request.POST,
+                            instance=entity) if uye_tipi == UyeTipiEnum.Yetişkin.value else GencUyeKayitForm(
+            request.POST, instance=entity)
         if form.is_valid():
             entity = form.save(commit=False)
             entity.user = request.user
@@ -33,8 +36,20 @@ def kaydet(request, id=None):
         else:
             messages.error(request, formErrorsToText(form.errors, UyeModel))
             return render(request, "calendarapp/uye/kaydet.html", context={'form': form})
-    form = UyeKayitForm(instance=UyeModel.objects.filter(pk=id).first())
-    return render(request, "calendarapp/uye/kaydet.html", context={'form': form})
+    else:
+        duzenleme_mi = False
+        if id is not None:
+            uye = UyeModel.objects.filter(pk=id).first()
+            uye_tipi = uye.uye_tipi
+            duzenleme_mi = True
+            form = UyeKayitForm(instance=uye) if uye_tipi == UyeTipiEnum.Yetişkin.value else GencUyeKayitForm(
+                instance=uye)
+        elif uye_tipi is not None:
+            form = UyeKayitForm() if uye_tipi == UyeTipiEnum.Yetişkin.value else GencUyeKayitForm()
+        else:
+            form = None
+    return render(request, "calendarapp/uye/kaydet.html",
+                  context={'form': form, 'uye_tipi': uye_tipi, 'duzenleme_mi': duzenleme_mi})
 
 
 @login_required

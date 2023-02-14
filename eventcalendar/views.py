@@ -112,9 +112,5 @@ def ilk_kayitlari_ekle():
                                      baslangic_tarih_saat=datetime.now().strftime("%Y-%m-%d %H:%M"),
                                      bitis_tarih_saat=datetime.now().strftime("%Y-%m-%d %H:%M"), kort_id=1,
                                      antrenor_id=1)
-    if EtkinlikKatilimModel.objects.count() == 0:
-        EtkinlikKatilimModel.objects.create(id=1, etkinlik_id=1, uye_id=1)
     if RezervasyonModel.objects.count() == 0:
         RezervasyonModel.objects.create(id=1, uye_id=1)
-    if TelafiDersModel.objects.count() == 0:
-        TelafiDersModel.objects.create(id=1, telafi_etkinlik_id=1, uye_id=1)

@@ -20,7 +20,7 @@
                 <div class="row border-bottom mb-3 pb-3 ">
                     <div class="col">
                         <h3 class="tile-title">Aktif Üye Listesi</h3>
-                        <a class="btn btn-info float-right" href="{% url 'calendarapp:kaydet_uye' %}" id="actionBtn"><i
+                        <a class="btn btn-info float-right" href="{% url 'calendarapp:kaydet_post' %}" id="actionBtn"><i
                                 class="fa fa-plus"></i> Ekle</a>
                     </div>
                 </div>
@@ -36,6 +36,7 @@
                                             <th>#</th>
                                             <th>Adı</th>
                                             <th>Soyadı</th>
+                                            <th>Üye Tipi</th>
                                             <th>Telefon</th>
                                             <th>Mail</th>
                                             <th>İşlemler</th>
@@ -43,11 +44,12 @@
                                         </thead>
                                         <tbody>
                                         {% for uye in uye_list %}
-                                            {% if uye.onaylandi_mi and uye.aktif_mi%}
+                                            {% if uye.onaylandi_mi and uye.aktif_mi %}
                                                 <tr>
                                                     <td class="sorting_1">{{ forloop.counter }}</td>
                                                     <td>{{ uye.adi }}</td>
                                                     <td>{{ uye.soyadi }}</td>
+                                                    <td>{% if uye.uye_tipi == 1 %}Yetişkin{% else %}Genç{% endif %}</td>
                                                     <td>{{ uye.telefon | default_if_none:"" }}</td>
                                                     <td>{{ uye.email| default_if_none:"" }}</td>
                                                     <td>
@@ -202,7 +204,6 @@
         </div>
 
     </div>
-
 
 {% endblock content %}
 

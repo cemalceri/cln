@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save, post_delete
 
 from django.conf import settings
-from calendarapp.models.Enums import SeviyeEnum, GrupOdemeSekliEnum
+from calendarapp.models.Enums import SeviyeEnum, GrupOdemeSekliEnum, UyeTipiEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 
 
@@ -29,22 +29,27 @@ def uye_no_uret():
 class UyeModel(BaseAbstract):
     adi = models.CharField('Adı', max_length=250, null=False, blank=False)
     soyadi = models.CharField('Soyadı', max_length=250, null=False, blank=False)
+    veli_adi_soyadi = models.CharField('Veli Ad Soyad', max_length=250, null=True, blank=True)
+    veli_telefon = models.CharField('Veli Telefon', max_length=11, null=True, blank=True)
     dogum_tarihi = models.DateField('Doğum Tarihi', null=True, blank=True)
     uye_no = models.IntegerField('Üye No', default=uye_no_uret, null=False, blank=False)
-    kimlikNo = models.CharField("KimlikNo", max_length=11, blank=True, null=True)
+    kimlikNo = models.CharField("Kimlik No", max_length=11, blank=True, null=True)
     telefon = models.CharField('Telefon', max_length=11, null=True, blank=True)
     email = models.EmailField('E-Mail', max_length=250, null=True, blank=True)
     adres = models.TextField('Adres', max_length=250, null=True, blank=True)
     seviye_rengi = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="red",
                                     verbose_name="Seviye Rengi")
     okul = models.ForeignKey('OkulModel', on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
-    onaylandi_mi = models.BooleanField('Onay Durumu', default=False)
-    aktif_mi = models.BooleanField('Aktif mi', default=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="uye", null=True, blank=True,
+    onaylandi_mi = models.BooleanField('Onay Durumu', null=True, blank=True, default=False)
+    aktif_mi = models.BooleanField('Aktif mi', null=True, blank=True, default=True)
+    uye_tipi = models.SmallIntegerField('Üye Tipi', choices=UyeTipiEnum.choices(), default=UyeTipiEnum.Yetişkin.value,
+                                        null=False, blank=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="uye", null=True,
+                             blank=True,
                              verbose_name="Ekleyen")
 
     def __str__(self):
-        return str(self.adi) + " " + str(self.soyadi)
+        return str(self.adi) + " " + str(self.soyadi) + " (" + str(self.uye_no) + ")"
 
     objects = UyeManager()
 
@@ -75,15 +80,15 @@ class GrupModel(BaseAbstract):
 
     def __str__(self):
         if self.tekil_mi is True:
-            return str(self.grup_uyegrup_relations.first().uye.uye_no) \
-                   + "-" + self.grup_uyegrup_relations.first().uye.adi + " " + self.grup_uyegrup_relations.first().uye.soyadi
+            return self.grup_uyegrup_relations.first().uye.adi + " " + self.grup_uyegrup_relations.first().uye.soyadi + " (" + str(
+                self.grup_uyegrup_relations.first().uye.uye_no) + ")"
         else:
             if self.adi is None or self.adi == "":
                 string = ""
                 grup = UyeGrupModel.objects.filter(grup_id=self.id)
-                string += "(" + str(grup.count()) + " Üyeli Grup) "
+                string += "|" + str(grup.count()) + " Üyeli Grup| "
                 for item in grup:
-                    string += str(item.uye.uye_no) + "-" + item.uye.adi + " " + item.uye.soyadi + "/"
+                    string += item.uye.adi + " " + item.uye.soyadi + " (" + str(item.uye.uye_no) + ") -"
                 return string[:-1]
             else:
                 return self.adi
