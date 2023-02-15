@@ -69,8 +69,8 @@ def profil(request, id):
     )).order_by('baslangic_tarih_saat')
     yapilan_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, bitis_tarih_saat__lt=datetime.now(
     )).order_by('-baslangic_tarih_saat')
-    iptal_etkinlik_katilim_idler = yapilan_etkinlikler
-    iptal_etkinlikler = EtkinlikModel.objects.filter(id__in=iptal_etkinlik_katilim_idler)
+    iptal_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, iptal_mi=True).order_by(
+        '-baslangic_tarih_saat')
     odemeler = ParaHareketiModel.objects.filter(uye_id=id)
     return render(request, "calendarapp/uye/profil.html",
                   {"uye": uye, "abonelikler": abonelikler, "paketler": paketler,

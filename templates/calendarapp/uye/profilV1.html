@@ -1,0 +1,609 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}
+    Profil
+{% endblock %}
+{% block extracss %}
+    {% include 'base/remark_css.html' %}
+    <link rel="stylesheet" href="{% static 'template/classic/base/assets/examples/css/pages/profile.css' %}">
+{% endblock extracss %}
+
+{% block extrascripts %}
+    {% include 'base/remark_js.html' %}
+    <script src="{% static 'template/classic/global/js/Plugin/responsive-tabs.js' %}"></script>
+    <script src="{% static 'template/classic/global/js/Plugin/tabs.js' %}"></script>
+    {#    <script>#}
+    {#        (document, window, jQuery);#}
+    {#    </script>#}
+{% endblock extrascripts %}
+{% block content %}
+    <div class="page-content container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <!-- Page Widget -->
+                <div class="card card-shadow text-center">
+                    <div class="card-block">
+                        <a class="avatar avatar-lg" href="javascript:void(0)">
+                            <img src="{% static 'template/classic/global/portraits/5.jpg' %}" alt="...">
+                        </a>
+                        <h4 class="profile-user">{{ uye.adi }} {{ uye.soyadi }}</h4>
+                        <p class="profile-job">Sporcu</p>
+                        <p>Hi! I'm Adrian the Senior UI Designer at AmazingSurge. We hope
+                            you enjoy the design and quality of Social.</p>
+                        <div class="profile-social">
+                            <a class="icon bd-twitter" href="javascript:void(0)"></a>
+                            <a class="icon bd-facebook" href="javascript:void(0)"></a>
+                            <a class="icon bd-dribbble" href="javascript:void(0)"></a>
+                            <a class="icon bd-github" href="javascript:void(0)"></a>
+                        </div>
+                        <button type="button" class="btn btn-primary">Follow</button>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row no-space">
+                            <div class="col-4">
+                                <strong class="profile-stat-count">260</strong>
+                                <span>Follower</span>
+                            </div>
+                            <div class="col-4">
+                                <strong class="profile-stat-count">180</strong>
+                                <span>Following</span>
+                            </div>
+                            <div class="col-4">
+                                <strong class="profile-stat-count">2000</strong>
+                                <span>Tweets</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Page Widget -->
+            </div>
+            <div class="col-lg-9">
+                <!-- Panel -->
+                <div class="panel border">
+                    <div class="panel-body nav-tabs-animate nav-tabs-horizontal" data-plugin="tabs">
+                        <ul class="nav nav-tabs nav-tabs-line mb-2" role="tablist">
+                            <li class="nav-item" role="presentation"><a class="nav-link active" data-toggle="tab"
+                                                                        href="#dersler" aria-controls="dersler"
+                                                                        role="tab" aria-selected="false">Dersler</a>
+                            </li>
+                            <li class="nav-item" role="presentation"><a class="nav-link " data-toggle="tab"
+                                                                        href="#bilgiler" aria-controls="bilgiler"
+                                                                        role="tab" aria-selected="true">Kişisel
+                                Bilgiler </a></li>
+                            <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
+                                                                        href="#paket" aria-controls="paket"
+                                                                        role="tab"
+                                                                        aria-selected="false">Paket / Abonelik</a>
+                            </li>
+                            <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab"
+                                                                        href="#odeme"
+                                                                        aria-controls="paket"
+                                                                        role="tab" aria-selected="false">Ödemeler</a>
+                            </li>
+                            <li class="nav-item dropdown" style="display: none;">
+                                <a class="dropdown-toggle nav-link" data-toggle="dropdown" href="#"
+                                   aria-expanded="false">Menu </a>
+                                <div class="dropdown-menu" role="menu">
+                                    <a class="dropdown-item" data-toggle="tab" href="#bilgiler"
+                                       aria-controls="bilgiler" role="tab">Bilgiler <span
+                                            class="badge badge-pill badge-danger">5</span></a>
+                                    <a class="dropdown-item" data-toggle="tab" href="#dersler" aria-controls="dersler"
+                                       role="tab">Dersler</a>
+                                    <a class="dropdown-item" data-toggle="tab" href="#paket" aria-controls="paket"
+                                       role="tab">Paket/Üyelik</a>
+                                    <a class="dropdown-item" data-toggle="tab" href="#odeme" aria-controls="odeme"
+                                       role="tab">Ödemeler</a>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane animation-slide-left active" id="dersler" role="tabpanel">
+                                <div class="panel border">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            Yaklaşan Dersler
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <ul class="list-group list-group-dividered list-group-full h-300 scrollable is-enabled scrollable-vertical"
+                                            data-plugin="scrollable" style="position: relative;">
+                                            <div data-role="container" class="scrollable-container">
+                                                <div data-role="content" class="scrollable-content">
+                                                    {% for etkinlik in yapilacak_etkinlikler %}
+                                                        <li class="list-group-item justify-content-between">
+                                                            <p>
+                                                                <span> Kort: {{ etkinlik.kort }} - Antrenör: {{ etkinlik.antrenor |default_if_none:"" }} Tarih: {{ etkinlik.baslangic_tarih_saat }}</span>
+                                                            </p>
+                                                            <small>Kayıt:
+                                                                <a class="hightlight"
+                                                                   href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                    <span>{{ etkinlik.user }}</span>
+                                                                </a>
+                                                                Tarih:
+                                                                <time datetime="2018-07-01T08:55">{{ etkinlik.created_at }}</time>
+                                                            </small>
+                                                        </li>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide"
+                                                 draggable="false">
+                                                <div class="scrollable-bar-handle"
+                                                     style="height: 136.661px; transform: translate3d(0px, 45.5608px, 0px);"></div>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="panel border">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            Yapılan Dersler
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <ul class="list-group list-group-dividered list-group-full h-300 scrollable is-enabled scrollable-vertical"
+                                            data-plugin="scrollable" style="position: relative;">
+                                            <div data-role="container" class="scrollable-container">
+                                                <div data-role="content" class="scrollable-content">
+                                                    {% for etkinlik in yapilan_etkinlikler %}
+                                                        <li class="list-group-item justify-content-between">
+                                                            {% if etkinlik.tamamlandi_mi %}
+                                                                <small class="badge badge-round badge-success float-right">Tamamlandı </small>
+                                                            {% else %}
+                                                                <small class="badge badge-round badge-info float-right">Onay
+                                                                    Bekliyor </small>
+                                                            {% endif %}
+                                                            <p>
+                                                                <span> Kort: {{ etkinlik.kort }} - Antrenör: {{ etkinlik.antrenor |default_if_none:"" }} Tarih: {{ etkinlik.baslangic_tarih_saat }}</span>
+                                                            </p>
+                                                            <small>Kayıt:
+                                                                <a class="hightlight"
+                                                                   href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                    <span>{{ etkinlik.user }}</span>
+                                                                </a>
+                                                                Tarih:
+                                                                <time datetime="2018-07-01T08:55">{{ etkinlik.created_at }}</time>
+                                                            </small>
+                                                        </li>
+
+                                                    {% endfor %}
+
+                                                </div>
+                                            </div>
+                                            <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide"
+                                                 draggable="false">
+                                                <div class="scrollable-bar-handle"
+                                                     style="height: 136.661px; transform: translate3d(0px, 45.5608px, 0px);"></div>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="panel border">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            İptal Edilen Dersler
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <ul class="list-group list-group-dividered list-group-full h-300 scrollable is-enabled scrollable-vertical"
+                                            data-plugin="scrollable" style="position: relative;">
+                                            <div data-role="container" class="scrollable-container">
+                                                <div data-role="content" class="scrollable-content">
+                                                    {% for etkinlik in iptal_etkinlikler %}
+                                                        <li class="list-group-item justify-content-between">
+                                                            <a href="#  ">
+                                                                <small
+                                                                        class="badge badge-round badge-danger float-right">İptali
+                                                                    Geri Al</small></a>
+                                                            <p>
+                                                                <span> Kort: {{ etkinlik.kort }} - Antrenör: {{ etkinlik.antrenor |default_if_none:"" }} Tarih: {{ etkinlik.baslangic_tarih_saat }}</span>
+                                                            </p>
+                                                            <small>Kayıt:
+                                                                <a class="hightlight"
+                                                                   href="#"> <span class="avatar avatar-xs">
+                              <img src="../../../global/portraits/1.jpg" alt=""></span>
+                                                                    <span>{{ etkinlik.user }}</span>
+                                                                </a>
+                                                                Tarih:
+                                                                <time datetime="2018-07-01T08:55">{{ etkinlik.created_at }}</time>
+                                                            </small>
+                                                        </li>
+
+                                                    {% endfor %}
+
+                                                </div>
+                                            </div>
+                                            <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide"
+                                                 draggable="false">
+                                                <div class="scrollable-bar-handle"
+                                                     style="height: 136.661px; transform: translate3d(0px, 45.5608px, 0px);"></div>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane animation-slide-left " id="bilgiler" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        {#                                        <caption><a class="btn btn-secondary" href="{% url 'calendarapp:guncelle_uye' uye.id%}">Güncelle</a> </caption>#}
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                Adı Soyadı:
+                                            </td>
+                                            <td>
+                                                {{ uye.adi }} {{ uye.soyadi }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Doğum Tarihi:
+                                            </td>
+                                            <td>
+                                                {{ uye.dogum_tarihi | default_if_none:"" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Üye No:
+                                            </td>
+                                            <td>
+                                                {{ uye.uye_no }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Kimlik No:
+                                            </td>
+                                            <td>
+                                                {{ uye.kimlik_no |default_if_none:"" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Telefon:
+                                            </td>
+                                            <td>
+                                                {{ uye.telefon |default_if_none:"" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                E-posta:
+                                            </td>
+                                            <td>
+                                                {{ uye.email |default_if_none:"" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Adres:
+                                            </td>
+                                            <td>
+                                                {{ uye.adres |default_if_none:"" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Seviye Rengi:
+                                            </td>
+                                            <td>
+                                                {{ uye.get_seviye_rengi_display }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Onay Durumu:
+                                            </td>
+                                            <td>
+                                                {{ uye.onaylandi_mi|yesno:"Onaylandı,Onaylanmadı" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Aktif Durumu:
+                                            </td>
+                                            <td>
+                                                {{ uye.aktif_mi | yesno:"Aktif, Pasif" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Ekleme Tarihi:
+                                            </td>
+                                            <td>
+                                                {{ uye.created_at }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Ekleyen:
+                                            </td>
+                                            <td>
+                                                {{ uye.user }}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane animation-slide-left" id="paket" role="tabpanel">
+                                <div class="border p-10">
+                                    <div class="row border-bottom mb-3 pb-3 ">
+                                        <div class="col">
+                                            <h3 class="tile-title">Abonelikler</h3>
+                                        </div>
+                                    </div>
+                                    <div class="tile-body">
+                                        <div class="table-responsive">
+                                            <div id="sampleTable_wrapper"
+                                                 class="container-fluid ">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <table class="table table-bordered dataTable table-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Kişiler</th>
+                                                                <th>Kort</th>
+                                                                <th>Gün</th>
+                                                                <th>Başlangıç - Bitiş</th>
+                                                                <th>Süre</th>
+                                                                <th>Aktif Mi</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for abonelik in abonelikler %}
+                                                                <tr>
+                                                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                                                    <td>{{ abonelik.grup }}</td>
+                                                                    <td>{{ abonelik.kort }}</td>
+                                                                    <td>{{ abonelik.gun_adi }}</td>
+                                                                    <td>{{ abonelik.baslangic_tarih_saat| time:'H:i' }}
+                                                                        - {{ abonelik.bitis_tarih_saat| default_if_none:"" | time:'H:i' }}</td>
+                                                                    <td>{{ abonelik.dakika_degeri }}</td>
+                                                                    <td>{{ abonelik.aktif_mi | yesno:"Evet,Hayır" }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border p-10">
+                                    <a href="{% url 'calendarapp:kaydet_uye_paket' uye.id %}"
+                                       class="btn btn-success m-10 float-right"><i class="fa fa-plus "></i>Paket
+                                        Ekle</a>
+                                    <div class="row border-bottom mb-3 pb-3 ">
+                                        <div class="col">
+                                            <h3 class="tile-title">Paketler</h3>
+                                        </div>
+                                    </div>
+                                    <div class="tile-body">
+                                        <div class="table-responsive">
+                                            <div id="sampleTable_wrapper"
+                                                 class="container-fluid ">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <table class="table table-bordered dataTable table-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Başlangıç - Bitiş</th>
+                                                                <th>Adet</th>
+                                                                <th>Kalan Adet</th>
+                                                                <th>Aktif Mi</th>
+                                                                <th>Grup Paketi Mi</th>
+                                                                <th>Özellikler</th>
+                                                                <th>İşlemler</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for paket in paketler %}
+                                                                <tr>
+                                                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                                                    <td>{{ paket.baslangic_tarih }}
+                                                                        - {{ paket.bitis_tarih|default_if_none:"" }}</td>
+                                                                    <td>{{ paket.adet }}</td>
+                                                                    <td>{{ paket.kalan_adet }}</td>
+                                                                    <td>{{ paket.aktif_mi | yesno:"Evet,Hayır" }}</td>
+                                                                    <td>{{ paket.grup_mu | yesno:"Evet,Hayır" }}</td>
+                                                                    <td>{{ paket.ozellikler | default_if_none:"" }}</td>
+                                                                    <td>
+                                                                        <a class="btn btn-primary btn-circle"
+                                                                           href="{% url 'calendarapp:guncelle_uye_paket' paket.id %}"
+                                                                           title="Kaydı Düzenle"><i
+                                                                                class="fa fa-edit black"></i></a>
+                                                                        <a href="{% url 'calendarapp:sil_uye_paket' paket.id %}"
+                                                                           class="btn btn-danger btn-circle confirm-delete"
+                                                                           title="Sil" data-toggle="modal"
+                                                                           data-target="#confirmDeleteModal"
+                                                                           id="delete_uye_{{ abonelik.id }}">
+                                                                            <i class="fa fa-trash black"></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane animation-slide-left" id="odeme" role="tabpanel">
+                                <div class="panel border">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Ödeme Girişi</h3>
+                                    </div>
+                                    <div class="panel-body container-fluid">
+                                        <form autocomplete="off" id="odemeForm">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="form-group col-md-2">
+                                                    <label class="form-control-label" for="paket">Paket /
+                                                        Üyelik </label>
+                                                    <select class="form-control" id="id_paket" name="paket">
+                                                        <option>&nbsp;</option>
+                                                        {% for abonelik in abonelikler %}
+                                                            <option value="{{ abonelik.paket_id }}">{{ abonelik }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-2">
+                                                    <label class="form-control-label" for="id_tutar">Tutar</label>
+                                                    <input type="number" class="form-control" id="id_tutar"
+                                                           name="tutar" placeholder="Tutar"
+                                                           autocomplete="off">
+                                                </div>
+                                                <div class="form-group col-md-2">
+                                                    <label class="form-control-label" for="id_tarih">Tarih</label>
+                                                    <input type="date" class="form-control" id="id_tarih"
+                                                           name="tarih" placeholder="Tarih"
+                                                           autocomplete="off">
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    <label class="form-control-label" for="id_aciklama">
+                                                        Açıklama</label>
+                                                    <input type="text" class="form-control" id="id_aciklama"
+                                                           name="aciklama" placeholder="Açıklama"
+                                                           autocomplete="off">
+                                                </div>
+                                                <div class="form-group col-md-2">
+                                                    <label class="form-control-label" for="id_aciklama">İşlemler</label>
+                                                    <div class="row">
+                                                        <div class="col-xs-6">
+                                                            <a id="odemeKaydetBtn"
+                                                               class="btn btn-outline btn-sm btn-success mr-2">Kaydet</a>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <a id="odemeTemizleBtn" onclick="formTemizle()"
+                                                               class="btn btn-outline btn-sm btn-primary">Temizle</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <ul class="list-group list-group-full border">
+                                    <h3 class="panel-title">Ödeme Listesi</h3>
+                                    <br>
+                                    <div class="tile-body">
+                                        <div class="table-responsive">
+                                            <div id="sampleTable_wrapper"
+                                                 class="container-fluid ">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <table class="table table-bordered dataTable table-fixed">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Tarih</th>
+                                                                <th>Tutar</th>
+                                                                <th>Paket / Abonelik</th>
+                                                                <th>Açıklama</th>
+                                                                <th>İşlemler</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for odeme in odemeler %}
+                                                                <tr>
+                                                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                                                    <td>{{ odeme.tarih }}</td>
+                                                                    <td>{{ odeme.tutar }}</td>
+                                                                    <td>{{ odeme.paket | default_if_none:"" }}</td>
+                                                                    <td>{{ odeme.aciklama| default_if_none:"" }}</td>
+                                                                    <td>
+                                                                        <a class="btn btn-primary btn-circle"
+                                                                           onclick="odemeDuzenle('{{ odeme.id }}')"
+                                                                           title="Kaydı Düzenle"><i
+                                                                                class="fa fa-edit black"></i></a>
+                                                                        <a href="{% url 'calendarapp:sil_odeme' odeme.id %}"
+                                                                           class="btn btn-danger btn-circle confirm-delete"
+                                                                           title="Sil"
+                                                                           data-toggle="modal"
+                                                                           data-target="#confirmDeleteModal"
+                                                                           id="delete_uye_{{ odeme.id }}">
+                                                                            <i class="fa fa-trash black"></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Panel -->
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#odemeKaydetBtn').click(function () {
+            let form = $('#odemeForm');
+            form.append('<input type="hidden" name="uye" value="{{ uye.id }}">');
+            let datas = form.serialize();
+            $.ajax({
+                url: "{% url 'calendarapp:kaydet_uye_odemesi_ajax' %}",
+                data: datas,
+                type: "post",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == "success") {
+                        popupMesajGoster(data.message, data.status);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        popupMesajGoster(data.message, data.status);
+                    }
+                }
+            });
+        });
+
+        function odemeDuzenle(id) {
+            $.ajax({
+                url: "{% url 'calendarapp:getir_odeme_by_id_ajax' %}",
+                data: {id: id},
+                type: "get",
+                dataType: 'json',
+                success: function (result) {
+                    if (result.status == "success") {
+                        for (let item in result.data) {
+                            $('#odemeForm').append('<input type="hidden" class="form-control" name="id" value="' + result.data.id + '">');
+                            $('#odemeForm').append('<input type="hidden" name="uye" value="{{ uye.id }}">');
+                            if (result.data[item] != "null" || result.data[item] != "undefined" || result.data[item] != "") {
+                                let key = item == 'id' ? 'pk' : item
+                                let element = document.getElementById("id_" + key);
+                                if (element)
+                                    element.value = result.data[item];
+                            }
+                        }
+                    } else {
+                        popupMesajGoster(data.message, data.status);
+                    }
+                }
+            });
+        }
+
+        function formTemizle() {
+            let elements = document.getElementsByClassName("form-control");
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].value = "";
+            }
+        }
+    </script>
+{% endblock content %}

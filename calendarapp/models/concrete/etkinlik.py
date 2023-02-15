@@ -66,11 +66,13 @@ class EtkinlikModel(BaseAbstract):
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name="anternor")
     top_rengi = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="Kirmizi", null=False,
-                                 blank=False,
-                                 verbose_name="Top Rengi")
+                                 blank=False, verbose_name="Top Rengi")
     tamamlandi_antrenor = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
     tamamlandi_yonetici = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Yönetici)")
     tamamlandi_uye = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Üye)")
+    iptal_mi = models.BooleanField(default=False, verbose_name="İptal mi?")
+    iptal_eden = models.CharField(max_length=50, null=True, blank=True)
+    iptal_tarih_saat = models.DateTimeField(null=True, blank=True, verbose_name="İptal Tarih Saat")
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="etkinlik", null=True,
                              blank=True,
