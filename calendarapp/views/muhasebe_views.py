@@ -7,9 +7,13 @@ from django.db import models
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
+
 from calendarapp.models.Enums import ParaHareketTuruEnum, AbonelikTipiEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel
+from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel
+from calendarapp.models.concrete.uye import UyeGrupModel
 
 
 @login_required
@@ -62,16 +66,16 @@ def index(request):
 @login_required
 def kaydet_uye_odemesi_ajax(request):
     if request.method == 'POST':
-        aciklama = request.POST.get('aciklama')
-        tarih = request.POST.get('tarih')
-        tutar = request.POST.get('tutar')
-        uye = request.POST.get('uye')
-        paket = request.POST.get('paket')
+        aciklama = request.GET.get('aciklama')
+        tarih = request.GET.get('tarih')
+        tutar = request.GET.get('tutar')
+        uye = request.GET.get('uye')
+        paket = request.GET.get('paket')
         if tutar is None or tutar == '':
             return JsonResponse({'status': 'error', 'message': 'Tutar boş olamaz.'})
         if tarih is None or tarih == '':
             return JsonResponse({'status': 'error', 'message': 'Tarih boş olamaz.'})
-        if request.POST.get('id'):
+        if request.GET.get('id'):
             item = ParaHareketiModel.objects.get(id=request.POST.get('id'))
             item.aciklama = aciklama
             item.tarih = tarih
@@ -80,11 +84,6 @@ def kaydet_uye_odemesi_ajax(request):
             item.paket_id = paket
             item.save()
         else:
-            print(paket)
-            print(aciklama)
-            print(tarih)
-            print(tutar)
-            print(uye)
             ParaHareketiModel.objects.create(paket_id=paket, aciklama=aciklama, tarih=tarih, tutar=tutar, uye_id=uye,
                                              hareket_turu=ParaHareketTuruEnum.Giris.value)
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
@@ -191,5 +190,27 @@ def filtre_metni_olustur(baslangic_tarihi=None, bitis_tarihi=None, tutar_min=Non
 def bitmek_uzere_olan_paketler():
     paketler = PaketKullanimModel.objects.filter(kalan_adet__lte=1, kalan_adet__isnull=False).select_related(
         "abonelik").distinct()
-    print(paketler)
     return paketler
+
+
+@login_required
+def muhasebe_uye(request, uye_id):
+    yillar = [x for x in range(2022, datetime.now().year + 1)]
+    aylar = [x for x in range(1, 13)]
+    return render(request, "calendarapp/muhasebe/uye_muhasebe.html",
+                  {"yillar": yillar, "aylar": aylar, "uye_id": uye_id})
+
+
+@login_required
+def muhasebe_uye_detay_getir_ajax(request):
+    yil = request.GET.get('yil')
+    ay = request.GET.get('ay')
+    uye_id = request.GET.get('uye_id')
+    # uyenin_gruplari= UyeGrupModel.objects.filter(uye_id=uye_id)
+    etkinlikler = EtkinlikModel.objects.all()
+    muhasebe_id = 1
+    html = render_to_string('calendarapp/muhasebe/partials/_uye_muhasebe_detay.html',
+                            {"muhasebe_id": muhasebe_id, "yil": yil, "ay": ay, "uye_id": uye_id,
+                             "etkinlikler": etkinlikler})
+    return JsonResponse(
+        data={"status": "success", "message": "İşlem Başarılı.", "html": html})

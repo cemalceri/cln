@@ -1,8 +1,9 @@
 from django.db import models
 
 from django.conf import settings
-from calendarapp.models.Enums import SeviyeEnum, ParaHareketTuruEnum, OdemeTuruEnum
+from calendarapp.models.Enums import ParaHareketTuruEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
+from calendarapp.models.concrete.abonelik import UyePaketModel
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.uye import UyeModel
 
@@ -12,16 +13,16 @@ class ParaHareketiModel(BaseAbstract):
                                 blank=False)
     hareket_turu = models.SmallIntegerField(choices=ParaHareketTuruEnum.choices(), null=True, blank=True)
     odeme_turu = models.CharField(max_length=20, null=True, blank=True)
-    uye = models.ForeignKey(UyeModel, on_delete=models.SET_NULL, related_name="uye_parahareketi_relations",
+    uye = models.ForeignKey(UyeModel, on_delete=models.DO_NOTHING, related_name="uye_parahareketi_relations",
                             null=True, blank=True)
-    antrenor = models.ForeignKey(AntrenorModel, on_delete=models.SET_NULL,
-                                 related_name="antrenor_parahareketi_relations",
-                                 null=True, blank=True)
-    # paket = models.ForeignKey(PaketModel, on_delete=models.SET_NULL, related_name="paket_parahareketi_relations",
-    #                           null=True, blank=True)
+    antrenor = models.ForeignKey(AntrenorModel, on_delete=models.DO_NOTHING,
+                                 related_name="antrenor_parahareketi_relations", null=True, blank=True)
+    paket = models.ForeignKey(UyePaketModel, on_delete=models.DO_NOTHING, related_name="paket_parahareketi_relations",
+                              null=True, blank=True)
     tarih = models.DateField(verbose_name="Tarih", null=False, blank=False)
     aciklama = models.CharField('Açıklama', max_length=250, null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="user_parahareketi_relations", null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                             related_name="user_parahareketi_relations", null=True, blank=True)
 
     def __str__(self):
         return self.get_hareket_turu_display() + " " + str(self.tutar)

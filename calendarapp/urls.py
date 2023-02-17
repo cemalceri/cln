@@ -120,5 +120,7 @@ urlpatterns = [
     path("muhasebe/kaydet-antrenor-odemesi", muhasebe_views.kaydet_antrenor_odemesi_ajax,
          name="kaydet_antrenor_odemesi_ajax"),
     path("muhasebe/sil-odeme/<int:id>", muhasebe_views.sil_odeme, name="sil_odeme"),
+    path("uye/muhasebe/<int:uye_id>", muhasebe_views.muhasebe_uye, name="muhasebe_uye"),
+    path("uye/muhasebe-detay", muhasebe_views.muhasebe_uye_detay_getir_ajax, name="muhasebe_uye_detay_getir_ajax"),
 
 ]

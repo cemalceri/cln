@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}
+    Muhasebe
+{% endblock %}
+{% block extracss %}
+    {% include 'base/remark_css.html' %}
+    <link rel="stylesheet" href="{% static 'template/classic/base/assets/examples/css/pages/profile.css' %}">
+{% endblock extracss %}
+
+{% block extrascripts %}
+    {% include 'base/remark_js.html' %}
+{% endblock extrascripts %}
+{% block content %}
+    <div class="card card-shadow">
+        <div class="card-header">
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label class="form-control-label" for="yilCmb">Yıl Seçiniz: </label>
+                    <select class="form-control" id="yilCmb">
+                        {% for yil in yillar %}
+                            <option value="{{ yil }}">{{ yil }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="form-control-label" for="ayCmb">Ay Seçiniz: </label>
+                    <select class="form-control" id="ayCmb">
+                        {% for ay in aylar %}
+                            <option value="{{ ay }}">{{ ay }}</option>
+                        {% endfor %}
+                    </select></div>
+                <div class="form-group col-md-2">
+                    <label class="form-control-label" for="aylarCmb">İşlem</label>
+                    <button class="btn btn-info form-control" onclick="muhasebeBilgileriniGetir()">Ödemeler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="detayDiv"></div>
+    <script>
+        function muhasebeBilgileriniGetir() {
+            var yil = $('#yilCmb').val();
+            var ay = $('#ayCmb').val();
+            $.ajax({
+                url: "{% url 'calendarapp:muhasebe_uye_detay_getir_ajax' %}",
+                data: {
+                    'yil': yil,
+                    'ay': ay,
+                    'uye_id': '{{ uye.id }}'
+                },
+                type: "get",
+                dataType: 'json',
+                success: function (data) {
+                    $('#detayDiv').html(data.html);
+                }
+            });
+        }
+
+    </script>
+{% endblock content %}
