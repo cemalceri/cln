@@ -8,7 +8,8 @@ from django.utils.dateparse import parse_datetime
 
 from calendarapp.forms.etkinlik_forms import HaftalikPlanForm
 
-from calendarapp.models.Enums import AbonelikTipiEnum, GunlerModel, SaatlerModel, SeviyeEnum
+from calendarapp.models.Enums import AbonelikTipiEnum, SeviyeEnum
+from calendarapp.models.concrete.commons import GunlerModel, SaatlerModel
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, UyePaketModel
 from calendarapp.models.concrete.commons import gun_adi_getir
 from calendarapp.models.concrete.etkinlik import HaftalikPlanModel, EtkinlikModel

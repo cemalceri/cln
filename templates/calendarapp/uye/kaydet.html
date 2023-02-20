@@ -51,9 +51,11 @@
                     {% for field in form %}
                         <div class="col-md-6 offset-md-3">
                             <div class="form-group row">
-                                <div class="col-md-4">
-                                    {{ field.label_tag }}
-                                </div>
+                                {% if field.name != "uye_tipi" %}
+                                    <div class="col-md-4">
+                                        {{ field.label }}
+                                    </div>
+                                {% endif %}
                                 <div class="col-md-8">
                                     {{ field }}
                                     {% if field.errors %}

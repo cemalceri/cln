@@ -37,6 +37,6 @@ processes = []
     timeout = "2s"
 
   [deploy]
-    release_command =  "python3 manage.py migrate --noinput"
+    release_command =  "python3 manage.py migrate --run-syncdb"
 
 

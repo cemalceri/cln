@@ -5,6 +5,7 @@ from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 from calendarapp.models.Enums import SeviyeEnum, GrupOdemeSekliEnum, UyeTipiEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
+from calendarapp.models.concrete.commons import GunlerModel, SaatlerModel
 
 
 class UyeManager(models.Manager):
@@ -17,35 +18,51 @@ class UyeManager(models.Manager):
 
 
 def uye_no_uret():
-    try:
-        last = UyeModel.objects.all().order_by('uye_no').last()
-        if not last:
-            return 100
-        return last.uye_no + 1
-    except:
-        return 100
+    any = UyeModel.objects.order_by('-uye_no').first()
+    if any:
+        return any.uye_no + 1
+    return 100
 
 
 class UyeModel(BaseAbstract):
-    adi = models.CharField('Adı', max_length=250, null=False, blank=False)
-    soyadi = models.CharField('Soyadı', max_length=250, null=False, blank=False)
-    veli_adi_soyadi = models.CharField('Veli Ad Soyad', max_length=250, null=True, blank=True)
-    veli_telefon = models.CharField('Veli Telefon', max_length=11, null=True, blank=True)
-    dogum_tarihi = models.DateField('Doğum Tarihi', null=True, blank=True)
-    uye_no = models.IntegerField('Üye No', default=uye_no_uret, null=False, blank=False)
+    # Ortak alanlar
+    adi = models.CharField('Adı', max_length=30, null=False, blank=False)
+    soyadi = models.CharField('Soyadı', max_length=30, null=False, blank=False)
     kimlik_no = models.CharField("Kimlik No", max_length=11, blank=True, null=True)
+    cinsiyet = models.CharField('Cinsiyet', max_length=10, null=True, blank=True)
     telefon = models.CharField('Telefon', max_length=11, null=True, blank=True)
-    email = models.EmailField('E-Mail', max_length=250, null=True, blank=True)
-    adres = models.TextField('Adres', max_length=250, null=True, blank=True)
-    seviye_rengi = models.CharField("Seviye Rengi", max_length=20, choices=SeviyeEnum.choices(), default="red" )
-    okul = models.ForeignKey('OkulModel', on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
+    email = models.EmailField('E-Mail', max_length=50, null=True, blank=True)
+    dogum_tarihi = models.DateField('Doğum Tarihi', null=True, blank=True)
+    dogum_yeri = models.CharField('Doğum Yeri', max_length=50, null=True, blank=True)
+    adres = models.CharField('Adres', max_length=250, null=True, blank=True)
+    uye_no = models.IntegerField('Üye No', default=uye_no_uret, null=False, blank=False)
+    seviye_rengi = models.CharField("Seviye Rengi", max_length=20, choices=SeviyeEnum.choices(), default="red")
     onaylandi_mi = models.BooleanField('Onay Durumu', null=True, blank=True, default=False)
     aktif_mi = models.BooleanField('Aktif mi', null=True, blank=True, default=True)
     uye_tipi = models.SmallIntegerField('Üye Tipi', choices=UyeTipiEnum.choices(), default=UyeTipiEnum.Yetişkin.value,
                                         null=False, blank=False)
+    referansi = models.CharField('Referans', max_length=50, null=True, blank=True)
+    tenis_gecmisi_var_mi = models.BooleanField('Tenis Eğitim Geçmişi', null=True, blank=True)
+    program_tercihi = models.CharField('Program Tercihi', max_length=100, null=True, blank=True)
+    gunler = models.ManyToManyField(GunlerModel, verbose_name='Tercih Edilen Günler', blank=True, null=True,
+                                    related_name='gunler_uye_tablosu')
+    saatler = models.ManyToManyField(SaatlerModel, verbose_name='Tercih Edilen Saatler', blank=True, null=True,
+                                     related_name='saatler_uye_tablosu')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="uye", null=True,
-                             blank=True,
-                             verbose_name="Ekleyen")
+                             blank=True, verbose_name="Ekleyen")
+    # Yetişkin
+    meslek = models.CharField('Meslek', max_length=50, null=True, blank=True)
+
+    # Genç
+    anne_adi_soyadi = models.CharField('Anne Ad Soyad', max_length=30, null=True, blank=True)
+    anne_telefon = models.CharField('Anne Telefon', max_length=11, null=True, blank=True)
+    anne_mail = models.EmailField('Anne E-Mail', max_length=50, null=True, blank=True)
+    anne_meslek = models.CharField('Anne Meslek', max_length=50, null=True, blank=True)
+    baba_adi_soyadi = models.CharField('Baba Ad Soyad', max_length=30, null=True, blank=True)
+    baba_telefon = models.CharField('Baba Telefon', max_length=11, null=True, blank=True)
+    baba_mail = models.EmailField('Baba E-Mail', max_length=50, null=True, blank=True)
+    baba_meslek = models.CharField('Baba Meslek', max_length=50, null=True, blank=True)
+    okul = models.ForeignKey('OkulModel', on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
 
     def __str__(self):
         return str(self.adi) + " " + str(self.soyadi) + " (" + str(self.uye_no) + ")"
@@ -66,6 +83,12 @@ class UyeModel(BaseAbstract):
         verbose_name = "Müşteri"
         verbose_name_plural = "Müşteriler"
         ordering = ["-id"]
+
+    def tercih_edilen_gunler(self):
+        return " / ".join([str(i) for i in self.gunler.all()])
+
+    def tercih_edilen_saatler(self):
+        return " / ".join([str(i) for i in self.saatler.all()])
 
 
 class GrupModel(BaseAbstract):

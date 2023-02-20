@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
 from calendarapp.forms.rezervasyon_forms import RezervasyonKayitForm
-from calendarapp.models.Enums import GunlerModel, SaatlerModel
+from calendarapp.models.concrete.commons import GunlerModel, SaatlerModel
 from calendarapp.models.concrete.rezervasyon import RezervasyonModel
 from calendarapp.utils import formErrorsToText
 

@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from calendarapp.models.Enums import GunlerModel, SaatlerModel
+from calendarapp.models.concrete.commons import GunlerModel, SaatlerModel
 from calendarapp.models.concrete.rezervasyon import RezervasyonModel
 
 

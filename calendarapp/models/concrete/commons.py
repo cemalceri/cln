@@ -6,11 +6,38 @@ from django.conf import settings
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 
 
+class GunlerModel(models.Model):
+    adi = models.CharField(max_length=250, null=False, blank=False)
+    haftanin_gunu = models.IntegerField(verbose_name="Haftanın Kaçıncı Günü", null=False, blank=False)
+    hafta_ici_mi = models.BooleanField(verbose_name="Hafta için mi", default=False)
+
+    def __str__(self):
+        return self.adi
+
+    class Meta:
+        verbose_name = "Günler"
+        verbose_name_plural = "Günler"
+        ordering = ["id"]
+
+
+class SaatlerModel(models.Model):
+    adi = models.CharField(max_length=250, null=False, blank=False)
+    baslangic_degeri = models.TimeField(null=False, blank=False)
+    bitis_degeri = models.TimeField(null=False, blank=False)
+
+    def __str__(self):
+        return self.adi
+
+    class Meta:
+        verbose_name = "Saatler"
+        verbose_name_plural = "Saatler"
+        ordering = ["id"]
+
+
 class OkulModel(BaseAbstract):
     adi = models.CharField('Adı', max_length=250, null=False, blank=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="okul", null=True,
-                             blank=True,
-                             verbose_name="Ekleyen")
+                             blank=True, verbose_name="Ekleyen")
 
     def __str__(self):
         return self.adi

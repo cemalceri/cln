@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-
 #
 # @admin.register(models.RezervasyonModel)
 # class EventAdmin(admin.ModelAdmin):
@@ -23,9 +22,8 @@ from django.contrib import admin
 #     model = models.EtkinlikMember
 #     list_display = ["id", "event", "user", "created_at", "updated_at"]
 #     list_filter = ["event"]
-from calendarapp.models.Enums import SaatlerModel, GunlerModel
-from calendarapp.models.concrete.abonelik import  UyeAbonelikModel, UyePaketModel
-from calendarapp.models.concrete.commons import OkulModel
+from calendarapp.models.concrete.commons import SaatlerModel, GunlerModel, OkulModel
+from calendarapp.models.concrete.abonelik import UyeAbonelikModel, UyePaketModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.kort import KortModel
 from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel, GrupModel

@@ -31,6 +31,7 @@ def kaydet(request, id=None, uye_tipi=None):
             entity = form.save(commit=False)
             entity.user = request.user
             entity.save()
+            form.save_m2m()
             messages.success(request, "Üye kaydedildi.")
             return redirect("calendarapp:index_uye")
         else:

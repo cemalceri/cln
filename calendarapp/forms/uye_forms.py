@@ -10,9 +10,9 @@ class UyeKayitForm(ModelForm):
 
     class Meta:
         model = UyeModel
-        fields = '__all__'
-        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'uye_no', 'okul', 'veli_telefon',
-                   'veli_adi_soyadi']
+        fields = ['adi', 'soyadi', 'kimlik_no', 'cinsiyet', 'dogum_tarihi', 'dogum_yeri', 'adres', 'telefon', 'email',
+                  'meslek', 'seviye_rengi', 'onaylandi_mi', 'aktif_mi', 'referansi', 'tenis_gecmisi_var_mi',
+                  'program_tercihi', 'gunler', 'saatler', ]
         widgets = {
             "dogum_tarihi": DateInput(
                 attrs={"type": "date", "class": "form-control"},
@@ -34,8 +34,10 @@ class GencUyeKayitForm(ModelForm):
 
     class Meta:
         model = UyeModel
-        fields = '__all__'
-        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'uye_no', 'uye_tipi']
+        fields = ['adi', 'soyadi', 'kimlik_no', 'cinsiyet', 'dogum_tarihi', 'dogum_yeri', 'adres', 'telefon', 'email',
+                  'seviye_rengi', 'onaylandi_mi', 'aktif_mi', 'referansi', 'tenis_gecmisi_var_mi', 'program_tercihi',
+                  'gunler', 'saatler', 'anne_adi_soyadi', 'anne_telefon', 'anne_mail', 'anne_meslek', 'baba_adi_soyadi',
+                  'baba_telefon', 'baba_telefon', 'baba_meslek', 'okul']
         widgets = {
             "dogum_tarihi": DateInput(
                 attrs={"type": "date", "class": "form-control"},
