@@ -18,242 +18,43 @@
     </ul>
 {% endblock breadcrumb %}
 {% block content %}
-    <div class="page-content">
-        <div class="">
+    <div class="row">
+        <div class="col-md-12">
             <div class="panel border">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Filtrele</h3>
+                    <h3 class="panel-title">Üye Borç Listesi</h3>
                 </div>
                 <div class="panel-body container-fluid">
-                    <form autocomplete="off" id="filtreForm" method="post">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="form-group col-md-3">
-                                <label class="form-control-label" for="id_baslangic_tarihi">Başlangıç Tarihi</label>
-                                <input type="date" class="form-control" id="id_baslangic_tarihi"
-                                       name="baslangic_tarihi" placeholder="Başlangıç Tarih"
-                                       autocomplete="off">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label class="form-control-label" for="id_bitis_tarihi">Bitiş Tarihi</label>
-                                <input type="date" class="form-control" id="id_bitis_tarihi"
-                                       name="bitis_tarihi" placeholder="Bitiş Tarih"
-                                       autocomplete="off">
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label class="form-control-label">Tutar Aralığı</label>
-                                <div class="row">
-                                    <div class="col-md-5">
-                                        <input type="number" class="form-control" id="id_tutar_min"
-                                               name="tutar_min" placeholder="Min"
-                                               autocomplete="off">
-                                    </div>
-                                    <label>_</label>
-                                    <div class="col-md-5">
-                                        <input type="number" class="form-control" id="id_tutar_max"
-                                               name="tutar_max" placeholder="Max"
-                                               autocomplete="off">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="panel-footer">
-                    <div class="row">
-                        <div class="col">
-                            <a id="temizleBtn" onclick="formTemizle()"
-                               class="btn btn-outline btn-sm btn-primary m-10 float-right">Temizle</a>
-                            <a id="filtreBtn" onclick="filtreleGetir()"
-                               class="btn btn-outline btn-sm btn-success m-10 float-right">Filtre</a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <p class="red-900">{{ filtreMetni |default_if_none:"" }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel border">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Para Girişleri</h3>
-                    </div>
-                    <div class="panel-body container-fluid">
-                        <table id="tableIn" class="table table-bordered dataTable">
-                            <thead>
+                    <table id="tableIn" class="table table-bordered dataTable">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Üye</th>
+                            <th>Yıl</th>
+                            <th>Ay</th>
+                            <th>Alacak</th>
+                            <th>Ödenen</th>
+                            <th>İşlemler</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for muhasebe in muhasebe_list %}
                             <tr>
-                                <th>#</th>
-                                <th>Üye</th>
-                                <th>Paket / Üyelik</th>
-                                <th>Tutar</th>
-                                <th>Tarih</th>
-                                <th>Açıklama</th>
-                                <th>İşlemler</th>
+                                <td class="sorting_1">{{ forloop.counter }}</td>
+                                <td>
+                                    <a href="{% url 'calendarapp:profil_uye' muhasebe.uye_id %}">{{ muhasebe.uye }}</a>
+                                </td>
+                                <td>{{ muhasebe.yil }}</td>
+                                <td>{{ muhasebe.ay }}</td>
+                                <td>{{ muhasebe.alacak }}</td>
+                                <td>{{ muhasebe.borc }}</td>
+                                <td></td>
                             </tr>
-                            </thead>
-                            <tbody>
-                            {% for giris in para_girisleri %}
-                                <tr>
-                                    <td class="sorting_1">{{ forloop.counter }}</td>
-                                    <td>{{ giris.uye }}</td>
-                                    <td>{{ giris.paket |default_if_none:"" }}</td>
-                                    <td>{{ giris.tutar }}</td>
-                                    <td>{{ giris.tarih }}</td>
-                                    <td>{{ giris.aciklama| default_if_none:"" }}</td>
-                                    <td>
-                                        <a class="btn btn-info btn-circle" title="Üye Profiline Git"
-                                           href="{% url 'calendarapp:profil_uye' giris.uye_id %}">
-                                            <i class="fa fas fa-user black"></i></a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-footer">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4 class="panel-title">Toplam Giriş: <span
-                                        id="toplamGiris">{{ toplam_giris | default_if_none:"0" }} TL</span></h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="panel border">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Para Çıkışları</h3>
-                    </div>
-                    <div class="panel-body container-fluid">
-                        <table id="tableIn" class="table table-bordered dataTable">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Antrenör</th>
-                                <th>Ödeme Türü</th>
-                                <th>Tutar</th>
-                                <th>Tarih</th>
-                                <th>Açıklama</th>
-                                <th>İşlemler</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for cikis in para_cikislari %}
-                                <tr>
-                                    <td class="sorting_1">{{ forloop.counter }}</td>
-                                    <td>{{ cikis.antrenor }}</td>
-                                    <td>{{ cikis.odeme_turu | default_if_none:"" }}</td>
-                                    <td>{{ cikis.tutar }}</td>
-                                    <td>{{ cikis.tarih }}</td>
-                                    <td>{{ cikis.aciklama| default_if_none:"" }}</td>
-                                    <td>
-                                        <a class="btn btn-info btn-circle" title="Antrenör Profiline Git"
-                                           href="{% url 'calendarapp:profil_antrenor' cikis.antrenor_id %}">
-                                            <i class="fa fas fa-user-secret black"></i></a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-footer">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4 class="panel-title">Toplam Çıkış: <span
-                                        id="toplamCikis">{{ toplam_cikis |default_if_none:"0" }} TL </span></h4>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="panel border">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Bekleyen Ödemeler</h3>
-                    </div>
-                    <div class="panel-body container-fluid">
-                        <table id="tableIn" class="table table-bordered dataTable">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Üye</th>
-                                <th>Abonelik Adı</th>
-                                <th>Abonelik Tutarı</th>
-                                <th>Son Yapılan Ödeme Tarihi</th>
-                                <th>Son Yapılan Ödeme Tutarı</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for abonelik in odeme_yapilmayan_uyelikler %}
-                                <tr>
-                                    <td class="sorting_1">{{ forloop.counter }}</td>
-                                    <td>
-                                        <a href="{% url 'calendarapp:profil_uye' abonelik.uye_id %}">{{ abonelik.uye }}</a>
-                                    </td>
-                                    <td>{{ abonelik.paket }}</td>
-                                    <td>{{ abonelik.paket.toplam_fiyati }}</td>
-                                    <td>{{ abonelik.son_yapilan_odeme_tarihi | default_if_none:"" }}</td>
-                                    <td>{{ abonelik.son_yapilan_odeme_tutari| default_if_none:"" }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-footer">
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="panel border">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Bitmek Üzere Olan Paketler</h3>
-                    </div>
-                    <div class="panel-body container-fluid">
-                        <table id="tableIn" class="table table-bordered dataTable">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Üye</th>
-                                <th>Paket Adı</th>
-                                <th>Paket Tutarı</th>
-                                <th>Kalan Adet</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for paket in bitmek_uzere_olan_paketler %}
-                                <tr>
-                                    <td class="sorting_1">{{ forloop.counter }}</td>
-                                    <td>
-                                        <a href="{% url 'calendarapp:profil_uye' paket.uye_id %}">{{ paket.uye }}</a>
-                                    </td>
-                                    <td>{{ paket.abonelik }}</td>
-                                    <td>{{ paket.abonelik.paket.toplam_fiyati }}</td>
-                                    <td>{{ paket.kalan_adet }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-footer">
-                    </div>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        function formTemizle() {
-            let elements = document.getElementsByClassName("form-control");
-            for (let i = 0; i < elements.length; i++) {
-                elements[i].value = "";
-            }
-        }
-
-        function filtreleGetir() {
-            document.getElementById("filtreForm").submit();
-        }
-    </script>
 {% endblock content %}

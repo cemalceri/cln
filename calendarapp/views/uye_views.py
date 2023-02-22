@@ -2,13 +2,16 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 
+from calendarapp.forms.muhasebe_forms import UyeParaHareketiKayitForm
 from calendarapp.forms.uye_forms import UyeKayitForm, GencUyeKayitForm
 from calendarapp.models.Enums import KatilimDurumuEnum, UyeTipiEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, UyePaketModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
-from calendarapp.models.concrete.muhasebe import ParaHareketiModel
+from calendarapp.models.concrete.muhasebe import ParaHareketiModel, MuhasebeModel
 from calendarapp.models.concrete.uye import UyeModel, UyeGrupModel
 from calendarapp.utils import formErrorsToText
 
@@ -78,3 +81,36 @@ def profil(request, id):
                    "iptal_etkinlikler": iptal_etkinlikler})
 
 
+@login_required
+def muhasebe_uye(request, uye_id):
+    muhasebe_list = MuhasebeModel.objects.filter(uye_id=uye_id).order_by('-id')
+    return render(request, "calendarapp/uye/muhasebe.html", {"muhasebe_list": muhasebe_list})
+
+
+@login_required
+def muhasebe_detay_modal_getir_ajax(request):
+    yil = request.GET.get('yil')
+    ay = request.GET.get('ay')
+    uye_id = request.GET.get('uye_id')
+    para_hareketleri = ParaHareketiModel.objects.filter(uye_id=uye_id, tarih__year=yil, tarih__month=ay).order_by('-id')
+    html = render_to_string('calendarapp/muhasebe/partials/_uye_muhasebe_detay.html',
+                            {'para_hareketleri': para_hareketleri})
+    return JsonResponse(
+        data={"status": "success", "message": "İşlem Başarılı.", "html": html})
+
+
+@login_required
+def muhasebe_odeme_modal_getir_ajax(request):
+    yil = request.GET.get('yil')
+    ay = request.GET.get('ay')
+    uye_id = request.GET.get('uye_id')
+    odeme_id = request.GET.get('odeme_id')
+    tarih = datetime.strptime(f"{yil}-{ay}-01", "%Y-%m-%d")
+    if odeme_id is not None:
+        para_hareketi = ParaHareketiModel.objects.filter(pk=odeme_id).first()
+        form = UyeParaHareketiKayitForm(instance=para_hareketi)
+    else:
+        form = UyeParaHareketiKayitForm(initial={'tarih': tarih, 'uye_id': uye_id})
+    html = render_to_string('calendarapp/muhasebe/partials/_uye_odeme_girisi.html', {'form': form})
+    print(html)
+    return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "html": html})

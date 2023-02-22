@@ -1,0 +1,104 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}
+    Muhasebe
+{% endblock %}
+{% block extracss %}
+    {% include 'base/remark_css.html' %}
+    <link rel="stylesheet" href="{% static 'template/classic/base/assets/examples/css/pages/profile.css' %}">
+{% endblock extracss %}
+
+{% block extrascripts %}
+    {% include 'base/remark_js.html' %}
+{% endblock extrascripts %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel border">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ödeme Geçmişi</h3>
+                </div>
+                <div class="panel-body container-fluid">
+                    <table id="tableIn" class="table table-bordered dataTable">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Yıl</th>
+                            <th>Ay</th>
+                            <th>Alacak</th>
+                            <th>Ödenen</th>
+                            <th>İşlemler</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for muhasebe in muhasebe_list %}
+                            <tr>
+                                <td class="sorting_1">{{ forloop.counter }}</td>
+                                <td>{{ muhasebe.yil }}</td>
+                                <td>{{ muhasebe.ay }}</td>
+                                <td>{{ muhasebe.alacak }}</td>
+                                <td>{{ muhasebe.borc }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="detayBilgileriniGetir('{{ muhasebe.uye_id }}',
+                                                    '{{ muhasebe.yil }}','{{ muhasebe.ay }}')">
+                                        Detay
+                                    </button>
+                                    <button type="button" class="btn btn-success"
+                                            onclick="odemeGiris('{{ muhasebe.uye_id }}',
+                                                    '{{ muhasebe.yil }}','{{ muhasebe.ay }}')">
+                                        Ödeme Girişi
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                    <h3 class="panel-title">Toplam Ödeme:</h3>
+                    <h3 class="panel-title">{{ toplam_odeme }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="detayDiv"></div>
+    <div id="odemeDiv"></div>
+    <script>
+        function detayBilgileriniGetir(uye_id, yil, ay) {
+            $.ajax({
+                url: "{% url 'calendarapp:uye_muhasebe_detay_modal_getir_ajax' %}",
+                data: {
+                    'yil': yil,
+                    'ay': ay,
+                    'uye_id': uye_id,
+                },
+                type: "get",
+                dataType: 'json',
+                success: function (data) {
+                    $('#detayDiv').html(data.html);
+                    $('#detayModal').modal('show');
+                }
+            });
+        }
+        function odemeGiris(uye_id, yil, ay) {
+            debugger;
+            $.ajax({
+                url: "{% url 'calendarapp:uye_odeme_modal_getir_ajax' %}",
+                data: {
+                    'yil': yil,
+                    'ay': ay,
+                    'uye_id': uye_id,
+                },
+                type: "get",
+                dataType: 'json',
+                success: function (data) {
+                    debugger;
+                    $('#odemeDiv').html(data.html);
+                    $('#odemeModal').modal('show');
+                }
+            });
+        }
+
+    </script>
+{% endblock content %}

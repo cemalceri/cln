@@ -60,6 +60,9 @@ urlpatterns = [
     path("uye/guncelle/<int:id>", uye_views.kaydet, name="guncelle_uye"),
     path("uye/sil/<int:id>", uye_views.sil, name="sil_uye"),
     path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),
+    path("uye/muhasebe/<int:uye_id>", uye_views.muhasebe_uye, name="muhasebe_uye"),
+    path("uye/muhasebe-detay", uye_views.muhasebe_detay_modal_getir_ajax, name="uye_muhasebe_detay_modal_getir_ajax"),
+    path("uye/muhasebe-detay", uye_views.muhasebe_odeme_modal_getir_ajax, name="uye_odeme_modal_getir_ajax"),
 
     # Kort
     path("kort/index", kort_views.index_kort, name="index_kort"),
@@ -120,7 +123,5 @@ urlpatterns = [
     path("muhasebe/kaydet-antrenor-odemesi", muhasebe_views.kaydet_antrenor_odemesi_ajax,
          name="kaydet_antrenor_odemesi_ajax"),
     path("muhasebe/sil-odeme/<int:id>", muhasebe_views.sil_odeme, name="sil_odeme"),
-    path("uye/muhasebe/<int:uye_id>", muhasebe_views.muhasebe_uye, name="muhasebe_uye"),
-    path("uye/muhasebe-detay", muhasebe_views.muhasebe_uye_detay_getir_ajax, name="muhasebe_uye_detay_getir_ajax"),
 
 ]

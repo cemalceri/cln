@@ -7,7 +7,7 @@ from calendarapp.models.concrete.muhasebe import ParaHareketiModel
 class UyeParaHareketiKayitForm(ModelForm):
     class Meta:
         model = ParaHareketiModel
-        fields = ["tutar", "tarih", "aciklama"]
+        fields = ["uye", "hareket_turu", "odeme_turu", "tutar", "tarih", "aciklama"]
         # exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
 
     def __init__(self, *args, **kwargs):

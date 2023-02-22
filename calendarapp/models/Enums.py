@@ -16,6 +16,7 @@ class SeviyeEnum(Enum):
     def choices(cls):
         return [(key.name, key.value,) for key in cls]
 
+
 class UyeTipiEnum(IntEnum):
     Yetişkin = 1
     Genç = 2
@@ -23,6 +24,7 @@ class UyeTipiEnum(IntEnum):
     @classmethod
     def choices(cls):
         return [(key.name, key.value,) for key in cls]
+
 
 class AntrenorRenkEnum(Enum):
     red = "Kırmızı"
@@ -32,8 +34,6 @@ class AntrenorRenkEnum(Enum):
     @classmethod
     def choices(cls):
         return [(key.name, key.value,) for key in cls]
-
-
 
 
 class AbonelikTipiEnum(Enum):
@@ -46,11 +46,11 @@ class AbonelikTipiEnum(Enum):
 
     @classmethod
     def choices(cls):
-        return [(key.name,key.value) for key in cls]
+        return [(key.name, key.value) for key in cls]
 
     @classmethod
     def etkinlik_kaydinda_kullanilacaklar(cls):
-        return [(key.name, key.value ) for key in cls if key.name in ["Telafi", "Demo", "TekDers", "Diger"]]
+        return [(key.name, key.value) for key in cls if key.name in ["Telafi", "Demo", "TekDers", "Diger"]]
 
     @classmethod
     def haftalik_plan_kaydinda_kullanilacaklar(cls):
@@ -58,23 +58,24 @@ class AbonelikTipiEnum(Enum):
 
 
 class ParaHareketTuruEnum(Enum):
-    Giris = 1
-    Cikis = 2
+    Borc = "Borç"
+    Alacak = "Alacak"
 
     @classmethod
     def choices(cls):
-        return [(key.value, key.name) for key in cls]
+        return [(key.name, key.value) for key in cls]
 
 
 class OdemeTuruEnum(Enum):
-    Maaş = 1
-    Yol = 2
-    Yemek = 3
-    Diğer = 4
+    Aidat = "Aidat"
+    Paket = "Paket"
+    TekDers = "Tek Ders"
+    FarkUcreti = "Fark Ücreti"
+    Diger = "Diğer"
 
     @classmethod
     def choices(cls):
-        return [(key.value, key.name) for key in cls]
+        return [(key.name, key.value) for key in cls]
 
 
 class GrupOdemeSekliEnum(Enum):

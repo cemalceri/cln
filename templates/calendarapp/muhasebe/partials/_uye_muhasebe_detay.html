@@ -1,160 +1,64 @@
 {% load static %}
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card card-shadow">
-            <div class="card-header">
-                <h3 class="card-title">Ödemeler</h3>
+
+<div class="modal fade " id="detayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exampleModalLabel">Ödeme / Borç Detayı</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div>
-                <h4 class="text-center">Yapılan Dersler</h4>
-            </div>
-            <div class="table-responsive">
-                <div class="container-fluid ">
-                    <table class="table table-bordered dataTable table-fixed">
-                        <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Grup/Uye</th>
-                            <th>Kort</th>
-                            <th>Antrenör</th>
-                            <th>Üye Onay</th>
-                            <th>Antrenör Onay</th>
-                            <th>Yönetici Onay</th>
-                            <th>Tarih</th>
-                            <th>Açıklama</th>
-                            {#                                        <th>İşlemler</th>#}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for etkinlik in etkinlikler %}
-                            <tr>
-                                <td class="sorting_1">{{ forloop.counter }}</td>
-                                <td>{{ etkinlik.grup }}</td>
-                                <td>{{ etkinlik.kort }}</td>
-                                <td>{{ etkinlik.antrenor|default_if_none:"" }}</td>
-                                <td>{{ etkinlik.tamamlandi_uye|yesno:"Evet,Hayır" }}</td>
-                                <td>{{ etkinlik.tamamlandi_antrenor|yesno:"Evet,Hayır" }}</td>
-                                <td>{{ etkinlik.tamamlandi_yonetici|yesno:"Evet,Hayır" }}</td>
-                                <td>{{ etkinlik.baslangic_tarih_saat | default_if_none:"" }}</td>
-                                <td>{{ etkinlik.aciklama| default_if_none:"" }}</td>
-                                {#                                            <td>#}
-                                {#                                                <a class="btn btn-primary btn-circle"#}
-                                {#                                                   onclick="odemeDuzenle('{{ odeme.id }}')"#}
-                                {#                                                   title="Kaydı Düzenle"><i#}
-                                {#                                                        class="fa fa-edit black"></i></a>#}
-                                {#                                                <a href="{% url 'calendarapp:sil_odeme' odeme.id %}"#}
-                                {#                                                   class="btn btn-danger btn-circle confirm-delete"#}
-                                {#                                                   title="Sil"#}
-                                {#                                                   data-toggle="modal"#}
-                                {#                                                   data-target="#confirmDeleteModal"#}
-                                {#                                                   id="delete_uye_{{ odeme.id }}">#}
-                                {#                                                    <i class="fa fa-trash black"></i></a>#}
-                                {#                                            </td>#}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-12">
-        <div class="card card-shadow">
-            <div class="card-header">
-                <h3 class="card-title">Ödeme Girişi & Yapılan Ödemeler</h3>
-            </div>
-            <div class="card-block border-bottom">
-                <div class="">
-                    </b><h4 class="text-center">Ödeme Girişi</h4>
-                </div>
-                <div class="table-responsive">
-                    <div class="container-fluid ">
-                        <div class="col-sm-12">
-                            <form autocomplete="off" id="odemeForm">
-                                <div class="row">
-                                    <input type="hidden" value="{{ muhasebe_id }}" name="id_muhasebe">
-                                    <div class="form-group col-md-2">
-                                        <label class="form-control-label" for="id_tutar">Tutar</label>
-                                        <input type="number" class="form-control" id="id_tutar"
-                                               name="tutar" placeholder="Tutar"
-                                               autocomplete="off">
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label class="form-control-label" for="id_tarih">Tarih</label>
-                                        <input type="date" class="form-control" id="id_tarih"
-                                               name="tarih" placeholder="Tarih"
-                                               autocomplete="off">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label class="form-control-label" for="id_aciklama">
-                                            Açıklama</label>
-                                        <input type="text" class="form-control" id="id_aciklama"
-                                               name="aciklama" placeholder="Açıklama"
-                                               autocomplete="off">
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label class="form-control-label" for="id_aciklama">İşlemler</label>
-                                        <div class="row">
-                                            <div class="col-xs-6">
-                                                <a id="odemeKaydetBtn"
-                                                   class="btn btn-outline btn-sm btn-success mr-2">Kaydet</a>
-                                            </div>
-                                            <div class="col-xs-6">
-                                                <a id="odemeTemizleBtn" onclick="formTemizle()"
-                                                   class="btn btn-outline btn-sm btn-primary">Temizle</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-block">
-                <div>
-                    <h4 class="text-center">Yapılan Ödemeler</h4>
-                </div>
+            <div class="modal-body">
                 <div class="table-responsive">
                     <div class="container-fluid ">
                         <table class="table table-bordered dataTable table-fixed">
                             <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Üye</th>
+                                <th>İşlem Tipi</th>
                                 <th>Tarih</th>
                                 <th>Tutar</th>
-                                <th>Paket / Abonelik</th>
+                                <th>Ödeme Türü</th>
                                 <th>Açıklama</th>
                                 <th>İşlemler</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {#                                        {% for odeme in odemeler %}#}
-                            {#                                            <tr>#}
-                            {#                                                <td class="sorting_1">{{ forloop.counter }}</td>#}
-                            {#                                                <td>{{ odeme.tarih }}</td>#}
-                            {#                                                <td>{{ odeme.tutar }}</td>#}
-                            {#                                                <td>{{ odeme.paket | default_if_none:"" }}</td>#}
-                            {#                                                <td>{{ odeme.aciklama| default_if_none:"" }}</td>#}
-                            {#                                                <td>#}
-                            {#                                                    <a class="btn btn-primary btn-circle"#}
-                            {#                                                       onclick="odemeDuzenle('{{ odeme.id }}')"#}
-                            {#                                                       title="Kaydı Düzenle"><i#}
-                            {#                                                            class="fa fa-edit black"></i></a>#}
-                            {#                                                    <a href="{% url 'calendarapp:sil_odeme' odeme.id %}"#}
-                            {#                                                       class="btn btn-danger btn-circle confirm-delete"#}
-                            {#                                                       title="Sil"#}
-                            {#                                                       data-toggle="modal"#}
-                            {#                                                       data-target="#confirmDeleteModal"#}
-                            {#                                                       id="delete_uye_{{ odeme.id }}">#}
-                            {#                                                        <i class="fa fa-trash black"></i></a>#}
-                            {#                                                </td>#}
-                            {#                                            </tr>#}
-                            {#                                        {% endfor %}#}
+                            {% for para_haraket in para_hareketleri %}
+                                <tr>
+                                    <td class="sorting_1">{{ forloop.counter }}</td>
+                                    <td>{{ para_haraket.uye }}</td>
+                                    <td>{{ para_haraket.tip }}</td>
+                                    <td>{{ para_haraket.tarih }}</td>
+                                    <td>{{ para_haraket.tutar }}</td>
+                                    <td>{{ para_haraket.tur }}</td>
+                                    <td>{{ para_haraket.aciklama| default_if_none:"" }}</td>
+                                    <td>
+                                        {#                                        <a class="btn btn-primary btn-circle"#}
+                                        {#                                           onclick="odemeDuzenle('{{ odeme.id }}')"#}
+                                        {#                                           title="Kaydı Düzenle"><i#}
+                                        {#                                                class="fa fa-edit black"></i></a>#}
+                                        <a href="{% url 'calendarapp:sil_odeme' odeme.id %}"
+                                           class="btn btn-danger btn-circle confirm-delete"
+                                           title="Sil"
+                                           data-toggle="modal"
+                                           data-target="#confirmDeleteModal"
+                                           id="delete_uye_{{ para_haraket.id }}">
+                                            <i class="fa fa-trash black"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+{#                <button onclick="EtkinlikDuzenle({{ etkinlik.id }})" type="button" class="btn btn-success">#}
+{#                    Düzenle#}
             </div>
         </div>
     </div>
