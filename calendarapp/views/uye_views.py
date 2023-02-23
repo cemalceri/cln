@@ -93,8 +93,8 @@ def muhasebe_detay_modal_getir_ajax(request):
     ay = request.GET.get('ay')
     uye_id = request.GET.get('uye_id')
     para_hareketleri = ParaHareketiModel.objects.filter(uye_id=uye_id, tarih__year=yil, tarih__month=ay).order_by('-id')
-    html = render_to_string('calendarapp/muhasebe/partials/_uye_muhasebe_detay.html',
-                            {'para_hareketleri': para_hareketleri})
+    print(para_hareketleri)
+    html = render_to_string('calendarapp/uye/partials/_uye_muhasebe_detay.html', {'para_hareketleri': para_hareketleri})
     return JsonResponse(
         data={"status": "success", "message": "İşlem Başarılı.", "html": html})
 
@@ -110,7 +110,18 @@ def muhasebe_odeme_modal_getir_ajax(request):
         para_hareketi = ParaHareketiModel.objects.filter(pk=odeme_id).first()
         form = UyeParaHareketiKayitForm(instance=para_hareketi)
     else:
-        form = UyeParaHareketiKayitForm(initial={'tarih': tarih, 'uye_id': uye_id})
-    html = render_to_string('calendarapp/muhasebe/partials/_uye_odeme_girisi.html', {'form': form})
-    print(html)
+        form = UyeParaHareketiKayitForm(initial={'tarih': tarih, 'uye': uye_id})
+    html = render_to_string('calendarapp/uye/partials/_uye_odeme_girisi.html', {'form': form, "uye_id": uye_id})
     return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "html": html})
+
+
+@login_required
+def kaydet_uye_odemesi_ajax(request):
+    form = UyeParaHareketiKayitForm(request.GET)
+    if form.is_valid():
+        entity = form.save(commit=False)
+        entity.user = request.user
+        entity.save()
+        return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
+    else:
+        return JsonResponse(data={"status": "error", "message": formErrorsToText(form.errors, ParaHareketiModel)})

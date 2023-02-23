@@ -23,31 +23,6 @@ def index(request):
     return render(request, "calendarapp/muhasebe/index.html", {"muhasebe_list": muhasebe_list})
 
 
-@login_required
-def kaydet_uye_odemesi_ajax(request):
-    if request.method == 'POST':
-        aciklama = request.GET.get('aciklama')
-        tarih = request.GET.get('tarih')
-        tutar = request.GET.get('tutar')
-        uye = request.GET.get('uye')
-        paket = request.GET.get('paket')
-        if tutar is None or tutar == '':
-            return JsonResponse({'status': 'error', 'message': 'Tutar boş olamaz.'})
-        if tarih is None or tarih == '':
-            return JsonResponse({'status': 'error', 'message': 'Tarih boş olamaz.'})
-        if request.GET.get('id'):
-            item = ParaHareketiModel.objects.get(id=request.POST.get('id'))
-            item.aciklama = aciklama
-            item.tarih = tarih
-            item.tutar = tutar
-            item.uye_id = uye
-            item.paket_id = paket
-            item.save()
-        else:
-            ParaHareketiModel.objects.create(paket_id=paket, aciklama=aciklama, tarih=tarih, tutar=tutar, uye_id=uye,
-                                             hareket_turu=ParaHareketTuruEnum.Giris.value)
-        return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
-
 
 @login_required
 def kaydet_antrenor_odemesi_ajax(request):

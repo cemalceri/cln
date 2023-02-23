@@ -1,0 +1,73 @@
+{% load static %}
+<div class="modal fade " id="odemeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exampleModalLabel">Ödeme Girişi</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <div class="container-fluid ">
+                        <form autocomplete="nope" method="get" id="odemeForm">
+                            {#                            <input type="hidden" id="id_uye" name="uye" value="{{ uye_id }}">#}
+                            <div class="row">
+                                {% for field in form %}
+                                    <div class="col-md-4">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                {{ field.label_tag }}
+                                            </div>
+                                            <div class="col-md-7">
+                                                {{ field }}
+                                                {% if field.errors %}
+                                                    {% for error in field.errors %}
+                                                        <span class="text-help">{{ error }}</span>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="OdemeKaydet()" type="button" class="btn btn-success">
+                    Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function OdemeKaydet() {
+        var form = $('#odemeForm');
+        debugger;
+        var formData = form.serialize();
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'calendarapp:kaydet_uye_odemesi_ajax' %}",
+            data: formData,
+            success: function (data) {
+                if (data['status'] == 'success') {
+                    popupMesajGoster(data.message, data.status);
+                    $('#odemeModal').modal('hide');
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    popupMesajGoster(data.message, data.status);
+                }
+            },
+            error: function (data) {
+                popupMesajGoster(data.message, data.status);
+            }
+        });
+    }
+</script>

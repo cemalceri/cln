@@ -25,8 +25,8 @@
                             <th>#</th>
                             <th>Yıl</th>
                             <th>Ay</th>
-                            <th>Alacak</th>
                             <th>Ödenen</th>
+                            <th>Alacak</th>
                             <th>İşlemler</th>
                         </tr>
                         </thead>
@@ -36,18 +36,19 @@
                                 <td class="sorting_1">{{ forloop.counter }}</td>
                                 <td>{{ muhasebe.yil }}</td>
                                 <td>{{ muhasebe.ay }}</td>
-                                <td>{{ muhasebe.alacak }}</td>
-                                <td>{{ muhasebe.borc }}</td>
+                                <td>{{ muhasebe.toplam_odeme }}</td>
+                                <td>{{ muhasebe.toplam_borc }}</td>
+                                <td>{{ muhasebe.fark }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary"
+                                    <button type="button" class="btn btn-primary" title="Detaylar Görüntüle"
                                             onclick="detayBilgileriniGetir('{{ muhasebe.uye_id }}',
                                                     '{{ muhasebe.yil }}','{{ muhasebe.ay }}')">
-                                        Detay
+                                        <i class="fa fa-list"></i>
                                     </button>
-                                    <button type="button" class="btn btn-success"
+                                    <button type="button" class="btn btn-success" title="Ödeme/Borç Girişi"
                                             onclick="odemeGiris('{{ muhasebe.uye_id }}',
                                                     '{{ muhasebe.yil }}','{{ muhasebe.ay }}')">
-                                        Ödeme Girişi
+                                        <i class="fa fa-plus-circle"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -62,8 +63,8 @@
             </div>
         </div>
     </div>
-    <div id="detayDiv"></div>
     <div id="odemeDiv"></div>
+    <div id="detayDiv"></div>
     <script>
         function detayBilgileriniGetir(uye_id, yil, ay) {
             $.ajax({
@@ -81,10 +82,10 @@
                 }
             });
         }
+
         function odemeGiris(uye_id, yil, ay) {
-            debugger;
             $.ajax({
-                url: "{% url 'calendarapp:uye_odeme_modal_getir_ajax' %}",
+                url: "{% url 'calendarapp:uye_muhasebe_odeme_modal_getir_ajax' %}",
                 data: {
                     'yil': yil,
                     'ay': ay,
@@ -93,7 +94,6 @@
                 type: "get",
                 dataType: 'json',
                 success: function (data) {
-                    debugger;
                     $('#odemeDiv').html(data.html);
                     $('#odemeModal').modal('show');
                 }

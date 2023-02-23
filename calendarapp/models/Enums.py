@@ -59,7 +59,7 @@ class AbonelikTipiEnum(Enum):
 
 class ParaHareketTuruEnum(Enum):
     Borc = "Borç"
-    Alacak = "Alacak"
+    Odeme = "Ödeme"
 
     @classmethod
     def choices(cls):

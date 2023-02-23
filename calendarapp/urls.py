@@ -61,8 +61,9 @@ urlpatterns = [
     path("uye/sil/<int:id>", uye_views.sil, name="sil_uye"),
     path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),
     path("uye/muhasebe/<int:uye_id>", uye_views.muhasebe_uye, name="muhasebe_uye"),
-    path("uye/muhasebe-detay", uye_views.muhasebe_detay_modal_getir_ajax, name="uye_muhasebe_detay_modal_getir_ajax"),
-    path("uye/muhasebe-detay", uye_views.muhasebe_odeme_modal_getir_ajax, name="uye_odeme_modal_getir_ajax"),
+    path("uye/muhasebe-detay/", uye_views.muhasebe_detay_modal_getir_ajax, name="uye_muhasebe_detay_modal_getir_ajax"),
+    path("uye/muhasebe-odeme-girisi/", uye_views.muhasebe_odeme_modal_getir_ajax, name="uye_muhasebe_odeme_modal_getir_ajax"),
+    path("uye/kaydet-uye-odemesi/", uye_views.kaydet_uye_odemesi_ajax, name="kaydet_uye_odemesi_ajax"),
 
     # Kort
     path("kort/index", kort_views.index_kort, name="index_kort"),
@@ -118,7 +119,6 @@ urlpatterns = [
 
     # Muhasebe
     path("muhasebe/index", muhasebe_views.index, name="index_muhasebe"),
-    path("muhasebe/kaydet-uye-odemesi", muhasebe_views.kaydet_uye_odemesi_ajax, name="kaydet_uye_odemesi_ajax"),
     path("muhasebe/getir-odeme-by-id", muhasebe_views.getir_odeme_by_id_ajax, name="getir_odeme_by_id_ajax"),
     path("muhasebe/kaydet-antrenor-odemesi", muhasebe_views.kaydet_antrenor_odemesi_ajax,
          name="kaydet_antrenor_odemesi_ajax"),

@@ -31,17 +31,17 @@
                                 <tr>
                                     <td class="sorting_1">{{ forloop.counter }}</td>
                                     <td>{{ para_haraket.uye }}</td>
-                                    <td>{{ para_haraket.tip }}</td>
+                                    <td>{{ para_haraket.hareket_turu }}</td>
                                     <td>{{ para_haraket.tarih }}</td>
                                     <td>{{ para_haraket.tutar }}</td>
-                                    <td>{{ para_haraket.tur }}</td>
+                                    <td>{{ para_haraket.odeme_turu }}</td>
                                     <td>{{ para_haraket.aciklama| default_if_none:"" }}</td>
                                     <td>
                                         {#                                        <a class="btn btn-primary btn-circle"#}
                                         {#                                           onclick="odemeDuzenle('{{ odeme.id }}')"#}
                                         {#                                           title="Kaydı Düzenle"><i#}
                                         {#                                                class="fa fa-edit black"></i></a>#}
-                                        <a href="{% url 'calendarapp:sil_odeme' odeme.id %}"
+                                        <a href="{% url 'calendarapp:sil_odeme' para_haraket.id %}"
                                            class="btn btn-danger btn-circle confirm-delete"
                                            title="Sil"
                                            data-toggle="modal"
@@ -69,7 +69,7 @@
         form.append('<input type="hidden" name="uye" value="{{ uye.id }}">');
         let datas = form.serialize();
         $.ajax({
-            url: "{% url 'calendarapp:kaydet_uye_odemesi_ajax' %}",
+            //url: "{% url 'calendarapp:kaydet_uye_odemesi_ajax' %}",
             data: datas,
             type: "get",
             dataType: 'json',
