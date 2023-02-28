@@ -46,6 +46,13 @@ class MuhasebeModel(BaseAbstract):
     def fark(self):
         return self.toplam_odeme - self.toplam_borc
 
+    def hesapla_butonu_gosterilecek_mi(self):
+        from datetime import datetime
+        if self.yil == datetime.now().year and self.ay == datetime.now().month:
+            return True
+        else:
+            return False
+
 
 class ParaHareketiModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, on_delete=models.CASCADE, related_name="uye_parahareketi_relations",
@@ -68,3 +75,5 @@ class ParaHareketiModel(BaseAbstract):
         verbose_name = "Para Hareketleri"
         verbose_name_plural = "Para Hareketleri"
         ordering = ["id"]
+
+    # def save(self, *args, **kwargs):

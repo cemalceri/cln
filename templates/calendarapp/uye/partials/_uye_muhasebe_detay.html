@@ -41,12 +41,9 @@
                                         {#                                           onclick="odemeDuzenle('{{ odeme.id }}')"#}
                                         {#                                           title="Kaydı Düzenle"><i#}
                                         {#                                                class="fa fa-edit black"></i></a>#}
-                                        <a href="{% url 'calendarapp:sil_odeme' para_haraket.id %}"
+                                        <a onclick="odemeSil('{{ para_haraket.id }}')"
                                            class="btn btn-danger btn-circle confirm-delete"
-                                           title="Sil"
-                                           data-toggle="modal"
-                                           data-target="#confirmDeleteModal"
-                                           id="delete_uye_{{ para_haraket.id }}">
+                                           title="Sil">
                                             <i class="fa fa-trash black"></i></a>
                                     </td>
                                 </tr>
@@ -57,8 +54,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-{#                <button onclick="EtkinlikDuzenle({{ etkinlik.id }})" type="button" class="btn btn-success">#}
-{#                    Düzenle#}
+                {#                <button onclick="EtkinlikDuzenle({{ etkinlik.id }})" type="button" class="btn btn-success">#}
+                {#                    Düzenle#}
             </div>
         </div>
     </div>
@@ -111,10 +108,11 @@
         });
     }
 
-    function formTemizle() {
-        let elements = document.getElementsByClassName("form-control");
-        for (let i = 0; i < elements.length; i++) {
-            elements[i].value = "";
+    function odemeSil(odeme_id) {
+        debugger;
+        if (confirm('Silmek istediğinize emin misiniz?')) {
+            let url = "/muhasebe/sil-odeme/" + odeme_id
+            window.location.href = url;
         }
     }
 </script>

@@ -424,10 +424,12 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
 
 def haftalik_plan_yeni_haftaya_tasindi_kontrolu():
     bu_haftaninin_pazartesi = datetime.now() - timedelta(days=datetime.now().weekday())
-    bu_haftanini_plani = HaftalikPlanModel.objects.filter(baslangic_tarih_saat__gte=bu_haftaninin_pazartesi)
-    # Bu haftanın planı yoksa ve bugün pazartesi ise yeni haftaya taşı
-    if not bu_haftanini_plani.exists() and datetime.now().weekday() == 0:
-        for plan in HaftalikPlanModel.objects.all():
-            plan.baslangic_tarih_saat += timedelta(days=7)
-            plan.bitis_tarih_saat += timedelta(days=7)
+    onceki_haftalarin_plani = HaftalikPlanModel.objects.filter(baslangic_tarih_saat__lt=bu_haftaninin_pazartesi)
+    # Bu haftanın öncesindeki planların haftalık planlar tablosundaki tarihlerini güncelle
+    if onceki_haftalarin_plani.exists():
+        for plan in onceki_haftalarin_plani:
+            plan_pazartesi = plan.baslangic_tarih_saat - timedelta(days=plan.baslangic_tarih_saat.weekday())
+            fark = (bu_haftaninin_pazartesi - plan_pazartesi).days
+            plan.baslangic_tarih_saat += timedelta(days=fark)
+            plan.bitis_tarih_saat += timedelta(days=fark)
             plan.save()

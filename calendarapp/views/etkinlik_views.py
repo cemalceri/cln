@@ -433,6 +433,7 @@ def haftanin_etkinliklerini_sil_ajax(request):
     haftanin_etkinlikleri = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=pazartesi,
                                                          haftalik_plan_kodu__isnull=False,
                                                          baslangic_tarih_saat__lt=pazartesi + timedelta(days=7))
+
     if haftanin_etkinlikleri.exists():
         haftanin_etkinlikleri.delete()
         return JsonResponse(data={"status": "success", "message": "İşlem başarılı."})

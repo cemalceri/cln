@@ -5,7 +5,6 @@
 {% endblock %}
 {% block extracss %}
     {% include 'base/remark_css.html' %}
-    <link rel="stylesheet" href="{% static 'template/classic/base/assets/examples/css/pages/profile.css' %}">
 {% endblock extracss %}
 
 {% block extrascripts %}
@@ -16,24 +15,23 @@
         <div class="col-md-12">
             <div class="panel border">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Ödeme Geçmişi</h3>
+                    <h3 class="panel-title"><b>{{ uye }}</b> Üyesinin Ödeme Geçmişi</h3>
                 </div>
                 <div class="panel-body container-fluid">
-                    <table id="tableIn" class="table table-bordered dataTable">
+                    <table class="table table-bordered dataTable table-fixed">
                         <thead>
                         <tr>
-                            <th>#</th>
                             <th>Yıl</th>
                             <th>Ay</th>
                             <th>Ödenen</th>
                             <th>Alacak</th>
+                            <th>Fark</th>
                             <th>İşlemler</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for muhasebe in muhasebe_list %}
                             <tr>
-                                <td class="sorting_1">{{ forloop.counter }}</td>
                                 <td>{{ muhasebe.yil }}</td>
                                 <td>{{ muhasebe.ay }}</td>
                                 <td>{{ muhasebe.toplam_odeme }}</td>
@@ -50,6 +48,12 @@
                                                     '{{ muhasebe.yil }}','{{ muhasebe.ay }}')">
                                         <i class="fa fa-plus-circle"></i>
                                     </button>
+                                    {% if muhasebe.hesapla_butonu_gosterilecek_mi %}
+                                        <a class="btn btn-info" title="Hesapla"
+                                           href="{% url 'calendarapp:hesapla_uye_borcu' muhasebe.uye_id %}">
+                                            <i class="fa fa-calculator"></i>
+                                        </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
