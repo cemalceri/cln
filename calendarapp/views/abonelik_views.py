@@ -35,8 +35,9 @@ def index_uye_paket(request):
 
 @login_required
 def kaydet_uye_paket(request, uye_id):
+    form = UyePaketKayitForm(initial={'uye': UyeModel.objects.filter(pk=uye_id).first()})
     if request.method == 'POST':
-        form = UyePaketKayitForm(request.POST)
+        form = UyePaketKayitForm(request.POST, initial={'uye': UyeModel.objects.filter(pk=uye_id).first()})
         if form.is_valid():
             entity = form.save(commit=False)
             entity.user = request.user
@@ -46,7 +47,6 @@ def kaydet_uye_paket(request, uye_id):
         else:
             messages.error(request, formErrorsToText(form.errors, UyePaketModel))
             return render(request, "calendarapp/abonelik/uye_paket_kaydet.html", context={'form': form})
-    form = UyePaketKayitForm(initial={'uye': UyeModel.objects.filter(pk=uye_id).first()})
     return render(request, "calendarapp/abonelik/uye_paket_kaydet.html", context={'form': form})
 
 
@@ -61,7 +61,7 @@ def guncelle_uye_paket(request, id):
             messages.success(request, "Kaydedildi.")
             return redirect("calendarapp:profil_uye", entity.uye.id)
         else:
-            messages.error(request, formErrorsToText(form.errors, AntrenorModel))
+            messages.error(request, formErrorsToText(form.errors, UyePaketModel))
             return render(request, "calendarapp/abonelik/uye_paket_kaydet.html", context={'form': form})
     form = UyePaketKayitForm(instance=entity)
     return render(request, "calendarapp/abonelik/uye_paket_kaydet.html", context={'form': form})

@@ -1,12 +1,12 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Abonelik / Paket Kaydı{% endblock title %}
+{% block title %}Kort Kayıt{% endblock title %}
 
 {% block breadcrumb %}
     <div>
         <h1><i class="fa fa-dashboard"></i> Kayıt Formu</h1>
-        <p>Abonelik / Paket Kaydı</p>
+        <p>Antrenor Kayıt</p>
     </div>
     <ul class="app-breadcrumb breadcrumb">
         <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
@@ -20,9 +20,9 @@
             <div class="panel-body">
                 <form autocomplete="nope" method="post"
                         {% if form.instance.id %}
-                      action="{% url 'calendarapp:guncelle_uye_paket' form.instance.id %}">
+                      action="{% url 'calendarapp:guncelle_ucret_tarifesi' form.instance.id %}">
                         {% else %}
-                            action="{% url 'calendarapp:kaydet_uye_paket' form.initial.uye.id %}">
+                            action="{% url 'calendarapp:kaydet_ucret_tarifesi' %}">
                         {% endif %}
                 {% csrf_token %}
                 <div class="row ">
@@ -47,32 +47,13 @@
                 <div class="row">
                     <div class="col-md-4 offset-md-4">
                         <button type="submit" class="btn btn-primary float-right">Kaydet</button>
-                        {% if form.instance.id %}
-                            <a href="{% url 'calendarapp:profil_uye' form.instance.uye.id %}"
-                               class="btn btn-secondary float-right mr-2">Geri</a>
-                            <a href="{% url 'calendarapp:sil_uye_paket' form.instance.id %}"
-                               class=" btn btn-danger btn-circle confirm-delete" title="Sil"
-                               data-toggle="modal"
-                               data-target="#confirmDeleteModal" id="delete_abonelik_{{ form.instance.id }}">
-                                <i class="fa fa-trash" style="color: black"></i></a>
-                        {% else %}
-                            <a href="{% url 'calendarapp:profil_uye' form.initial.uye.id %}"
-                               class="btn btn-secondary float-right mr-2">Geri</a>
-                        {% endif %}
+                        <a href="{% url 'calendarapp:index_ucret_tarifesi' %}"
+                           class="btn btn-secondary float-right mr-2">Geri</a>
                     </div>
                 </div>
                 </form>
             </div>
         </div>
     </div>
-
-    <script>
-        $(document).ready(function () {
-            $("#id_uye").select2({
-                placeholder: "Üye Seçiniz",
-                allowClear: true,
-            });
-        });
-    </script>
 
 {% endblock content %}

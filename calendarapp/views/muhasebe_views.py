@@ -10,11 +10,13 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
-from calendarapp.models.Enums import ParaHareketTuruEnum, AbonelikTipiEnum, OdemeTuruEnum
+from calendarapp.forms.muhasebe_forms import UcretTarifesiKayitForm
+from calendarapp.models.Enums import ParaHareketTuruEnum,  UcretTuruEnum
 from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
-from calendarapp.models.concrete.muhasebe import ParaHareketiModel, MuhasebeModel
+from calendarapp.models.concrete.muhasebe import ParaHareketiModel, MuhasebeModel, UcretTarifesiModel
 from calendarapp.models.concrete.uye import UyeGrupModel
+from calendarapp.utils import formErrorsToText
 
 
 @login_required
@@ -29,6 +31,38 @@ def getir_odeme_by_id_ajax(request):
         id = request.GET.get('id')
         odeme = ParaHareketiModel.objects.filter(pk=id).first()
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı.", "data": to_dict(odeme)})
+
+
+@login_required
+def index_ucret_tarifesi(request):
+    form = UcretTarifesiModel.objects.all().order_by('id')
+    return render(request, "calendarapp/muhasebe/ucret_tarifesi/index.html", {"list": form})
+
+
+@login_required
+def kaydet_ucret_tarifesi(request, id=None):
+    entity = UcretTarifesiModel.objects.filter(pk=id).first()
+    if request.method == 'POST':
+        form = UcretTarifesiKayitForm(request.POST, instance=entity)
+        if form.is_valid():
+            entity = form.save(commit=False)
+            entity.user = request.user
+            entity.save()
+            messages.success(request, "Kaydedildi.")
+            return redirect("calendarapp:index_ucret_tarifesi")
+        else:
+            messages.error(request, formErrorsToText(form.errors, UcretTarifesiModel))
+            return render(request, "calendarapp/muhasebe/ucret_tarifesi/kaydet.html", context={'form': form})
+    form = UcretTarifesiKayitForm(instance=entity)
+    return render(request, "calendarapp/muhasebe/ucret_tarifesi/kaydet.html", context={'form': form})
+
+
+@login_required
+def sil_ucret_tarifesi(request, id):
+    item = UcretTarifesiModel.objects.filter(pk=id).first()
+    item.delete()
+    messages.success(request, "Kayıt Silindi.")
+    return redirect("calendarapp:index_ucret_tarifesi")
 
 
 @login_required
@@ -58,11 +92,11 @@ def hesapla_uye_borcu(request, uye_id):
     uyenin_haftalik_planlari = HaftalikPlanModel.objects.filter(grup_id__in=uyenin_grup_ids)
     toplam_borcu = 0
     ParaHareketiModel.objects.filter(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
-                                     odeme_turu=OdemeTuruEnum.Aidat.value, tarih__year=bu_yil,
+                                     ucret_turu=UcretTuruEnum.Aidat.value, tarih__year=bu_yil,
                                      tarih__month=bu_ay).delete()
     for haftalik_plan in uyenin_haftalik_planlari:
         ParaHareketiModel.objects.create(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
-                                         odeme_turu=OdemeTuruEnum.Aidat.value, tarih=date(bu_yil, bu_ay, 1), tutar=1000,
+                                         ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(bu_yil, bu_ay, 1), tutar=1000,
                                          aciklama="Sistem Tarafından Hesaplandı.")
 
     messages.success(request, "İşlem Başarılı.")

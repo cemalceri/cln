@@ -1,11 +1,14 @@
 from django.urls import path
 
-from .views import etkinlik_views as ev, rezervasyon_views as rv, telafi_ders_views, abonelik_views
+from .views import etkinlik_views as ev
+from .views import rezervasyon_views as rv
+from .views import telafi_ders_views
+from .views import abonelik_views
 from .views import uye_views
 from .views import kort_views
 from .views import antrenor_views
 from .views import grup_views
-from .views import muhasebe_views
+from .views import muhasebe_views as mv
 from .views.eski import haftalik_plan_views
 from .views import sabit_plan_views as hfsp_views
 
@@ -50,7 +53,8 @@ urlpatterns = [
     path("etkinlik/datay-modal", ev.detay_modal_ajax, name="etkinlik_detay_modal_getir_ajax"),
     path("etkinlik/kaydet-modal", ev.kaydet_modal_ajax, name="etkinlik_kaydet_modal_getir_ajax"),
     path("etkinlik/duzenle-modal", ev.duzenle_modal_ajax, name="etkinlik_duzenle_modal_getir_ajax"),
-    path("etkinlik/haftayi-olustur", ev.haftayi_sabit_plandan_olustur_ajax, name="haftanin_etkinliklerini_sabit_plandan_olustur_ajax"),
+    path("etkinlik/haftayi-olustur", ev.haftayi_sabit_plandan_olustur_ajax,
+         name="haftanin_etkinliklerini_sabit_plandan_olustur_ajax"),
     path("etkinlik/haftayi-sil", ev.haftanin_etkinliklerini_sil_ajax, name="haftanin_etkinliklerini_sil_ajax"),
 
     # Uye
@@ -62,7 +66,8 @@ urlpatterns = [
     path("uye/profil/<int:id>", uye_views.profil, name="profil_uye"),
     path("uye/muhasebe/<int:uye_id>", uye_views.muhasebe_uye, name="muhasebe_uye"),
     path("uye/muhasebe-detay/", uye_views.muhasebe_detay_modal_getir_ajax, name="uye_muhasebe_detay_modal_getir_ajax"),
-    path("uye/muhasebe-odeme-girisi/", uye_views.muhasebe_odeme_modal_getir_ajax, name="uye_muhasebe_odeme_modal_getir_ajax"),
+    path("uye/muhasebe-odeme-girisi/", uye_views.muhasebe_odeme_modal_getir_ajax,
+         name="uye_muhasebe_odeme_modal_getir_ajax"),
     path("uye/kaydet-uye-odemesi/", uye_views.kaydet_uye_odemesi_ajax, name="kaydet_uye_odemesi_ajax"),
 
     # Kort
@@ -114,13 +119,17 @@ urlpatterns = [
     # path("abonelik/sil/<int:id>", abonelik_views.sil, name="sil_paket"),
     # path("abonelik/detay/<int:id>", abonelik_views.detay, name="detay_paket"),
     path("abonelik/kaydet-uye-paket/<int:uye_id>", abonelik_views.kaydet_uye_paket, name="kaydet_uye_paket"),
-    path("abonelik/guncelle-uye_paket/<int:id>", abonelik_views.guncelle_uye_paket, name="guncelle_uye_paket"),
-    path("abonelik/sil_uye_paket/<int:id>", abonelik_views.sil_uye_paket, name="sil_uye_paket"),
+    path("abonelik/guncelle-uye-paket/<int:id>", abonelik_views.guncelle_uye_paket, name="guncelle_uye_paket"),
+    path("abonelik/sil-uye-paket/<int:id>", abonelik_views.sil_uye_paket, name="sil_uye_paket"),
 
     # Muhasebe
-    path("muhasebe/index", muhasebe_views.index, name="index_muhasebe"),
-    path("muhasebe/getir-odeme-by-id", muhasebe_views.getir_odeme_by_id_ajax, name="getir_odeme_by_id_ajax"),
-    path("muhasebe/sil-odeme/<int:id>", muhasebe_views.sil_odeme, name="sil_odeme"),
-    path("muhasebe/hesapla_uye_borcu/<int:uye_id>", muhasebe_views.hesapla_uye_borcu, name="hesapla_uye_borcu"),
+    path("muhasebe/index", mv.index, name="index_muhasebe"),
+    path("muhasebe/getir-odeme-by-id", mv.getir_odeme_by_id_ajax, name="getir_odeme_by_id_ajax"),
+    path("muhasebe/sil-odeme/<int:id>", mv.sil_odeme, name="sil_odeme"),
+    path("muhasebe/hesapla_uye_borcu/<int:uye_id>", mv.hesapla_uye_borcu, name="hesapla_uye_borcu"),
+    path("muhasebe/index-ucret-tarifesi", mv.index_ucret_tarifesi, name="index_ucret_tarifesi"),
+    path("muhasebe/kaydet-ucret-tarifesi", mv.kaydet_ucret_tarifesi, name="kaydet_ucret_tarifesi"),
+    path("muhasebe/guncelle-ucret-tarifesi/<int:id>", mv.kaydet_ucret_tarifesi, name="guncelle_ucret_tarifesi"),
+    path("muhasebe/sil-ucret-tarifesi/<int:id>", mv.sil_ucret_tarifesi, name="sil_ucret_tarifesi"),
 
 ]

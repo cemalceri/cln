@@ -3,10 +3,8 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Sum
 
-from calendarapp.models.Enums import ParaHareketTuruEnum, OdemeTuruEnum
+from calendarapp.models.Enums import ParaHareketTuruEnum, SeviyeEnum, AbonelikTipiEnum, UcretTuruEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
-from calendarapp.models.concrete.abonelik import UyePaketModel
-from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.uye import UyeModel
 
 
@@ -59,11 +57,12 @@ class ParaHareketiModel(BaseAbstract):
                             null=True, blank=True, verbose_name="Üye")
     hareket_turu = models.CharField(max_length=20, choices=ParaHareketTuruEnum.choices(), null=False, blank=False,
                                     default=ParaHareketTuruEnum.Borc.value)
-    odeme_turu = models.CharField("Türü", max_length=20, choices=OdemeTuruEnum.choices(), null=False, blank=False,
-                                  default=OdemeTuruEnum.Diger.value)
+    ucret_turu = models.CharField("Türü", max_length=20, choices=UcretTuruEnum.choices(), null=False, blank=False,
+                                  default=UcretTuruEnum.Diger.value)
     tutar = models.DecimalField(max_length=20, verbose_name="Tutar", max_digits=10, decimal_places=2, null=False,
                                 blank=False)
     tarih = models.DateField(verbose_name="Tarih", null=False, blank=False)
+    paket_id = models.IntegerField(verbose_name="Paket Id", null=True, blank=True)
     aciklama = models.CharField('Açıklama', max_length=250, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
                              related_name="user_parahareketi_relations", null=True, blank=True)
@@ -77,3 +76,19 @@ class ParaHareketiModel(BaseAbstract):
         ordering = ["id"]
 
     # def save(self, *args, **kwargs):
+
+
+class UcretTarifesiModel(BaseAbstract):
+    adi = models.CharField(max_length=50, verbose_name="Adı", null=False, blank=False)
+    seviye = models.CharField(max_length=20, choices=SeviyeEnum.choices(), null=False, blank=False)
+    abonelik_tipi = models.CharField(max_length=20, choices=AbonelikTipiEnum.haftalik_plan_kaydinda_kullanilacaklar(),
+                                     null=False, blank=False)
+    kisi_sayisi = models.SmallIntegerField(verbose_name="Kişi Sayısı", null=False, blank=False)
+    kisi_basi_ucret = models.SmallIntegerField(verbose_name="Kişi Başı Ücret", null=False, blank=False)
+    ders_sayisi = models.SmallIntegerField(verbose_name="Ders Sayısı", null=True, blank=True)
+
+    def __str__(self):
+        return self.adi
+
+    def toplam_ucret(self):
+        return self.kisi_basi_ucret * self.kisi_sayisi

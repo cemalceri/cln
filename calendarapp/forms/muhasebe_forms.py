@@ -1,14 +1,15 @@
 from django import forms
 from django.forms import ModelForm, DateInput
 
+from calendarapp.models.Enums import AbonelikTipiEnum
 from calendarapp.models.concrete.antrenor import AntrenorModel
-from calendarapp.models.concrete.muhasebe import ParaHareketiModel
+from calendarapp.models.concrete.muhasebe import ParaHareketiModel, UcretTarifesiModel
 
 
 class UyeParaHareketiKayitForm(ModelForm):
     class Meta:
         model = ParaHareketiModel
-        fields = ["uye", "hareket_turu", "odeme_turu", "tutar", "tarih", "aciklama"]
+        fields = ["uye", "hareket_turu", "ucret_turu", "tutar", "tarih", "aciklama"]
         # exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
         widgets = {
             "tarih": DateInput(
@@ -24,3 +25,24 @@ class UyeParaHareketiKayitForm(ModelForm):
                 'class': 'form-control',
                 'autocomplete': 'nope'
             })
+
+
+class UcretTarifesiKayitForm(ModelForm):
+    class Meta:
+        model = UcretTarifesiModel
+        fields = "__all__"
+        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user']
+
+    def __init__(self, *args, **kwargs):
+        super(UcretTarifesiKayitForm, self).__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'nope'
+            })
+
+    def clean(self):
+        abonelik_tipi = self.cleaned_data.get("abonelik_tipi")
+        ders_sayisi = self.cleaned_data.get("ders_sayisi")
+        if abonelik_tipi == AbonelikTipiEnum.Paket.name and (ders_sayisi is None or ders_sayisi < 1):
+            self.add_error("ders_sayisi", "Paket seçildiğinde ders sayısı girilmesi zorunludur.")

@@ -66,7 +66,7 @@ class ParaHareketTuruEnum(Enum):
         return [(key.name, key.value) for key in cls]
 
 
-class OdemeTuruEnum(Enum):
+class UcretTuruEnum(Enum):
     Aidat = "Aidat"
     Paket = "Paket"
     TekDers = "Tek Ders"

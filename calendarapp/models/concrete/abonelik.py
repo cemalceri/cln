@@ -1,10 +1,13 @@
+import datetime
+
 from django.conf import settings
 from django.db import models
 
-from calendarapp.models.Enums import AbonelikTipiEnum
+from calendarapp.models.Enums import ParaHareketTuruEnum, UcretTuruEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.kort import KortModel
+from calendarapp.models.concrete.muhasebe import UcretTarifesiModel, ParaHareketiModel
 from calendarapp.models.concrete.uye import UyeModel, GrupModel
 
 
@@ -43,7 +46,8 @@ class UyePaketModel(BaseAbstract):
     baslangic_tarih = models.DateField("Başlangıç Tarihi", null=False, blank=False)
     bitis_tarih = models.DateField(verbose_name="Bitiş Tarihi", null=True, blank=True)
     adet = models.IntegerField(verbose_name="Adet", null=False, blank=False)
-    toplam_fiyati = models.IntegerField(verbose_name="Toplam Fiyatı", null=False, blank=False)
+    ucret_tarifesi = models.ForeignKey(UcretTarifesiModel, verbose_name="Paket", on_delete=models.CASCADE, blank=False,
+                                       null=False)
     ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
     aktif_mi = models.BooleanField(default=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
@@ -59,7 +63,30 @@ class UyePaketModel(BaseAbstract):
         ordering = ["id"]
 
     def __str__(self):
-        return str(self.uye) + "-" + str(self.kort) + " - Adet: " + str(self.adet)
+        return str(self.uye) + "-" + str(self.ucret_tarifesi) + " - Adet: " + str(self.adet)
+
+    def save(self, *args, **kwargs):
+        # Paket kayıt anındaki adet değeri kayıt ediliyor.
+        self.adet = self.ucret_tarifesi.ders_sayisi
+        super(UyePaketModel, self).save(*args, **kwargs)
+        para_hareketi = ParaHareketiModel.objects.filter(paket_id=self.id).first()
+        if self.id and para_hareketi:
+            ucret_tarifesi = UcretTarifesiModel.objects.filter(id=self.ucret_tarifesi.id).first()
+            para_hareketi.paket_id = self.id
+            para_hareketi.tutar = ucret_tarifesi.kisi_basi_ucret
+            para_hareketi.tarih = datetime.datetime.now().date()
+            para_hareketi.aciklama = "Paket Güncelleme İşleminde Sistem Tarafından Güncellendi"
+            para_hareketi.save()
+        else:
+            ParaHareketiModel.objects.create(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Borc.name,
+                                             ucret_turu=UcretTuruEnum.Paket.name, paket_id=self.id,
+                                             tutar=self.ucret_tarifesi.kisi_basi_ucret,
+                                             tarih=datetime.datetime.now().date(),
+                                             aciklama="Paket Kaydında Sistem Tarafından Oluşturuldu")
+
+    def delete(self, *args, **kwargs):
+        ParaHareketiModel.objects.filter(paket_id=self.id).delete()
+        super(UyePaketModel, self).delete(*args, **kwargs)
 
 
 class PaketKullanimModel(BaseAbstract):

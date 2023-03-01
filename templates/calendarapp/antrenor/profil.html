@@ -256,8 +256,8 @@
                                             {% csrf_token %}
                                             <div class="row">
                                                 <div class="form-group col-md-2">
-                                                    <label class="form-control-label" for="id_odeme_turu">Ödeme Türü</label>
-                                                    <select class="form-control" id="id_odeme_turu" name="odeme_turu">
+                                                    <label class="form-control-label" for="id_ucret_turu">Ödeme Türü</label>
+                                                    <select class="form-control" id="id_ucret_turu" name="odeme_turu">
                                                         <option value="Maaş">Maaş</option>
                                                         <option value="Yol/Yemek">Yol/Yemek</option>
                                                         <option value="Diğer">Diğer</option>
@@ -323,7 +323,7 @@
                                                             {% for odeme in odemeler %}
                                                                 <tr>
                                                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                                                    <td>{{ odeme.odeme_turu | default_if_none:"" }}</td>
+                                                                    <td>{{ odeme.ucret_turu | default_if_none:"" }}</td>
                                                                     <td>{{ odeme.tutar }}</td>
                                                                     <td>{{ odeme.tarih }}</td>
                                                                     <td>{{ odeme.aciklama| default_if_none:"" }}</td>
