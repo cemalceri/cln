@@ -83,11 +83,22 @@ def profil(request, id):
 
 @login_required
 def muhasebe_uye(request, uye_id):
+    uye = UyeModel.objects.filter(pk=uye_id).first()
     if not MuhasebeModel.objects.filter(uye_id=uye_id, yil=datetime.now().year, ay=datetime.now().month).exists():
         MuhasebeModel.objects.create(uye_id=uye_id, yil=datetime.now().year, ay=datetime.now().month)
     muhasebe_list = MuhasebeModel.objects.filter(uye_id=uye_id).order_by('yil', 'ay')
-    uye = UyeModel.objects.filter(pk=uye_id).first()
-    return render(request, "calendarapp/uye/muhasebe.html", {"muhasebe_list": muhasebe_list, "uye": uye})
+    toplam_borc = muhasebe_list.first().toplam_borc if muhasebe_list.first() else 0
+    toplam_odeme = muhasebe_list.first().toplam_odeme if muhasebe_list.first() else 0
+    toplam_fark = muhasebe_list.first().toplam_odeme if muhasebe_list.first() else 0
+
+    contex = {
+        "muhasebe_list": muhasebe_list,
+        "toplam_borc": toplam_borc,
+        "toplam_odeme": toplam_odeme,
+        "toplam_fark": toplam_fark,
+        "uye": uye
+    }
+    return render(request, "calendarapp/uye/muhasebe.html", context=contex)
 
 
 @login_required
