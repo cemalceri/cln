@@ -64,13 +64,13 @@
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-md-4">
-                            <span> <h3>Ödeme Toplamı: {{ muhasebe_list.first.toplam_odeme |default_if_none:"0" }}</h3></span>
+                            <span> <h3>Ödeme Toplamı: {{ toplam_odeme |default_if_none:"0" }}</h3></span>
                         </div>
                         <div class="col-md-4">
-                            <span> <h3>Borç Toplamı: {{ muhasebe_list.first.toplam_borc |default_if_none:"0" }}</h3></span>
+                            <span> <h3>Borç Toplamı: {{ toplam_borc |default_if_none:"0" }}</h3></span>
                         </div>
                         <div class="col-md-4">
-                            <span><h3>Fark : {{ muhasebe_list.first.toplam_fark |default_if_none:"0" }}</h3></span>
+                            <span><h3>Fark : {{ toplam_fark|default_if_none:"0" }}</h3></span>
                         </div>
                     </div>
                 </div>
