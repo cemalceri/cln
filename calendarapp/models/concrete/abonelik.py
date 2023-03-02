@@ -73,7 +73,7 @@ class UyePaketModel(BaseAbstract):
             para_hareketi.paket_id = self.id
             para_hareketi.tutar = ucret_tarifesi.kisi_basi_ucret
             para_hareketi.tarih = datetime.now().date()
-            para_hareketi.aciklama = "Paket gunceleme sistem tarafından" + datetime.now().strftime(
+            para_hareketi.aciklama = "Paket güncelleme işleminde sistem tarafından" + datetime.now().strftime(
                 "%d.%m.%Y %H:%M:%S") + " tarihinde otomatik olarak oluşturuldu."
             para_hareketi.save()
         else:
@@ -81,8 +81,8 @@ class UyePaketModel(BaseAbstract):
                                              ucret_turu=UcretTuruEnum.Paket.name, paket_id=self.id,
                                              tutar=self.ucret_tarifesi.kisi_basi_ucret,
                                              tarih=datetime.now().date(),
-                                             aciklama="Paket kayıt sistem tarafından" + datetime.now().strftime(
-                                                 "%d.%m.%Y %H:%M:%S") + "tarihinde otomatik olarak oluşturuldu")
+                                             aciklama="Paket kayıt işleminde sistem tarafından" + datetime.now().strftime(
+                                                 "%d.%m.%Y %H:%M:%S") + " tarihinde otomatik olarak oluşturuldu")
 
     def delete(self, *args, **kwargs):
         ParaHareketiModel.objects.filter(paket_id=self.id).delete()

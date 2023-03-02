@@ -5,7 +5,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="exampleModalLabel">Ödeme / Borç Detayı</h3>
+                <h3 class="modal-title" id="exampleModalLabel">Ödeme/Borç Detayı</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -17,11 +17,11 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Üye</th>
-                                <th>İşlem Tipi</th>
+                                <th>Tipi</th>
                                 <th>Tarih</th>
                                 <th>Tutar</th>
                                 <th>Türü</th>
+                                <th>Kayıt Tarihi</th>
                                 <th>Açıklama</th>
                                 <th>İşlemler</th>
                             </tr>
@@ -30,11 +30,11 @@
                             {% for para_haraket in para_hareketleri %}
                                 <tr>
                                     <td class="sorting_1">{{ forloop.counter }}</td>
-                                    <td>{{ para_haraket.uye }}</td>
-                                    <td>{{ para_haraket.hareket_turu }}</td>
+                                    <td>{{ para_haraket.get_hareket_turu_display }}</td>
                                     <td>{{ para_haraket.tarih }}</td>
                                     <td>{{ para_haraket.tutar }}</td>
-                                    <td>{{ para_haraket.ucret_turu }}</td>
+                                    <td>{{ para_haraket.get_ucret_turu_display }}</td>
+                                    <td>{{ para_haraket.created_at }}</td>
                                     <td>{{ para_haraket.aciklama| default_if_none:"" }}</td>
                                     <td>
                                         {#                                        <a class="btn btn-primary btn-circle"#}

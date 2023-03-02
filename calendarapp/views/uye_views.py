@@ -83,6 +83,8 @@ def profil(request, id):
 
 @login_required
 def muhasebe_uye(request, uye_id):
+    if not MuhasebeModel.objects.filter(uye_id=uye_id, yil=datetime.now().year, ay=datetime.now().month).exists():
+        MuhasebeModel.objects.create(uye_id=uye_id, yil=datetime.now().year, ay=datetime.now().month)
     muhasebe_list = MuhasebeModel.objects.filter(uye_id=uye_id).order_by('yil', 'ay')
     uye = UyeModel.objects.filter(pk=uye_id).first()
     return render(request, "calendarapp/uye/muhasebe.html", {"muhasebe_list": muhasebe_list, "uye": uye})

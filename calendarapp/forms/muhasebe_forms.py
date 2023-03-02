@@ -1,9 +1,7 @@
-from django import forms
 from django.forms import ModelForm, DateInput
-
 from calendarapp.models.Enums import AbonelikTipiEnum
-from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel, UcretTarifesiModel
+from calendarapp.models.concrete.uye import UyeModel
 
 
 class UyeParaHareketiKayitForm(ModelForm):
@@ -25,6 +23,9 @@ class UyeParaHareketiKayitForm(ModelForm):
                 'class': 'form-control',
                 'autocomplete': 'nope'
             })
+        if self.initial.get('uye'):
+            self.fields['uye'].queryset = UyeModel.objects.filter(
+            pk=self.initial.get('uye'))
 
 
 class UcretTarifesiKayitForm(ModelForm):

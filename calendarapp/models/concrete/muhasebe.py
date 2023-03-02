@@ -22,7 +22,7 @@ class MuhasebeModel(BaseAbstract):
         return str(self.uye) + " " + str(self.yil) + " " + str(self.ay)
 
     @property
-    def toplam_borc(self):
+    def toplam_aylik_borc(self):
         borc_toplami = \
             ParaHareketiModel.objects.filter(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Borc.name,
                                              tarih__year=self.yil, tarih__month=self.ay).aggregate(
@@ -32,7 +32,7 @@ class MuhasebeModel(BaseAbstract):
         return borc_toplami if borc_toplami else 0
 
     @property
-    def toplam_odeme(self):
+    def toplam_aylik_odeme(self):
         odeme_toplami = \
             ParaHareketiModel.objects.filter(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Odeme.name,
                                              tarih__year=self.yil, tarih__month=self.ay).aggregate(
@@ -42,7 +42,7 @@ class MuhasebeModel(BaseAbstract):
         return odeme_toplami if odeme_toplami else 0
 
     def fark(self):
-        return self.toplam_odeme - self.toplam_borc
+        return self.toplam_aylik_odeme - self.toplam_aylik_borc
 
     def hesapla_butonu_gosterilecek_mi(self):
         from datetime import datetime
@@ -50,6 +50,19 @@ class MuhasebeModel(BaseAbstract):
             return True
         else:
             return False
+
+    def toplam_odeme(self):
+        return \
+            ParaHareketiModel.objects.filter(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Odeme.name).aggregate(
+                Sum('tutar'))['tutar__sum']
+
+    def toplam_borc(self):
+        return \
+            ParaHareketiModel.objects.filter(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Borc.name).aggregate(
+                Sum('tutar'))['tutar__sum']
+
+    def toplam_fark(self):
+        return self.toplam_odeme() - self.toplam_borc()
 
 
 class ParaHareketiModel(BaseAbstract):
@@ -62,7 +75,11 @@ class ParaHareketiModel(BaseAbstract):
     tutar = models.DecimalField(max_length=20, verbose_name="Tutar", max_digits=10, decimal_places=2, null=False,
                                 blank=False)
     tarih = models.DateField(verbose_name="Tarih", null=False, blank=False)
-    paket_id = models.IntegerField(verbose_name="Paket Id", null=True, blank=True)
+    paket = models.ForeignKey('UyePaketModel', on_delete=models.CASCADE, related_name="paket_parahareketi_relations",
+                              null=True, blank=True)
+    abonelik = models.ForeignKey('HaftalikPlanModel', on_delete=models.CASCADE,
+                                 related_name="abonelik_parahareketi_relations",
+                                 null=True, blank=True)
     aciklama = models.CharField('Açıklama', max_length=250, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
                              related_name="user_parahareketi_relations", null=True, blank=True)

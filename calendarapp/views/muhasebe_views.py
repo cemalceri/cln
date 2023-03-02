@@ -6,9 +6,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from calendarapp.forms.muhasebe_forms import UcretTarifesiKayitForm
 from calendarapp.models.Enums import ParaHareketTuruEnum, UcretTuruEnum, AbonelikTipiEnum
-from calendarapp.models.concrete.etkinlik import  HaftalikPlanModel
+from calendarapp.models.concrete.etkinlik import HaftalikPlanModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel, MuhasebeModel, UcretTarifesiModel
-from calendarapp.models.concrete.uye import UyeGrupModel
+from calendarapp.models.concrete.uye import UyeGrupModel, UyeModel
 from calendarapp.utils import formErrorsToText, gun_adi_ve_saati_getir
 
 
@@ -78,31 +78,58 @@ def to_dict(instance):
 
 
 @login_required
+def hesapla_tum_uyelerin_borcu(request):
+    uyeler = UyeModel.objects.filter(aktif_mi=True, onaylandi_mi=True)
+    for uye in uyeler:
+        uye_grup_ids = UyeGrupModel.objects.filter(uye_id=uye.id).values_list('grup_id', flat=True)
+        uyenin_haftalik_planlari = HaftalikPlanModel.objects.filter(grup_id__in=uye_grup_ids)
+        if not planlarin_ucret_bilgisi_var_mi(request, uyenin_haftalik_planlari):
+            return redirect("calendarapp:index_muhasebe")
+        borc_hesapla(uye.id, uyenin_haftalik_planlari)
+    messages.success(request, "İşlem Başarılı.")
+    return redirect("calendarapp:index_muhasebe")
+
+
+@login_required
 def hesapla_uye_borcu(request, uye_id):
+    uye_grup_ids = UyeGrupModel.objects.filter(uye_id=uye_id).values_list('grup_id', flat=True)
+    uyenin_haftalik_planlari = HaftalikPlanModel.objects.filter(grup_id__in=uye_grup_ids)
+    if not planlarin_ucret_bilgisi_var_mi(request, uyenin_haftalik_planlari):
+        return redirect("calendarapp:muhasebe_uye", uye_id=uye_id)
+    borc_hesapla(uye_id, uyenin_haftalik_planlari)
+    messages.success(request, "İşlem Başarılı.")
+    return redirect("calendarapp:muhasebe_uye", uye_id=uye_id)
+
+
+def borc_hesapla(uye_id, uyenin_haftalik_planlari):
     bu_yil = date.today().year
     bu_ay = date.today().month
-    uyenin_grup_ids = UyeGrupModel.objects.filter(uye_id=uye_id).values_list('grup_id', flat=True)
-    uyenin_haftalik_planlari = HaftalikPlanModel.objects.filter(grup_id__in=uyenin_grup_ids)
-    ilk_kayit_edilen_id = 0
     for plan in uyenin_haftalik_planlari:
         ucret = UcretTarifesiModel.objects.filter(seviye=plan.top_rengi, abonelik_tipi=AbonelikTipiEnum.Uyelik.name,
                                                   kisi_sayisi=plan.grup.uye_sayisi()).first().kisi_basi_ucret
-        aciklama = "Sistem Tarafından " + gun_adi_ve_saati_getir(
-            plan.baslangic_tarih_saat) + " aboneliği için " + datetime.now().strftime(
-            "%d.%m.%Y %H:%M:%S") + " tarihinde otomatik olarak oluşturuldu."
-        if not ucret:
-            mesaj = gun_adi_ve_saati_getir(
-                plan.baslangic_tarih_saat) + " tarihli abonelik için bir ücret tarifesi bulunamadı. Lüffen tarife ekleyiniz."
+        kayit = ParaHareketiModel.objects.filter(uye_id=uye_id, abonelik_id=plan.id)
+        if not kayit.exists():
+            aciklama = "Sistem tarafından " + gun_adi_ve_saati_getir(
+                plan.baslangic_tarih_saat) + " aboneliği için otomatik olarak oluşturuldu."
+            ParaHareketiModel.objects.create(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
+                                             ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(bu_yil, bu_ay, 1),
+                                             tutar=ucret, abonelik_id=plan.id, aciklama=aciklama)
+        else:
+            aciklama = "Sistem tarafından " + gun_adi_ve_saati_getir(
+                plan.baslangic_tarih_saat) + " aboneliği için " + str(
+                datetime.now().strftime("%d.%m.%Y %H:%M:%S")) + " tarihinde yeniden hesaplandı."
+            kayit.update(tutar=ucret, aciklama=aciklama)
+
+
+def planlarin_ucret_bilgisi_var_mi(request, planlar):
+    for plan in planlar:
+        if not UcretTarifesiModel.objects.filter(seviye=plan.top_rengi, abonelik_tipi=AbonelikTipiEnum.Uyelik.name,
+                                                 kisi_sayisi=plan.grup.uye_sayisi()).first():
+            mesaj = "Seviye: " + str(plan.top_rengi) + ", Abonelik Tipi: Üyelik, Kişi Sayısı:" + str(
+                plan.grup.uye_sayisi()) + " olan ücret tarifesi bulunamadı. Ücret tarifesini ekledikten sonra tekrar deneyiniz."
             messages.error(request, mesaj)
-            return redirect("calendarapp:muhasebe_uye", uye_id=uye_id)
-        kayit = ParaHareketiModel.objects.create(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
-                                                 ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(bu_yil, bu_ay, 1),
-                                                 tutar=ucret, aciklama=aciklama)
-        if ilk_kayit_edilen_id == 0:
-            ilk_kayit_edilen_id = kayit.id
-    ParaHareketiModel.objects.filter(id__lt=ilk_kayit_edilen_id, paket_id__isnull=True).delete()
-    messages.success(request, "İşlem Başarılı.")
-    return redirect("calendarapp:muhasebe_uye", uye_id=uye_id)
+            return False
+    return True
 
 # @login_required
 # def index(request):

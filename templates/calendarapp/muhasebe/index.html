@@ -10,12 +10,14 @@
 {% endblock extrascripts %}
 {% block breadcrumb %}
     <div>
-        <h1><i class="fa fa-dashboard"></i> Muhasebe</h1>
+        <h1><i class="fa fa-dashboard"></i>Muhasebe</h1>
+        <p>Borç/Ödeme Listesi</p>
     </div>
-    <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
-        <li class="breadcrumb-item"><a href="#">Anasayfa</a></li>
-    </ul>
+    <div class="btn-group" aria-label="Basic example" role="group">
+        <a class="btn btn-info" href="{% url 'calendarapp:hesapla_tum_uyelerin_borcu' %}"><i
+                class="fa fa-calculator"></i>Tüm Üyeleri Hesapla
+        </a>
+    </div>
 {% endblock breadcrumb %}
 {% block content %}
     <div class="row">
@@ -28,26 +30,26 @@
                     <table id="tableIn" class="table table-bordered dataTable">
                         <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Üye</th>
                             <th>Yıl</th>
                             <th>Ay</th>
+                            <th>Üye</th>
                             <th>Ödenen</th>
                             <th>Borç</th>
+                            <th>Fark</th>
                             <th>İşlemler</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for muhasebe in muhasebe_list %}
                             <tr>
-                                <td data-order="{{ forloop.counter }}">{{ forloop.counter }}</td>
-                                <td>
-                                    <a href="{% url 'calendarapp:profil_uye' muhasebe.uye_id %}">{{ muhasebe.uye }}</a>
-                                </td>
                                 <td>{{ muhasebe.yil }}</td>
                                 <td>{{ muhasebe.ay }}</td>
+                                <td>
+                                    <a href="{% url 'calendarapp:muhasebe_uye' muhasebe.uye_id %}">{{ muhasebe.uye }}</a>
+                                </td>
                                 <td>{{ muhasebe.odeme |default_if_none:"" }}</td>
                                 <td>{{ muhasebe.borc |default_if_none:"" }}</td>
+                                <td>{{ muhasebe.fark |default_if_none:"" }}</td>
                                 <td></td>
                             </tr>
                         {% endfor %}
