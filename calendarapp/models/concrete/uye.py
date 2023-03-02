@@ -115,9 +115,11 @@ class GrupModel(BaseAbstract):
             else:
                 return self.adi
 
+    def renk(self):
+        return UyeGrupModel.objects.filter(grup_id=self.id).first().uye.seviye_rengi
 
-def renk(self):
-    return UyeGrupModel.objects.filter(grup_id=self.id).first().uye.seviye_rengi
+    def uye_sayisi(self):
+        return len(UyeGrupModel.objects.filter(grup_id=self.id))
 
 
 class UyeGrupModel(BaseAbstract):

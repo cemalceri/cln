@@ -1,8 +1,6 @@
-import datetime
-
 from django.conf import settings
 from django.db import models
-
+from datetime import datetime
 from calendarapp.models.Enums import ParaHareketTuruEnum, UcretTuruEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
@@ -74,15 +72,17 @@ class UyePaketModel(BaseAbstract):
             ucret_tarifesi = UcretTarifesiModel.objects.filter(id=self.ucret_tarifesi.id).first()
             para_hareketi.paket_id = self.id
             para_hareketi.tutar = ucret_tarifesi.kisi_basi_ucret
-            para_hareketi.tarih = datetime.datetime.now().date()
-            para_hareketi.aciklama = "Paket Güncelleme İşleminde Sistem Tarafından Güncellendi"
+            para_hareketi.tarih = datetime.now().date()
+            para_hareketi.aciklama = "Paket gunceleme sistem tarafından" + datetime.now().strftime(
+                "%d.%m.%Y %H:%M:%S") + " tarihinde otomatik olarak oluşturuldu."
             para_hareketi.save()
         else:
             ParaHareketiModel.objects.create(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Borc.name,
                                              ucret_turu=UcretTuruEnum.Paket.name, paket_id=self.id,
                                              tutar=self.ucret_tarifesi.kisi_basi_ucret,
-                                             tarih=datetime.datetime.now().date(),
-                                             aciklama="Paket Kaydında Sistem Tarafından Oluşturuldu")
+                                             tarih=datetime.now().date(),
+                                             aciklama="Paket kayıt sistem tarafından" + datetime.now().strftime(
+                                                 "%d.%m.%Y %H:%M:%S") + "tarihinde otomatik olarak oluşturuldu")
 
     def delete(self, *args, **kwargs):
         ParaHareketiModel.objects.filter(paket_id=self.id).delete()

@@ -32,22 +32,22 @@
                             <th>Üye</th>
                             <th>Yıl</th>
                             <th>Ay</th>
-                            <th>Alacak</th>
                             <th>Ödenen</th>
+                            <th>Borç</th>
                             <th>İşlemler</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for muhasebe in muhasebe_list %}
                             <tr>
-                                <td class="sorting_1">{{ forloop.counter }}</td>
+                                <td data-order="{{ forloop.counter }}">{{ forloop.counter }}</td>
                                 <td>
                                     <a href="{% url 'calendarapp:profil_uye' muhasebe.uye_id %}">{{ muhasebe.uye }}</a>
                                 </td>
                                 <td>{{ muhasebe.yil }}</td>
                                 <td>{{ muhasebe.ay }}</td>
-                                <td>{{ muhasebe.alacak }}</td>
-                                <td>{{ muhasebe.borc }}</td>
+                                <td>{{ muhasebe.odeme |default_if_none:"" }}</td>
+                                <td>{{ muhasebe.borc |default_if_none:"" }}</td>
                                 <td></td>
                             </tr>
                         {% endfor %}

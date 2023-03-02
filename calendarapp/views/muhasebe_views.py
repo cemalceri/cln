@@ -1,22 +1,15 @@
-import random
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from itertools import chain
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db import models
-from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.template.loader import render_to_string
-
 from calendarapp.forms.muhasebe_forms import UcretTarifesiKayitForm
-from calendarapp.models.Enums import ParaHareketTuruEnum,  UcretTuruEnum
-from calendarapp.models.concrete.abonelik import UyeAbonelikModel, PaketKullanimModel
-from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanModel
+from calendarapp.models.Enums import ParaHareketTuruEnum, UcretTuruEnum, AbonelikTipiEnum
+from calendarapp.models.concrete.etkinlik import  HaftalikPlanModel
 from calendarapp.models.concrete.muhasebe import ParaHareketiModel, MuhasebeModel, UcretTarifesiModel
 from calendarapp.models.concrete.uye import UyeGrupModel
-from calendarapp.utils import formErrorsToText
+from calendarapp.utils import formErrorsToText, gun_adi_ve_saati_getir
 
 
 @login_required
@@ -90,19 +83,27 @@ def hesapla_uye_borcu(request, uye_id):
     bu_ay = date.today().month
     uyenin_grup_ids = UyeGrupModel.objects.filter(uye_id=uye_id).values_list('grup_id', flat=True)
     uyenin_haftalik_planlari = HaftalikPlanModel.objects.filter(grup_id__in=uyenin_grup_ids)
-    toplam_borcu = 0
-    ParaHareketiModel.objects.filter(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
-                                     ucret_turu=UcretTuruEnum.Aidat.value, tarih__year=bu_yil,
-                                     tarih__month=bu_ay).delete()
-    for haftalik_plan in uyenin_haftalik_planlari:
-        ParaHareketiModel.objects.create(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
-                                         ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(bu_yil, bu_ay, 1), tutar=1000,
-                                         aciklama="Sistem Tarafından Hesaplandı.")
-
+    ilk_kayit_edilen_id = 0
+    for plan in uyenin_haftalik_planlari:
+        ucret = UcretTarifesiModel.objects.filter(seviye=plan.top_rengi, abonelik_tipi=AbonelikTipiEnum.Uyelik.name,
+                                                  kisi_sayisi=plan.grup.uye_sayisi()).first().kisi_basi_ucret
+        aciklama = "Sistem Tarafından " + gun_adi_ve_saati_getir(
+            plan.baslangic_tarih_saat) + " aboneliği için " + datetime.now().strftime(
+            "%d.%m.%Y %H:%M:%S") + " tarihinde otomatik olarak oluşturuldu."
+        if not ucret:
+            mesaj = gun_adi_ve_saati_getir(
+                plan.baslangic_tarih_saat) + " tarihli abonelik için bir ücret tarifesi bulunamadı. Lüffen tarife ekleyiniz."
+            messages.error(request, mesaj)
+            return redirect("calendarapp:muhasebe_uye", uye_id=uye_id)
+        kayit = ParaHareketiModel.objects.create(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
+                                                 ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(bu_yil, bu_ay, 1),
+                                                 tutar=ucret, aciklama=aciklama)
+        if ilk_kayit_edilen_id == 0:
+            ilk_kayit_edilen_id = kayit.id
+    ParaHareketiModel.objects.filter(id__lt=ilk_kayit_edilen_id, paket_id__isnull=True).delete()
     messages.success(request, "İşlem Başarılı.")
     return redirect("calendarapp:muhasebe_uye", uye_id=uye_id)
 
-#
 # @login_required
 # def index(request):
 #     if request.method == "POST":

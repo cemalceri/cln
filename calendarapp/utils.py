@@ -63,3 +63,8 @@ def formErrorsToText(Errors, instance):
     return errorText
 
 
+def gun_adi_ve_saati_getir(tarih):
+    gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
+    gun = gunler[tarih.weekday()]
+    saat = tarih.strftime("%H:%M")
+    return gun + " " + saat
