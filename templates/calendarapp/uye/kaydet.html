@@ -39,7 +39,7 @@
         <div class="panel-heading">
             <h2 class="panel-title">{% if uye_tipi == 1 %}Yetişkin Üye {% else %} Sporcu {% endif %} Kayıt</h2>
             <div class="panel-body">
-                <form autocomplete="nope" method="post"
+                <form autocomplete="nope" method="post" enctype="multipart/form-data"
                         {% if form.instance.id %}
                       action="{% url 'calendarapp:guncelle_uye' form.instance.id %}">
                         {% else %}
@@ -51,7 +51,7 @@
                     {% for field in form %}
                         <div class="col-md-6 offset-md-3">
                             <div class="form-group row">
-                                {% if field.name != "uye_tipi" %}
+                                {% if field.widget_type != "hidden" %}
                                     <div class="col-md-4">
                                         {{ field.label }}
                                     </div>

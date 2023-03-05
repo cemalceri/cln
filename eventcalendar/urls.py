@@ -15,14 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
 urlpatterns = [
-    path("", views.dasboard, name="dashboard"),
-    path("ajax", views.etkinlik_listesi_tablosu_getir_ajax, name="etkinlik_listesi_tablosu_getir_ajax"),
-    path("baslangic-metodu", views.baslangic_metodu, name="baslangic_metodu"),
-    path("admin/", admin.site.urls),
-    path("auths/", include("auths.urls")),
-    path("", include("calendarapp.urls")),
-]
+                  path("", views.dasboard, name="dashboard"),
+                  path("ajax", views.etkinlik_listesi_tablosu_getir_ajax, name="etkinlik_listesi_tablosu_getir_ajax"),
+                  path("baslangic-metodu", views.baslangic_metodu, name="baslangic_metodu"),
+                  path("admin/", admin.site.urls),
+                  path("auths/", include("auths.urls")),
+                  path("", include("calendarapp.urls")),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL,
+                                                                                         document_root=settings.STATIC_ROOT)

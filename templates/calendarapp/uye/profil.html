@@ -23,7 +23,11 @@
                     <div class="card-block">
                         <div class="row">
                             <div class="col-md-3">
-                                <img class="img-fluid" src="{% static 'template/classic/global/portraits/5.jpg' %}"
+                                <a class="icon fa fa-trash bg-danger float-right"
+                                   href="{% url 'calendarapp:profil_foto_sil_uye' uye.id %}"
+                                   title="Sil"></a>
+                                <a class="icon fa fa-edit float-right" href="javascript:void(0)" title="Düzenle"></a>
+                                <img class="img-fluid" src="/media/{{ uye.profil_fotografi }}"
                                      alt="...">
                                 <h4 class="profile-user">{{ uye.adi }} {{ uye.soyadi }}</h4>
                                 <div class="profile-social">

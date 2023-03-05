@@ -69,6 +69,7 @@ urlpatterns = [
     path("uye/muhasebe-odeme-girisi/", uye_views.muhasebe_odeme_modal_getir_ajax,
          name="uye_muhasebe_odeme_modal_getir_ajax"),
     path("uye/kaydet-uye-odemesi/", uye_views.kaydet_uye_odemesi_ajax, name="kaydet_uye_odemesi_ajax"),
+    path("uye/profil-foto-sil/<int:id>", uye_views.profil_foto_sil, name="profil_foto_sil_uye"),
 
     # Kort
     path("kort/index", kort_views.index_kort, name="index_kort"),

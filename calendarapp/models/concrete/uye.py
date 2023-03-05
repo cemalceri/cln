@@ -52,6 +52,7 @@ class UyeModel(BaseAbstract):
                                     related_name='gunler_uye_tablosu')
     saatler = models.ManyToManyField(SaatlerModel, verbose_name='Tercih Edilen Saatler', blank=True, null=True,
                                      related_name='saatler_uye_tablosu')
+    profil_fotografi = models.ImageField('Profil Fotoğrafı', upload_to='profiles/', null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="uye", null=True,
                              blank=True, verbose_name="Ekleyen")
     # Yetişkin

@@ -27,9 +27,9 @@ def kaydet(request, id=None, uye_tipi=None):
     if request.method == 'POST':
         entity = UyeModel.objects.filter(pk=id).first()
         uye_tipi = request.POST.get("uye_tipi")
-        form = UyeKayitForm(request.POST,
+        form = UyeKayitForm(request.POST, request.FILES,
                             instance=entity) if uye_tipi == UyeTipiEnum.Yetişkin.value else GencUyeKayitForm(
-            request.POST, instance=entity)
+            request.POST, request.FILES, instance=entity)
         if form.is_valid():
             entity = form.save(commit=False)
             entity.user = request.user
@@ -137,3 +137,14 @@ def kaydet_uye_odemesi_ajax(request):
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})
     else:
         return JsonResponse(data={"status": "error", "message": formErrorsToText(form.errors, ParaHareketiModel)})
+
+
+@login_required
+def profil_foto_sil(request, id):
+    uye = UyeModel.objects.filter(pk=id).first()
+    if uye.profil_fotografi:
+        uye.profil_fotografi.delete()
+        messages.success(request, "Kayıt Silindi.")
+    else:
+        messages.error(request, "Kayıtlı Fotoğraf Bulunamadı.")
+    return redirect("calendarapp:profil_uye", id=id)
