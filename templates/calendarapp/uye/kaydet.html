@@ -30,14 +30,14 @@
                     Kayıt</a>
             </div>
             <div class="col-md-6">
-                <a class="btn btn-info btn-block" href="{% url 'calendarapp:kaydet_uye'  uye_tipi=2 %}">Genç Kayıt</a>
+                <a class="btn btn-info btn-block" href="{% url 'calendarapp:kaydet_uye'  uye_tipi=2 %}">Sporcu Kayıt</a>
             </div>
         {% endif %}
     </div>
     {% if form %}
         <div class="panel bg-blue-grey-300">
         <div class="panel-heading">
-            <h2 class="panel-title">{% if uye_tipi == 1 %}Yetişkin Üye {% else %} Genç Üye {% endif %} Kayıt</h2>
+            <h2 class="panel-title">{% if uye_tipi == 1 %}Yetişkin Üye {% else %} Sporcu {% endif %} Kayıt</h2>
             <div class="panel-body">
                 <form autocomplete="nope" method="post"
                         {% if form.instance.id %}

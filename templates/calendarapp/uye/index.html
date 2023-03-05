@@ -49,7 +49,7 @@
                                                     <td class="sorting_1">{{ forloop.counter }}</td>
                                                     <td>{{ uye.adi }}</td>
                                                     <td>{{ uye.soyadi }}</td>
-                                                    <td>{% if uye.uye_tipi == 1 %}Yetişkin{% else %}Genç{% endif %}</td>
+                                                    <td>{% if uye.uye_tipi == 1 %}Yetişkin{% else %}Sporcu{% endif %}</td>
                                                     <td>{{ uye.telefon | default_if_none:"" }}</td>
                                                     <td>{{ uye.email| default_if_none:"" }}</td>
                                                     <td>

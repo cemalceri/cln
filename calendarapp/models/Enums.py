@@ -19,7 +19,7 @@ class SeviyeEnum(Enum):
 
 class UyeTipiEnum(IntEnum):
     Yetişkin = 1
-    Genç = 2
+    Sporcu = 2
 
     @classmethod
     def choices(cls):
@@ -30,6 +30,14 @@ class AntrenorRenkEnum(Enum):
     red = "Kırmızı"
     orange = "Turuncu"
     yellow = "Sarı"
+
+    @classmethod
+    def choices(cls):
+        return [(key.name, key.value,) for key in cls]
+
+class CinsiyetEnum(Enum):
+    Erkek = "Erkek"
+    Kadın = "Kadın"
 
     @classmethod
     def choices(cls):

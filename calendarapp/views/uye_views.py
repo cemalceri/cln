@@ -41,17 +41,16 @@ def kaydet(request, id=None, uye_tipi=None):
             messages.error(request, formErrorsToText(form.errors, UyeModel))
             return render(request, "calendarapp/uye/kaydet.html", context={'form': form})
     else:
+        uye = UyeModel.objects.filter(pk=id).first()
         duzenleme_mi = False
-        if id is not None:
-            uye = UyeModel.objects.filter(pk=id).first()
+        form = None
+        if uye:
             uye_tipi = uye.uye_tipi
             duzenleme_mi = True
             form = UyeKayitForm(instance=uye) if uye_tipi == UyeTipiEnum.Yetişkin.value else GencUyeKayitForm(
                 instance=uye)
-        elif uye_tipi is not None:
+        elif uye_tipi:
             form = UyeKayitForm() if uye_tipi == UyeTipiEnum.Yetişkin.value else GencUyeKayitForm()
-        else:
-            form = None
     return render(request, "calendarapp/uye/kaydet.html",
                   context={'form': form, 'uye_tipi': uye_tipi, 'duzenleme_mi': duzenleme_mi})
 

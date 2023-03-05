@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import etkinlik_views as ev
+from .views import etkinlik_views as ev, common_views
 from .views import rezervasyon_views as rv
 from .views import telafi_ders_views
 from .views import abonelik_views
@@ -133,4 +133,9 @@ urlpatterns = [
     path("muhasebe/guncelle-ucret-tarifesi/<int:id>", mv.kaydet_ucret_tarifesi, name="guncelle_ucret_tarifesi"),
     path("muhasebe/sil-ucret-tarifesi/<int:id>", mv.sil_ucret_tarifesi, name="sil_ucret_tarifesi"),
 
+    # Commons
+    path("commons/okul-index", common_views.index_okul, name="index_okul"),
+    path("commons/okul-kaydet", common_views.kaydet_okul, name="kaydet_okul"),
+    path("commons/okul-kaydet/<int:id>", common_views.kaydet_okul, name="guncelle_okul"),
+    path("commons/okul-sil/<int:id>", common_views.sil_okul, name="sil_okul"),
 ]

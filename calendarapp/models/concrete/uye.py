@@ -3,9 +3,9 @@ from django.db.models import Q
 from django.db.models.signals import post_save, post_delete
 
 from django.conf import settings
-from calendarapp.models.Enums import SeviyeEnum, GrupOdemeSekliEnum, UyeTipiEnum
+from calendarapp.models.Enums import SeviyeEnum, GrupOdemeSekliEnum, UyeTipiEnum, CinsiyetEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
-from calendarapp.models.concrete.commons import GunlerModel, SaatlerModel
+from calendarapp.models.concrete.commons import GunlerModel, SaatlerModel, OkulModel
 
 
 class UyeManager(models.Manager):
@@ -29,7 +29,7 @@ class UyeModel(BaseAbstract):
     adi = models.CharField('Adı', max_length=30, null=False, blank=False)
     soyadi = models.CharField('Soyadı', max_length=30, null=False, blank=False)
     kimlik_no = models.CharField("Kimlik No", max_length=11, blank=True, null=True)
-    cinsiyet = models.CharField('Cinsiyet', max_length=10, null=True, blank=True)
+    cinsiyet = models.CharField('Cinsiyet', max_length=10, choices=CinsiyetEnum.choices(), null=True, blank=True)
     telefon = models.CharField('Telefon', max_length=11, null=True, blank=True)
     email = models.EmailField('E-Mail', max_length=50, null=True, blank=True)
     dogum_tarihi = models.DateField('Doğum Tarihi', null=True, blank=True)
@@ -42,8 +42,12 @@ class UyeModel(BaseAbstract):
     uye_tipi = models.SmallIntegerField('Üye Tipi', choices=UyeTipiEnum.choices(), default=UyeTipiEnum.Yetişkin.value,
                                         null=False, blank=False)
     referansi = models.CharField('Referans', max_length=50, null=True, blank=True)
-    tenis_gecmisi_var_mi = models.BooleanField('Tenis Eğitim Geçmişi', null=True, blank=True)
-    program_tercihi = models.CharField('Program Tercihi', max_length=100, null=True, blank=True)
+    tenis_gecmisi_var_mi = models.CharField('Tenis Eğitim Geçmişi',
+                                            choices=[('Var', 'Var'), ('Yok', 'Yok'), ('Az', 'Az')],
+                                            max_length=10, null=True, blank=True)
+    program_tercihi = models.CharField('Program Tercihi', max_length=100, null=True, blank=True,
+                                       choices=[('Özel Ders', 'Özel Ders'), ('Grup', 'Grup'), ('Hobi', 'Hobi'),
+                                                ('Altyapı', 'Altyapı')])
     gunler = models.ManyToManyField(GunlerModel, verbose_name='Tercih Edilen Günler', blank=True, null=True,
                                     related_name='gunler_uye_tablosu')
     saatler = models.ManyToManyField(SaatlerModel, verbose_name='Tercih Edilen Saatler', blank=True, null=True,
@@ -62,7 +66,7 @@ class UyeModel(BaseAbstract):
     baba_telefon = models.CharField('Baba Telefon', max_length=11, null=True, blank=True)
     baba_mail = models.EmailField('Baba E-Mail', max_length=50, null=True, blank=True)
     baba_meslek = models.CharField('Baba Meslek', max_length=50, null=True, blank=True)
-    okul = models.ForeignKey('OkulModel', on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
+    okul = models.ForeignKey(OkulModel, on_delete=models.SET_NULL, related_name="okul", null=True, blank=True)
 
     def __str__(self):
         return str(self.adi) + " " + str(self.soyadi) + " (" + str(self.uye_no) + ")"

@@ -30,7 +30,7 @@ class UyeKayitForm(ModelForm):
 
 
 class GencUyeKayitForm(ModelForm):
-    uye_tipi = forms.IntegerField(widget=forms.HiddenInput(), initial=UyeTipiEnum.Genç.value)
+    uye_tipi = forms.IntegerField(widget=forms.HiddenInput(), initial=UyeTipiEnum.Sporcu.value)
 
     class Meta:
         model = UyeModel
@@ -52,7 +52,7 @@ class GencUyeKayitForm(ModelForm):
                 'class': 'form-control',
                 'autocomplete': 'nope'
             })
-        self.fields["uye_tipi"].initial = UyeTipiEnum.Genç.value
+        self.fields["uye_tipi"].initial = UyeTipiEnum.Sporcu.value
         # self.fields["bitis_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)
 
 
