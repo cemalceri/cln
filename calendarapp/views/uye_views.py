@@ -33,6 +33,7 @@ def kaydet(request, id=None, uye_tipi=None):
         if form.is_valid():
             entity = form.save(commit=False)
             entity.user = request.user
+            entity.uye_tipi = uye_tipi
             entity.save()
             form.save_m2m()
             messages.success(request, "Üye kaydedildi.")
