@@ -31,54 +31,88 @@
     <div id="bekleyenModalDiv"></div>
     <script>
         $(document).ready(function () {
+            console.log(new Date());
             {% for gun in haftanin_gunleri %}
                 sabitPlaniGetir('{{ gun }}');
             {% endfor %}
+            console.log(new Date());
+
         });
 
         function sabitPlaniGetir(sorgulanan_gun) {
+            let plan;
             $.ajax({
-                url: "{% url 'calendarapp:sabit_plan_gunun_etkinlikleri_ajax' %}",
-                type: "GET",
-                dataType: "json",
-                data: {
-                    'tarih': sorgulanan_gun
-                },
-                success: function (result) {
-                    for (let i = 0; i < result.list.length; i++) { //her kort için döngü
-                        let kortId = result.list[i].kort_id;
-                        let kortunSaatleri = result.list[i].saatler;
-                        let kolon = $('#' + sorgulanan_gun + '_kort_' + kortId);
-                        let saat = "";
-                        for (let s = 0; s < kortunSaatleri.length; s++) {
-                            saat = kortunSaatleri[s].saat;
-                            let saatDiv = $('<div id="' + sorgulanan_gun + '_kort_' + kortId + '_saat_' + saat + '" class="row" style="height:30px"></div>');
-                            let etkinlikler = result.list[i].saatler[s].etkinlikler;
-                            let bolunmeSayisi = result.list[i].saatler[s].bolunmeSayisi;
-                            let hucreGenisligi = 60 / bolunmeSayisi;
-                            for (let e = 0; e < etkinlikler.length; e++) {
-                                let etkinlik = etkinlikler[e];
-                                let etkinlikDiv = $('<div id="' + etkinlik.id + '" class="col doluEtkinlik border black" ' +
-                                    'style="font-size: 0.7rem; width: ' + hucreGenisligi + 'px; background-color:' + etkinlik.renk + '">' +
-                                    etkinlik.seviye + ' </div>');
-                                 if (result.list[i].saatler[s].bekleyenVarMi) {
-                                    etkinlikDiv.append('<i class="fa fa-info"></i>');
+                    url: "{% url 'calendarapp:sabit_plan_gunun_etkinlikleri_ajax' %}",
+                    type: "GET",
+                    dataType: "json",
+                    //  async: false,
+                    data: {
+                        'tarih': sorgulanan_gun
+                    },
+                    success: function (result) {
+                        console.log(result.liste)
+                        for (let i = 0; i < result.liste.length; i++) {
+                            plan = result.liste[i];
+                            let hucreIdListesi = planinDahilOlduguHucreIdleri(plan.baslangic_tarih_saat, plan.bitis_tarih_saat, plan.kort_id);
+                            for (let j = 0; j < hucreIdListesi.length; j++) {
+                                let eklenecekDivs = $("div[id^='" + hucreIdListesi[j] + "']");
+                                if (eklenecekDivs == null || eklenecekDivs.length == 0) {
+                                    continue;
+                                } else {
+                                    let bolunme_sayisi = bolunmeSayisiGetir(plan.top_rengi);
+                                    for (let t = bolunme_sayisi; t < eklenecekDivs.length; t++) {
+                                        //fazla divleri sil
+                                        eklenecekDivs[t].remove();
+                                    }
+                                    eklenecekDivs[0].classList.add('doluEtkinlik');
+                                    eklenecekDivs[0].classList.remove('bosEtkinlik');
+                                    eklenecekDivs[0].classList.remove('bg-white');
+                                    eklenecekDivs[0].setAttribute('id', plan.id);
+                                    eklenecekDivs[0].setAttribute('style', 'background-color:' + plan.renk);
+                                    eklenecekDivs[0].innerHTML = plan.grup;
                                 }
-                                saatDiv.append(etkinlikDiv);
                             }
-                            let eklenecekBosDivSayisi = bolunmeSayisi - etkinlikler.length;
-                            for (let b = 0; b < eklenecekBosDivSayisi; b++) {
-                                let bolunmeDiv = $('<div id="' + result.list[i].saatler[s].sorgulananTarihSaat + '" class="col bosEtkinlik border bg-white"></div>');
-                                if (result.list[i].saatler[s].bekleyenVarMi) {
-                                    bolunmeDiv.append('<i class="fa fa-info"></i>');
-                                }
-                                saatDiv.append(bolunmeDiv);
-                            }
-                            kolon.append(saatDiv);
                         }
                     }
                 }
-            });
+            )
+        }
+
+        function planinDahilOlduguHucreIdleri(baslangic_tarih_saat, bitis_tarih_saat, kort_id) {
+            let baslangic = new Date(baslangic_tarih_saat);
+            let bitis = new Date(bitis_tarih_saat);
+            let yarim_saat_sayisi = (bitis - baslangic) / 1000 / 60 / 30;
+            let idList = [];
+            let id;
+            for (let i = 0; i < yarim_saat_sayisi; i++) {
+                let saat;
+                let dakkika;
+                if (baslangic.getMinutes() == 0)
+                    dakkika = baslangic.getMinutes() + '0';
+                else
+                    dakkika = baslangic.getMinutes();
+                if (baslangic.getHours() < 10)
+                    saat = '0' + baslangic.getHours();
+                else
+                    saat = baslangic.getHours();
+                saat = saat + '-' + dakkika;
+                baslangic.setMinutes(baslangic.getMinutes() + 30);
+                id = 'saat_' + saat + '_kort_' + kort_id + '_tarih_' + baslangic.toISOString().split('T')[0]
+                idList.push(id);
+            }
+            return idList;
+        }
+
+        function bolunmeSayisiGetir(top_rengi) {
+            if (top_rengi === 'Kirmizi') {
+                return 5;
+            } else if (top_rengi === 'Turuncu' | top_rengi === 'Sari' | top_rengi === 'Yesil') {
+                return 2;
+            } else if (top_rengi === 'Yetiskin') {
+                return 1;
+            } else if (top_rengi === 'TenisOkulu') {
+                return 6;
+            }
         }
 
         $(document).on('click', '.doluEtkinlik', function () {
@@ -101,15 +135,10 @@
 
         $(document).on('click', '.bosEtkinlik', function () {
             let parent_id = $(this).parent().attr('id');
-            let baslangic_tarih = parent_id.split('_')[0];
-            let kort_id = parent_id.split('_')[2];
-            let saat = parent_id.split('_')[4];
-            //parse saat to string and find char count
-
-            if (saat.toString().length == 4) {
-                // db 9:00 gibi bir algılamadığı için 09 olarak set ediyoruz
-                saat = '0' + saat;
-            }
+            let kort_id = parent_id.split('_')[0];
+            let baslangic_tarih = parent_id.split('_')[1];
+            let saat = parent_id.split('_')[2];
+            saat = saat.replace('-', ':');
             let baslangic_tarih_saat = baslangic_tarih + 'T' + saat;
             kayitModalAc(baslangic_tarih_saat, kort_id)
         });
@@ -130,13 +159,24 @@
             });
         }
 
-        function bekleyenListesiModalDoldurAc(tarihSaat) {
+        $(document).on('click', '.beklenenSaat', function () {
+            let id = $(this).attr('id');
+            let gun = id.split('_')[1];
+            let saat = id.split('_')[0].replace('-', ':');
+         //   saat=saat;
+            bekleyenListesiModalDoldurAc("", gun, saat);
+        });
+
+        function bekleyenListesiModalDoldurAc(tarihSaat, beklenenGun = "", beklenenSaat = "") {
+            debugger;
             $.ajax({
                 url: "{% url 'calendarapp:bekleyen_musteri_modal_getir_ajax' %}",
                 type: "GET",
                 dataType: "json",
                 data: {
                     'tarih_saat': tarihSaat,
+                    'beklenen_gun': beklenenGun,
+                    'beklenen_saat': beklenenSaat,
                 },
                 success: function (result) {
                     $('#bekleyenModalDiv').html(result.html);

@@ -61,17 +61,25 @@ def bekleyen_musteri_getir_ajax(request):
 
 @login_required
 def bekleyen_musteri_modal_getir_ajax(request):
-    rezervasyonlar = bekleyen_musteri_getir(request.GET.get("tarih_saat"))
+    beklenen_gun = request.GET.get("beklenen_gun", None)
+    beklenen_saat = request.GET.get("beklenen_saat", None)
+    if beklenen_saat and beklenen_saat:
+        gun = GunlerModel.objects.filter(adi=beklenen_gun).first()
+        saat = SaatlerModel.objects.filter(baslangic_degeri=beklenen_saat + ":00").first()
+        rezervasyonlar = bekleyen_musteri_getir(None, gun, saat)
+    else:
+        rezervasyonlar = bekleyen_musteri_getir(request.GET.get("tarih_saat"))
     html = render_to_string(
         "calendarapp/rezervasyon/partials/_bekleyen_listesi_modal.html", {"list": rezervasyonlar})
     return JsonResponse(data={"html": html, "status": "success", "message": "Başarılı"}, safe=False)
 
 
-def bekleyen_musteri_getir(tarih_saat):
-    gunun_saati = datetime.strptime(tarih_saat, "%Y-%m-%dT%H:%M:%S").time()
-    haftanini_gunu = datetime.strptime(tarih_saat, "%Y-%m-%dT%H:%M:%S").weekday()
-    gun = GunlerModel.objects.filter(haftanin_gunu=haftanini_gunu).first()
-    saat = SaatlerModel.objects.filter(baslangic_degeri=gunun_saati).first()
+def bekleyen_musteri_getir(tarih_saat=None, gun=None, saat=None):
+    gunun_saati = datetime.strptime(tarih_saat, "%Y-%m-%dT%H:%M:%S").time() if tarih_saat else datetime.now().time()
+    haftanini_gunu = datetime.strptime(tarih_saat,
+                                       "%Y-%m-%dT%H:%M:%S").weekday() if tarih_saat else datetime.now().weekday()
+    gun = GunlerModel.objects.filter(haftanin_gunu=haftanini_gunu).first() if not gun else gun
+    saat = SaatlerModel.objects.filter(baslangic_degeri=gunun_saati).first() if not saat else saat
     rezervasyonlar = RezervasyonModel.objects.filter(
         Q(gunler=gun, saatler=saat) |
         Q(gunler=gun, saatler__isnull=True) |
