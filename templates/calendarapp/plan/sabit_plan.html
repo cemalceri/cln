@@ -31,12 +31,9 @@
     <div id="bekleyenModalDiv"></div>
     <script>
         $(document).ready(function () {
-            console.log(new Date());
             {% for gun in haftanin_gunleri %}
                 sabitPlaniGetir('{{ gun }}');
             {% endfor %}
-            console.log(new Date());
-
         });
 
         function sabitPlaniGetir(sorgulanan_gun) {
@@ -50,7 +47,6 @@
                         'tarih': sorgulanan_gun
                     },
                     success: function (result) {
-                        console.log(result.liste)
                         for (let i = 0; i < result.liste.length; i++) {
                             plan = result.liste[i];
                             let hucreIdListesi = planinDahilOlduguHucreIdleri(plan.baslangic_tarih_saat, plan.bitis_tarih_saat, plan.kort_id);
@@ -137,8 +133,7 @@
             let parent_id = $(this).parent().attr('id');
             let kort_id = parent_id.split('_')[0];
             let baslangic_tarih = parent_id.split('_')[1];
-            let saat = parent_id.split('_')[2];
-            saat = saat.replace('-', ':');
+            let saat = parent_id.split('_')[2].replace('-', ':');
             let baslangic_tarih_saat = baslangic_tarih + 'T' + saat;
             kayitModalAc(baslangic_tarih_saat, kort_id)
         });
@@ -163,12 +158,10 @@
             let id = $(this).attr('id');
             let gun = id.split('_')[1];
             let saat = id.split('_')[0].replace('-', ':');
-         //   saat=saat;
             bekleyenListesiModalDoldurAc("", gun, saat);
         });
 
         function bekleyenListesiModalDoldurAc(tarihSaat, beklenenGun = "", beklenenSaat = "") {
-            debugger;
             $.ajax({
                 url: "{% url 'calendarapp:bekleyen_musteri_modal_getir_ajax' %}",
                 type: "GET",

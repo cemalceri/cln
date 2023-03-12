@@ -12,8 +12,6 @@
                 <span id="{{ item.saat_for_id }}_{{ tarih | date:'l' }}"
                       class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
                       style="height: 30px;font-size: 1rem;">{{ item.saat }}</span>
-                {#                <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"#}
-                {#                      style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>#}
             {% endfor %}
         </div>
     </div>
@@ -34,7 +32,6 @@
     </div>
 </div>
 <script>
-    //documet ready fonksiyonu oluştur
     $(document).ready(function () {
         let kort_div;
         let saatdiv;

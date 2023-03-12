@@ -1,18 +1,17 @@
 {% load static %}
 <script src="{% static 'js/jquery.js' %}"></script>
 <div class="row">
-    <div class="col col-md-12 text-center"><h1>{{ tarih | date:'d F (l)'}}</h1></div>
+    <div class="col col-md-12 text-center"><h1>{{ tarih | date:'d F (l)' }}</h1></div>
 </div>
 <div class="row mb-20">
     <div class="col-md-1 col-xl-1 col-sm-1">
         <div class="row">
             <div class="container black vertical-align vertical-align-middle text-left border-bottom m-0"
                  style="height: 60px"></div>
-            {% for saat in saatler %}
-                <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
-                      style="height: 30px;font-size: 1rem;">{{ saat }}</span>
-{#                <span class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"#}
-{#                      style="height: 30px;font-size: 0.8rem;">{{ saat }}:30</span>#}
+            {% for item in saatler %}
+                <span id="{{ item.saat_for_id }}_{{ tarih | date:'l' }}"
+                      class="container bg-info black vertical-align vertical-align-middle text-center border-top m-0"
+                      style="height: 30px;font-size: 1rem;">{{ item.saat }}</span>
             {% endfor %}
         </div>
     </div>
@@ -25,12 +24,35 @@
                              style="height: 60px;font-size: 1.3rem">{{ kort.adi }}</div>
                     </div>
                     <div class="row">
-                        <div id="{{ tarih_str }}_kort_{{ kort.id }}" class="col">
-                        </div>
+                        <div class="col" id="kort_{{ kort.id }}_tarih_{{ tarih_str }}"></div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        let kort_div;
+        let saatdiv;
+        let id;
+        let beklenenSaat;
+        {% for bekleyen in bekleyen_listesi %}
+            beklenenSaat = $('#{{bekleyen.id}}');
+            beklenenSaat.addClass('bg-danger beklenenSaat');
+        {% endfor %}
+        {% for kort in kortlar %}
+            kort_div = $('#kort_{{ kort.id }}_tarih_{{ tarih_str }}');
+            {% for item in saatler %}
+                id = '{{kort.id}}_{{ tarih_str }}_{{ item.saat_for_id }}';
+                kort_div.append('<div class="row" id="' + id + '" style="height:30px"></div>');
+                saatdiv = $('#' + id);
+                for (let i = 0; i < {{ kort.max_etkinlik_sayisi }}; i++) {
+                    saatdiv.append('<div class="col bosEtkinlik border black bg-white" id="saat_{{ item.saat_for_id }}_kort_{{kort.id}}_tarih_{{ tarih_str }}_hucre_' + i + '" style="height:30px"></div>');
+                }
+            {% endfor %}
+        {% endfor %}
+    });
+</script>
 

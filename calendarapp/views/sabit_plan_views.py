@@ -95,7 +95,7 @@ def gunun_planlari_ajax(request):
         tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
     sonraki_gun = tarih + timedelta(days=1)
     planlar = HaftalikPlanModel.objects.filter(baslangic_tarih_saat__gte=tarih,
-                                               baslangic_tarih_saat__lt=sonraki_gun).order_by("-id")
+                                               baslangic_tarih_saat__lt=sonraki_gun).order_by("-baslangic_tarih_saat")
     liste = []
     for plan in planlar:
         liste.append({
