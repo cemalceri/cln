@@ -64,25 +64,24 @@ class UyePaketModel(BaseAbstract):
         return str(self.uye) + "-" + str(self.ucret_tarifesi) + " - Adet: " + str(self.adet)
 
     def save(self, *args, **kwargs):
-        # Paket kayıt anındaki adet değeri kayıt ediliyor.
+        # ücret tarifesindeki ders_sayisi değeri adet'e set edildikten sonra kayıt ediliyor.
         self.adet = self.ucret_tarifesi.ders_sayisi
         super(UyePaketModel, self).save(*args, **kwargs)
         para_hareketi = ParaHareketiModel.objects.filter(paket_id=self.id).first()
         if self.id and para_hareketi:
-            ucret_tarifesi = UcretTarifesiModel.objects.filter(id=self.ucret_tarifesi.id).first()
             para_hareketi.paket_id = self.id
-            para_hareketi.tutar = ucret_tarifesi.kisi_basi_ucret
+            para_hareketi.tutar = self.ucret_tarifesi.kisi_basi_ucret
             para_hareketi.tarih = datetime.now().date()
-            para_hareketi.aciklama = "Paket güncelleme işleminde sistem tarafından" + datetime.now().strftime(
-                "%d.%m.%Y %H:%M:%S") + " tarihinde otomatik olarak oluşturuldu."
+            para_hareketi.aciklama = "Sistem tarafından '" + self.ucret_tarifesi.adi + "' paketi güncelleme işleminde eklendi. " + datetime.now().strftime(
+                "%d.%m.%Y %H:%M:%S")
             para_hareketi.save()
         else:
             ParaHareketiModel.objects.create(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Borc.name,
                                              ucret_turu=UcretTuruEnum.Paket.name, paket_id=self.id,
                                              tutar=self.ucret_tarifesi.kisi_basi_ucret,
                                              tarih=datetime.now().date(),
-                                             aciklama="Paket kayıt işleminde sistem tarafından" + datetime.now().strftime(
-                                                 "%d.%m.%Y %H:%M:%S") + " tarihinde otomatik olarak oluşturuldu")
+                                             aciklama="Sistem tarafından '" + self.ucret_tarifesi.adi + "' paketi kaydında otomatik olarak oluşturuldu. " + datetime.now().strftime(
+                                                 "%d.%m.%Y %H:%M:%S"))
 
     def delete(self, *args, **kwargs):
         ParaHareketiModel.objects.filter(paket_id=self.id).delete()

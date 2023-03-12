@@ -77,9 +77,10 @@ class ParaHareketiModel(BaseAbstract):
     tarih = models.DateField(verbose_name="Tarih", null=False, blank=False)
     paket = models.ForeignKey('UyePaketModel', on_delete=models.CASCADE, related_name="paket_parahareketi_relations",
                               null=True, blank=True)
-    abonelik = models.ForeignKey('HaftalikPlanModel', on_delete=models.CASCADE,
-                                 related_name="abonelik_parahareketi_relations",
-                                 null=True, blank=True)
+    abonelik = models.ForeignKey('HaftalikPlanModel', on_delete=models.CASCADE, null=True, blank=True,
+                                 related_name="abonelik_parahareketi_relations")
+    etkinlik = models.ForeignKey('EtkinlikModel', on_delete=models.CASCADE, null=True, blank=True,
+                                 related_name="etkinlik_parahareketi_relations")
     aciklama = models.CharField('Açıklama', max_length=250, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
                              related_name="user_parahareketi_relations", null=True, blank=True)

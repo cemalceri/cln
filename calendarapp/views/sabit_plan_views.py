@@ -227,7 +227,7 @@ def plan_kaydi_icin_hata_var_mi(form):
         return JsonResponse(data={"status": "error", "message": mesaj})
     if ayni_saatte_plan_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
                                  form.data["kort"], form.cleaned_data["top_rengi"], form.cleaned_data["pk"]) is False:
-        mesaj = "Bu saatte kayıtlı olan diğer etkinlikler için bu top rengi uygun değil."
+        mesaj = "Bu saatte kayıtlı olan diğer kayıtlar için bu top rengi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
     uyelik_var_mi = grup_uyesinin_bu_saatte_plan_var_mi(form.cleaned_data["pk"],
                                                         form.cleaned_data["baslangic_tarih_saat"],

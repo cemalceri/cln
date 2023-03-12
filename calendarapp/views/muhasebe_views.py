@@ -102,22 +102,25 @@ def hesapla_uye_borcu(request, uye_id):
 
 
 def borc_hesapla(uye_id, uyenin_haftalik_planlari):
-    bu_yil = date.today().year
-    bu_ay = date.today().month
+    yil = date.today().year
+    ay = date.today().month
     for plan in uyenin_haftalik_planlari:
         ucret = UcretTarifesiModel.objects.filter(seviye=plan.top_rengi, abonelik_tipi=AbonelikTipiEnum.Uyelik.name,
                                                   kisi_sayisi=plan.grup.uye_sayisi()).first().kisi_basi_ucret
+        if plan.antrenor:
+            ucret *= plan.antrenor.ucret_katsayisi
         kayit = ParaHareketiModel.objects.filter(uye_id=uye_id, abonelik_id=plan.id)
         if not kayit.exists():
             aciklama = "Sistem tarafından " + gun_adi_ve_saati_getir(
-                plan.baslangic_tarih_saat) + " aboneliği için otomatik olarak oluşturuldu."
+                plan.baslangic_tarih_saat) + " aboneliği için otomatik olarak oluşturuldu." + datetime.now().strftime(
+                "%d.%m.%Y %H:%M:%S")
             ParaHareketiModel.objects.create(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
-                                             ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(bu_yil, bu_ay, 1),
+                                             ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(yil, ay, 1),
                                              tutar=ucret, abonelik_id=plan.id, aciklama=aciklama)
         else:
             aciklama = "Sistem tarafından " + gun_adi_ve_saati_getir(
-                plan.baslangic_tarih_saat) + " aboneliği için " + str(
-                datetime.now().strftime("%d.%m.%Y %H:%M:%S")) + " tarihinde yeniden hesaplandı."
+                plan.baslangic_tarih_saat) + " aboneliği için yeniden hesaplandı." + datetime.now().strftime(
+                "%d.%m.%Y %H:%M:%S")
             kayit.update(tutar=ucret, aciklama=aciklama)
 
 

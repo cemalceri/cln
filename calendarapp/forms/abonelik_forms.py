@@ -29,8 +29,7 @@ class UyePaketKayitForm(ModelForm):
                 'class': 'form-control',
                 'autocomplete': 'nope'
             })
-        self.fields['ucret_tarifesi'].queryset = UcretTarifesiModel.objects.filter(
-            abonelik_tipi=AbonelikTipiEnum.Paket.name)
+        self.fields['ucret_tarifesi'].queryset = UcretTarifesiModel.objects.filter(ders_sayisi__isnull=False)
 
     def clean(self):
         grup_mu = self.cleaned_data.get("grup_mu")

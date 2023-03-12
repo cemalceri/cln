@@ -45,5 +45,5 @@ class UcretTarifesiKayitForm(ModelForm):
     def clean(self):
         abonelik_tipi = self.cleaned_data.get("abonelik_tipi")
         ders_sayisi = self.cleaned_data.get("ders_sayisi")
-        if abonelik_tipi == AbonelikTipiEnum.Paket.name and (ders_sayisi is None or ders_sayisi < 1):
-            self.add_error("ders_sayisi", "Paket seçildiğinde ders sayısı girilmesi zorunludur.")
+        if abonelik_tipi != AbonelikTipiEnum.Uyelik.name and (ders_sayisi is None or ders_sayisi < 1):
+            self.add_error("ders_sayisi", "Abonelik tipi üyelik değilse ders sayısı girilmelidir.")

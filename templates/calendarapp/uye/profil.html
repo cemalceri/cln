@@ -211,6 +211,7 @@
                                         <thead>
                                         <tr>
                                             <th>#</th>
+                                            <th>Paket Adı</th>
                                             <th>Başlangıç - Bitiş</th>
                                             <th>Adet</th>
                                             <th>Kalan Adet</th>
@@ -224,6 +225,7 @@
                                         {% for paket in paketler %}
                                             <tr>
                                                 <td class="sorting_1">{{ forloop.counter }}</td>
+                                                <td>{{ paket.ucret_tarifesi }}</td>
                                                 <td>{{ paket.baslangic_tarih }}
                                                     - {{ paket.bitis_tarih|default_if_none:"" }}</td>
                                                 <td>{{ paket.adet }}</td>

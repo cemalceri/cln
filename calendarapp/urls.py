@@ -16,8 +16,8 @@ app_name = "calendarapp"
 
 urlpatterns = [
     # Takvim ve Etkinlikler -> Eski sayfaların
-    path("takvim/", ev.takvim_getir, name="takvim_getir"),
-    path("takvim/<int:kort_id>", ev.takvim_getir, name="takvim_getir_by_kort_id"),
+    # path("takvim/", ev.takvim_getir, name="takvim_getir"),
+    #path("takvim/<int:kort_id>", ev.takvim_getir, name="takvim_getir_by_kort_id"),
     path("gunun_etkinlikleri", ev.gunun_etkinlikleri_ajax, name="gunun_etkinlikleri_ajax"),
     # path("etkinlik/index/<str:tarih>", ev.index_getir_by_tarih, name="index_getir_by_tarih"),
 

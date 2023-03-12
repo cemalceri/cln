@@ -179,30 +179,6 @@ def sil_etkinlik(request, id):
 
 
 @login_required
-def takvim_getir(request, kort_id=None):
-    kort = KortModel.objects.filter(pk=kort_id).first()
-    form = EtkinlikForm()
-    kortlar = KortModel.objects.all().order_by("id")
-    events = EtkinlikModel.objects.filter(kort_id=kort_id) if kort_id else []
-    event_list = []
-    # start: '2020-09-16T16:00:00'
-    for event in events:
-        event_list.append(
-            {
-                "id": event.id,
-                "title": event.grup.__str__(),
-                "start": event.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                "end": event.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M:%S"),
-                "backgroundColor": event.antrenor.renk if event.antrenor else "gray",
-                # "eventColor": event.renk,
-            }
-        )
-    context = {"form": form, "etkinlikler": event_list, "kortlar": kortlar,
-               "secili_kort": kort, }
-    return render(request, 'calendarapp/etkinlik/eski/takvim.html', context)
-
-
-@login_required
 def kaydet_etkinlik_ajax(request):
     form = EtkinlikForm(request.GET)
     if form.is_valid():
@@ -223,35 +199,71 @@ def kaydet_etkinlik_ajax(request):
 
 
 def etkinlik_kaydi_hata_var_mi(form):
-    if form.cleaned_data["baslangic_tarih_saat"].minute % 30 != 0 or form.cleaned_data[
-        "bitis_tarih_saat"].minute % 30 != 0:
-        return JsonResponse(
-            data={"status": "error", "message": "Etkinlik başlangıç ve bitiş saati 30 dakikanın katları olmalıdır."})
     if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"] or \
             form.cleaned_data["baslangic_tarih_saat"] == form.cleaned_data["bitis_tarih_saat"]:
         mesaj = "Etkinlik başlangıç - bitiş tarihi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
-    if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"],
-                                     form.cleaned_data["bitis_tarih_saat"],
-                                     form.data["kort"], form.cleaned_data["pk"]):
-        mesaj = "Bu kort aynı saat için maksimimum etkinlik sayısına ulaştı."
+    if form.cleaned_data["baslangic_tarih_saat"].minute % 30 != 0 or form.cleaned_data[
+        "bitis_tarih_saat"].minute % 30 != 0:
+        return JsonResponse(
+            data={"status": "error", "message": "Etkinlik başlangıç ve bitiş saati 30 dakikanın katları olmalıdır."})
+    if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
+                                     form.data["kort"], form.cleaned_data["top_rengi"],
+                                     form.cleaned_data["pk"]) is False:
+        mesaj = "Bu saatte kayıtlı olan diğer kayıtlar için bu top rengi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
+    if form.cleaned_data["abonelik_tipi"] != AbonelikTipiEnum.Telafi.name or form.cleaned_data["abonelik_tipi"] != \
+            AbonelikTipiEnum.Diger.name:
+        paketi_olmayan_grup_uyeleri = paketi_olmayan_grup_üyeleri_getir(form)
+        if paketi_olmayan_grup_uyeleri:
+            mesaj = paketi_olmayan_grup_uyeleri + " üyesi bu ders tipi için paket almamış. Paket kaydı yapınız."
+            return JsonResponse(data={"status": "error", "message": mesaj})
     return False
 
 
-def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, etkinlik_id=None):
-    kort = KortModel.objects.get(id=kort_id)
-    result = EtkinlikModel.objects.filter(Q(kort_id=kort_id) & (
-            Q(baslangic_tarih_saat__lt=baslangic_tarih_saat,
-              bitis_tarih_saat__gt=baslangic_tarih_saat) |  # başlangıç saati herhangi bir etkinliğin içinde olan
-            Q(baslangic_tarih_saat=baslangic_tarih_saat,
-              bitis_tarih_saat=bitis_tarih_saat) |  # başlangıç ve bitiş tarihi aynı olan
+def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, top_rengi, etkinlik_id=None):
+    planlar = EtkinlikModel.objects.filter(Q(kort_id=kort_id) & (
+        # başlangıç saati herhangi bir etkinliğin içinde olan
+            Q(baslangic_tarih_saat__lt=baslangic_tarih_saat, bitis_tarih_saat__gt=baslangic_tarih_saat) |
+            # veya başlangıç ve bitiş tarihi aynı olan
+            Q(baslangic_tarih_saat=baslangic_tarih_saat, bitis_tarih_saat=bitis_tarih_saat) |
+            # veya bitiş tarihi herhangi bir etkinliğin içinde olan
             Q(baslangic_tarih_saat__lt=bitis_tarih_saat, bitis_tarih_saat__gt=bitis_tarih_saat) |
-            # bitiş tarihi herhangi bir etkinliğin içinde olan
-            Q(baslangic_tarih_saat__gte=baslangic_tarih_saat, bitis_tarih_saat__lte=bitis_tarih_saat))
-                                          # balangıç ve bitiş saati bizim etkinliğin arasında olan
-                                          ).exclude(id=etkinlik_id)
-    return result.count() > kort.max_etkinlik_sayisi - 1
+            # veya balangıç ve bitiş saati bizim etkinliğin arasında olan
+            Q(baslangic_tarih_saat__gte=baslangic_tarih_saat, bitis_tarih_saat__lte=bitis_tarih_saat))).exclude(
+        id=etkinlik_id)
+    result = True
+    if planlar.filter(top_rengi=SeviyeEnum.Kirmizi).exists() and (
+            top_rengi != SeviyeEnum.Kirmizi.name or top_rengi != SeviyeEnum.TenisOkulu.name):
+        result = False
+    if planlar.filter(top_rengi=SeviyeEnum.TenisOkulu).exists() and (
+            top_rengi != SeviyeEnum.Kirmizi.name or top_rengi != SeviyeEnum.Kirmizi.name):
+        result = False
+    if top_rengi == SeviyeEnum.Yetiskin.name and planlar.exists():
+        result = False
+    if ((
+            top_rengi == SeviyeEnum.Turuncu.name or top_rengi == SeviyeEnum.Sari.name or top_rengi == SeviyeEnum.Yesil.name)
+            and (planlar.filter(top_rengi=SeviyeEnum.Kirmizi).exists()
+                 or planlar.filter(top_rengi=SeviyeEnum.TenisOkulu).exists()
+                 or planlar.filter(top_rengi=SeviyeEnum.Yetiskin).exists())):
+        result = False
+    return result
+
+
+def paketi_olmayan_grup_üyeleri_getir(form):
+    grup_id = form.data["grup" or None]
+    uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
+    uyeler = ""
+    grup_paketi_mi = uye_grubu.count() > 1
+    for item in uye_grubu:
+        abonelik_paket_listesi = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True, grup_mu=grup_paketi_mi,
+                                                              ucret_tarifesi__abonelik_tipi=form.cleaned_data[
+                                                                  "abonelik_tipi"])
+        if not abonelik_paket_listesi.exists():
+            uyeler += str(item.uye) + ", "
+    if uyeler != "":
+        return uyeler[:-2]
+    return None
 
 
 @login_required
