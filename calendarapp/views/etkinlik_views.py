@@ -16,6 +16,7 @@ from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
 from calendarapp.models.concrete.rezervasyon import RezervasyonModel
+from calendarapp.models.concrete.telafi_ders import TelafiDersModel
 from calendarapp.models.concrete.uye import UyeGrupModel
 from calendarapp.utils import formErrorsToText
 
@@ -199,25 +200,21 @@ def kaydet_etkinlik_ajax(request):
 
 
 def etkinlik_kaydi_hata_var_mi(form):
-    if form.cleaned_data["baslangic_tarih_saat"] > form.cleaned_data["bitis_tarih_saat"] or \
-            form.cleaned_data["baslangic_tarih_saat"] == form.cleaned_data["bitis_tarih_saat"]:
-        mesaj = "Etkinlik başlangıç - bitiş tarihi uygun değil."
-        return JsonResponse(data={"status": "error", "message": mesaj})
-    if form.cleaned_data["baslangic_tarih_saat"].minute % 30 != 0 or form.cleaned_data[
-        "bitis_tarih_saat"].minute % 30 != 0:
-        return JsonResponse(
-            data={"status": "error", "message": "Etkinlik başlangıç ve bitiş saati 30 dakikanın katları olmalıdır."})
     if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
                                      form.data["kort"], form.cleaned_data["top_rengi"],
                                      form.cleaned_data["pk"]) is False:
         mesaj = "Bu saatte kayıtlı olan diğer kayıtlar için bu top rengi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
-    if form.cleaned_data["abonelik_tipi"] != AbonelikTipiEnum.Telafi.name or form.cleaned_data["abonelik_tipi"] != \
-            AbonelikTipiEnum.Diger.name:
-        paketi_olmayan_grup_uyeleri = paketi_olmayan_grup_üyeleri_getir(form)
+    if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Demo.name or form.cleaned_data["abonelik_tipi"] == \
+            AbonelikTipiEnum.TekDers.name:
+        paketi_olmayan_grup_uyeleri = paketi_olmayan_grup_uyeleri_getir(form)
         if paketi_olmayan_grup_uyeleri:
-            mesaj = paketi_olmayan_grup_uyeleri + " üyesi bu ders tipi için paket almamış. Paket kaydı yapınız."
+            mesaj = paketi_olmayan_grup_uyeleri + " üye/üyeleri bu ders tipi için paket almamış. Paket kaydı yapınız."
             return JsonResponse(data={"status": "error", "message": mesaj})
+    telafi_dersi_olmayan_grup = telafi_dersi_grup_uyeleri_getir(form)
+    if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Telafi.name and telafi_dersi_olmayan_grup:
+        mesaj = telafi_dersi_olmayan_grup + " üye/üyelerinin telafi hakkı bulunmamaktadır."
+        return JsonResponse(data={"status": "error", "message": mesaj})
     return False
 
 
@@ -250,7 +247,7 @@ def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_i
     return result
 
 
-def paketi_olmayan_grup_üyeleri_getir(form):
+def paketi_olmayan_grup_uyeleri_getir(form):
     grup_id = form.data["grup" or None]
     uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
     uyeler = ""
@@ -260,6 +257,19 @@ def paketi_olmayan_grup_üyeleri_getir(form):
                                                               ucret_tarifesi__abonelik_tipi=form.cleaned_data[
                                                                   "abonelik_tipi"])
         if not abonelik_paket_listesi.exists():
+            uyeler += str(item.uye) + ", "
+    if uyeler != "":
+        return uyeler[:-2]
+    return None
+
+
+def telafi_dersi_grup_uyeleri_getir(form):
+    grup_id = form.data["grup" or None]
+    uye_grubu = UyeGrupModel.objects.filter(grup_id=grup_id)
+    uyeler = ""
+    for item in uye_grubu:
+        telafi_ders = TelafiDersModel.objects.filter(uye_id=item.uye_id)
+        if not telafi_ders.exists():
             uyeler += str(item.uye) + ", "
     if uyeler != "":
         return uyeler[:-2]
@@ -292,15 +302,15 @@ def etkinlik_tamamlandi_ajax(request):
                 data={"status": "error",
                       "message": "Etkinlik bitiş saatinden önce tamamlandı hale getirelemez."})
         uye_grup = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
-        if etkinlik.abonelik_tipi == AbonelikTipiEnum.Paket.value:
-            grup_mu = uye_grup.count() > 1
-            for item in uye_grup:
-                paket = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True).first()
-                if paket and not PaketKullanimModel.objects.filter(uye_paket_id=paket.id, grup_mu=grup_mu,
-                                                                   etkinlik_id=etkinlik.id,
-                                                                   uye_id=item.uye_id).exists():
-                    PaketKullanimModel.objects.create(uye_paket_id=paket.id, etkinlik_id=etkinlik.id,
-                                                      uye_id=item.uye_id, user=request.user)
+        grup_mu = uye_grup.count() > 1
+        for item in uye_grup:
+            paket = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True, grup_mu=grup_mu,
+                                                 ucret_tarifesi__abonelik_tipi=etkinlik.abonelik_tipi).first()
+            print(paket)
+            if paket and not PaketKullanimModel.objects.filter(uye_paket_id=paket.id, etkinlik_id=etkinlik.id,
+                                                               uye_id=item.uye_id).exists():
+                PaketKullanimModel.objects.create(uye_paket_id=paket.id, etkinlik_id=etkinlik.id,
+                                                  uye_id=item.uye_id, user=request.user)
         etkinlik.tamamlandi_yonetici = True
         etkinlik.save()
         return JsonResponse(data={"status": "success", "message": "İşlem Başarılı."})

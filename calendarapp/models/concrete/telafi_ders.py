@@ -27,6 +27,6 @@ class TelafiDersModel(BaseAbstract):
         return self.uye.adi + " " + self.uye.soyadi
 
     class Meta:
-        verbose_name = "Antrenor"
-        verbose_name_plural = "Antrenor"
+        verbose_name = "Telafi Ders"
+        verbose_name_plural = "Telafi Ders"
         ordering = ["id"]

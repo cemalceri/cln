@@ -99,8 +99,7 @@ class ParaHareketiModel(BaseAbstract):
 class UcretTarifesiModel(BaseAbstract):
     adi = models.CharField(max_length=50, verbose_name="Adı", null=False, blank=False)
     seviye = models.CharField(max_length=20, choices=SeviyeEnum.choices(), null=False, blank=False)
-    abonelik_tipi = models.CharField(max_length=20, choices=AbonelikTipiEnum.haftalik_plan_kaydinda_kullanilacaklar(),
-                                     null=False, blank=False)
+    abonelik_tipi = models.CharField(max_length=20, choices=AbonelikTipiEnum.ucret_tarifesinde_kullanilacaklar(), null=False, blank=False)
     kisi_sayisi = models.SmallIntegerField(verbose_name="Kişi Sayısı", null=False, blank=False)
     kisi_basi_ucret = models.SmallIntegerField(verbose_name="Kişi Başı Ücret", null=False, blank=False)
     ders_sayisi = models.SmallIntegerField(verbose_name="Ders Sayısı", null=True, blank=True)

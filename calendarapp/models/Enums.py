@@ -63,7 +63,11 @@ class AbonelikTipiEnum(Enum):
 
     @classmethod
     def haftalik_plan_kaydinda_kullanilacaklar(cls):
-        return [(key.name, key.value) for key in cls if key.name in ["Paket", "Uyelik", "Demo", "TekDers"]]
+        return [(key.name, key.value) for key in cls if key.name in ["Uyelik", "Paket"]]
+
+    @classmethod
+    def ucret_tarifesinde_kullanilacaklar(cls):
+        return [(key.name, key.value) for key in cls if key.name in ["Uyelik", "Paket", "Demo", "TekDers"]]
 
 
 class ParaHareketTuruEnum(Enum):

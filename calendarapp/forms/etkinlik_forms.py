@@ -37,6 +37,19 @@ class EtkinlikForm(ModelForm):
             'class': 'select2', })
         # self.fields["bitis_tarih_saat"].input_formats = ("%Y-%m-%dT%H:%M",)
 
+    def clean(self):
+        baslangic_tarih_saat = self.cleaned_data.get("baslangic_tarih_saat")
+        bitis_tarih_saat = self.cleaned_data.get("bitis_tarih_saat")
+        if baslangic_tarih_saat > bitis_tarih_saat:
+            self.add_error('bitis_tarih_saat', "Bitiş tarihi başlangıç tarihinden önce olamaz.")
+        elif baslangic_tarih_saat == bitis_tarih_saat:
+            self.add_error('bitis_tarih_saat', "Bitiş tarihi başlangıç tarihine eşit olamaz.")
+        if baslangic_tarih_saat.minute % 30 != 0:
+            self.add_error('baslangic_tarih_saat', "Başlangıç saati 30 dakikanın katları olmalıdır.")
+        if bitis_tarih_saat.minute % 30 != 0:
+            self.add_error('bitis_tarih_saat', "Bitiş saati 30 dakikanın katları olmalıdır.")
+        return self.cleaned_data
+
 
 class HaftalikPlanForm(ModelForm):
     pk = forms.IntegerField(widget=forms.HiddenInput(), required=False)

@@ -201,6 +201,7 @@ def duzenle_modal_ajax(request):
 def detay_modal_ajax(request):
     plan_id = request.GET.get("plan_id")
     item = HaftalikPlanModel.objects.filter(pk=plan_id).first()
+    html = "<p>Plan bulunamadı.</p>"
     if item:
         html = render_to_string('calendarapp/plan/partials/_plan_detay_modal.html', {"etkinlik": item})
     return JsonResponse(data={"status": "success", "messages": "İşlem başarılı", "html": html})
@@ -209,10 +210,6 @@ def detay_modal_ajax(request):
 def grup_uyesinin_bu_saatte_plan_var_mi(id, baslangic_tarih_saat, grup):
     if HaftalikPlanModel.objects.filter(grup=grup, baslangic_tarih_saat=baslangic_tarih_saat).exclude(pk=id).exists():
         return "Bu saat aynı üye/grup için zaten kayıtlı. "
-    grup_uyeleri = UyeGrupModel.objects.filter(grup=grup)
-    # for item in grup_uyeleri:
-    #     if UyeAbonelikModel.objects.filter(uye=item.uye, baslangic_tarih_saat=baslangic_tarih_saat).exists():
-    #         return "Grupta bulunan " + str(item.uye) + " üyesinin bu saatte abonelik kaydı var."
     return None
 
 

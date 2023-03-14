@@ -51,8 +51,12 @@ class UyePaketModel(BaseAbstract):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
                              related_name="uyepaket_relations", null=True, blank=True, verbose_name="Ekleyen")
 
+    @property
     def kalan_adet(self):
         kullanilan_adet = PaketKullanimModel.objects.filter(uye_paket_id=self.id).count()
+        if self.adet - kullanilan_adet <= 0:
+            self.aktif_mi = False
+            self.save()
         return self.adet - kullanilan_adet
 
     class Meta:
