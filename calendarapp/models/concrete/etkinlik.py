@@ -15,13 +15,13 @@ class EtkinlikManager(models.Manager):
 
     def getir_butun_etkinlikler(self, user=None):
         events = EtkinlikModel.objects.filter(
-            # user=user,
+            iptal_mi=False,
             is_active=True, is_deleted=False)
         return events
 
     def getir_bugun_devam_eden_etkinlikler(self, kort_id=None, user=None):
         running_events = EtkinlikModel.objects.filter(
-            # user=user,
+            iptal_mi=False,
             is_active=True,
             is_deleted=False,
             baslangic_tarih_saat__day=datetime.now().day,
@@ -36,7 +36,7 @@ class EtkinlikManager(models.Manager):
         today_start = datetime.combine(today, time())
         today_end = datetime.combine(tomorrow, time())
         events = EtkinlikModel.objects.filter(
-            # user=user,
+            iptal_mi=False,
             is_active=True, is_deleted=False,
             baslangic_tarih_saat__lte=today_end,
             bitis_tarih_saat__gte=today_start,
@@ -45,7 +45,7 @@ class EtkinlikManager(models.Manager):
 
     def getir_gelecek_etkinlikler(self, user=None):
         running_events = EtkinlikModel.objects.filter(
-            # user=user,
+            iptal_mi=False,
             is_active=True,
             is_deleted=False,
             bitis_tarih_saat__gte=datetime.now(),

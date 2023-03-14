@@ -15,7 +15,7 @@ from calendarapp.models.concrete.uye import UyeModel, GrupModel, UyeGrupModel
 
 @login_required
 def dasboard(request):
-    tum_etkinlik_sayisi = EtkinlikModel.objects.filter(baslangic_tarih_saat__year=datetime.now().year).count()
+    tum_etkinlik_sayisi = EtkinlikModel.objects.filter(baslangic_tarih_saat__year=datetime.now().year,iptal_mi=False,).count()
     kortlar = KortModel.objects.all()
     antrenorler = AntrenorModel.objects.all()
     bugun_kalan_etkinlik_sayisi = EtkinlikModel.objects.getir_bugun_devam_eden_etkinlikler().count()

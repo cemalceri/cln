@@ -100,7 +100,7 @@ def gunun_etkinlikleri_ajax(request):
     if isinstance(tarih, str):
         tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
     sonraki_gun = tarih + timedelta(days=1)
-    planlar = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
+    planlar = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih, iptal_mi=False,
                                            baslangic_tarih_saat__lt=sonraki_gun).order_by("-baslangic_tarih_saat")
     liste = []
     for plan in planlar:
@@ -122,7 +122,7 @@ def gunun_etkinlikleri_ajax_eski(request):
     if isinstance(tarih, str):
         tarih = datetime.strptime(tarih, "%Y-%m-%d").date()
     sonraki_gun = tarih + timedelta(days=1)
-    etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih,
+    etkinlikler = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=tarih, iptal_mi=False,
                                                baslangic_tarih_saat__lt=sonraki_gun).order_by(
         "baslangic_tarih_saat")
     kortlar = KortModel.objects.all()
@@ -164,7 +164,7 @@ def sil_etkinlik_ajax(request):
     sonrakiler_silinsin_mi = request.GET.get("sonrakiler_silinsin_mi")
     etkinlik = EtkinlikModel.objects.filter(pk=id).first()
     if sonrakiler_silinsin_mi == "true" and etkinlik.haftalik_plan_kodu:
-        EtkinlikModel.objects.filter(haftalik_plan_kodu=etkinlik.haftalik_plan_kodu,
+        EtkinlikModel.objects.filter(haftalik_plan_kodu=etkinlik.haftalik_plan_kodu, iptal_mi=False,
                                      baslangic_tarih_saat__gte=etkinlik.baslangic_tarih_saat).delete()
     etkinlik.delete()
     return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
@@ -172,8 +172,8 @@ def sil_etkinlik_ajax(request):
 
 @login_required()
 def sil_etkinlik(request, id):
-    etklik = EtkinlikModel.objects.filter(pk=id).first()
-    etklik.delete()
+    etkinlik = EtkinlikModel.objects.filter(pk=id).first()
+    etkinlik.delete()
     messages.success(request, "Etkinlik silindi.")
     return redirect("dashboard")
 
@@ -222,7 +222,7 @@ def etkinlik_kaydi_hata_var_mi(form):
 
 
 def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, top_rengi, etkinlik_id=None):
-    planlar = EtkinlikModel.objects.filter(Q(kort_id=kort_id) & (
+    planlar = EtkinlikModel.objects.filter(Q(kort_id=kort_id, iptal_mi=False) & (
         # başlangıç saati herhangi bir etkinliğin içinde olan
             Q(baslangic_tarih_saat__lt=baslangic_tarih_saat, bitis_tarih_saat__gt=baslangic_tarih_saat) |
             # veya başlangıç ve bitiş tarihi aynı olan
@@ -369,7 +369,7 @@ def haftayi_sabit_plandan_olustur_ajax(request):
             tarih_kontrolu = True if kayda_baslanacak_tarih >= plan.ders_baslangic_tarihi else False
         else:
             tarih_kontrolu = True
-        if not EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod, grup=plan.grup,
+        if not EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod, grup=plan.grup, iptal_mi=False,
                                             baslangic_tarih_saat=plan.baslangic_tarih_saat + timedelta(days=gun_farki),
                                             ).exists() and tarih_kontrolu:  # Belirlenen günden önce etkinlik tablosuna otomatik kayıt oluşturulmaması için
             EtkinlikModel.objects.create(haftalik_plan_kodu=plan.kod, grup=plan.grup,
@@ -388,7 +388,7 @@ def haftanin_etkinliklerini_sil_ajax(request):
     pazartesi = tarih - timedelta(days=tarih.weekday())
     if pazartesi < datetime.now().date():
         return JsonResponse(data={"status": "error", "message": "Geçmiş tarihler için işlem yapılamaz."})
-    haftanin_etkinlikleri = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=pazartesi,
+    haftanin_etkinlikleri = EtkinlikModel.objects.filter(baslangic_tarih_saat__gte=pazartesi, iptal_mi=False,
                                                          haftalik_plan_kodu__isnull=False,
                                                          baslangic_tarih_saat__lt=pazartesi + timedelta(days=7))
 

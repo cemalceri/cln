@@ -69,9 +69,9 @@ def profil(request, id):
     abonelikler = UyeAbonelikModel.objects.filter(uye_id=id)
     paketler = UyePaketModel.objects.filter(uye_id=id)
     gruplar = UyeGrupModel.objects.filter(uye_id=id).values_list('grup_id', flat=True)
-    yapilacak_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, baslangic_tarih_saat__gt=datetime.now(
+    yapilacak_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar,iptal_mi=False, baslangic_tarih_saat__gt=datetime.now(
     )).order_by('baslangic_tarih_saat')
-    yapilan_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, bitis_tarih_saat__lt=datetime.now(
+    yapilan_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar,iptal_mi=False, bitis_tarih_saat__lt=datetime.now(
     )).order_by('-baslangic_tarih_saat')
     iptal_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, iptal_mi=True).order_by(
         '-baslangic_tarih_saat')
@@ -90,7 +90,6 @@ def muhasebe_uye(request, uye_id):
     toplam_borc = muhasebe_list.first().toplam_borc if muhasebe_list.first() else 0
     toplam_odeme = muhasebe_list.first().toplam_odeme if muhasebe_list.first() else 0
     toplam_fark = muhasebe_list.first().toplam_odeme if muhasebe_list.first() else 0
-
     contex = {
         "muhasebe_list": muhasebe_list,
         "toplam_borc": toplam_borc,

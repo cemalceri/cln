@@ -226,7 +226,7 @@ def paket_uyeligi_olmayan_grup_uyesi(form):
 
 
 def haftalik_plani_takvimde_guncelle(plan):
-    haftalik_plana_bagli_etkinlikler = EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod)
+    haftalik_plana_bagli_etkinlikler = EtkinlikModel.objects.filter(haftalik_plan_kodu=plan.kod,iptal_mi=False)
     if not haftalik_plana_bagli_etkinlikler.exists():  # Haftalık plana bağlı etkinlik yoksa oluştur
         baslangic_tarih_saat = plan.baslangic_tarih_saat
         if isinstance(plan.baslangic_tarih_saat, str):

@@ -39,9 +39,9 @@ def kaydet(request, id=None):
 @login_required
 def profil(request, id):
     antrenor = AntrenorModel.objects.filter(pk=id).first()
-    yapilacak_etkinlikler = EtkinlikModel.objects.filter(antrenor_id=antrenor.id, baslangic_tarih_saat__gt=datetime.now(
+    yapilacak_etkinlikler = EtkinlikModel.objects.filter(antrenor_id=antrenor.id,iptal_mi=False, baslangic_tarih_saat__gt=datetime.now(
     )).order_by('baslangic_tarih_saat')
-    yapilan_etkinlikler = EtkinlikModel.objects.filter(antrenor_id=antrenor.id, bitis_tarih_saat__lt=datetime.now(
+    yapilan_etkinlikler = EtkinlikModel.objects.filter(antrenor_id=antrenor.id,iptal_mi=False, bitis_tarih_saat__lt=datetime.now(
     )).order_by('-baslangic_tarih_saat')
     iptal_etkinlik_katilim_idler = None
     iptal_etkinlikler = EtkinlikModel.objects.filter(id__in=iptal_etkinlik_katilim_idler)
