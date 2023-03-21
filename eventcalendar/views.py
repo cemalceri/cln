@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 
 from calendarapp.models.concrete.antrenor import AntrenorModel
+from calendarapp.models.concrete.commons import SaatlerModel, GunlerModel
 from calendarapp.models.concrete.etkinlik import EtkinlikModel
 from calendarapp.models.concrete.kort import KortModel
 from calendarapp.models.concrete.rezervasyon import RezervasyonModel
@@ -69,7 +70,6 @@ def baslangic_metodu(request):
 
 
 def saatler_yoksa_ekle():
-    from calendarapp.models.Enums import SaatlerModel
     if SaatlerModel.objects.count() == 0:
         from datetime import datetime
         from datetime import timedelta
@@ -83,7 +83,6 @@ def saatler_yoksa_ekle():
 
 
 def gunler_yoksa_ekle():
-    from calendarapp.models.Enums import GunlerModel
     if GunlerModel.objects.count() == 0:
         GunlerModel.objects.create(adi="Pazartesi", haftanin_gunu=0, hafta_ici_mi=True)
         GunlerModel.objects.create(adi="Salı", haftanin_gunu=1, hafta_ici_mi=True)

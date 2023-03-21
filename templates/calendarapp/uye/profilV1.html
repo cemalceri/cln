@@ -90,7 +90,7 @@
                                     <a class="dropdown-item" data-toggle="tab" href="#dersler" aria-controls="dersler"
                                        role="tab">Dersler</a>
                                     <a class="dropdown-item" data-toggle="tab" href="#paket" aria-controls="paket"
-                                       role="tab">Paket/Üyelik</a>
+                                       role="tab">Paket/Aidat</a>
                                     <a class="dropdown-item" data-toggle="tab" href="#odeme" aria-controls="odeme"
                                        role="tab">Ödemeler</a>
                                 </div>
@@ -447,8 +447,7 @@
                                             {% csrf_token %}
                                             <div class="row">
                                                 <div class="form-group col-md-2">
-                                                    <label class="form-control-label" for="paket">Paket /
-                                                        Üyelik </label>
+                                                    <label class="form-control-label" for="paket">Paket/Aidat </label>
                                                     <select class="form-control" id="id_paket" name="paket">
                                                         <option>&nbsp;</option>
                                                         {% for abonelik in abonelikler %}

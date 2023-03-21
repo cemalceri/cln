@@ -237,7 +237,7 @@ def haftalik_plani_takvimde_guncelle(plan):
                                          baslangic_tarih_saat=plan.baslangic_tarih_saat,
                                          bitis_tarih_saat=plan.bitis_tarih_saat, kort=plan.kort,
                                          antrenor=plan.antrenor,
-                                         top_rengi=plan.top_rengi, aciklama=plan.aciklama)
+                                         seviye=plan.seviye, aciklama=plan.aciklama)
     else:  # Haftalık plana bağlı etkinli varsa güncelle
         plan_haftanin_gunu = parse_datetime(plan.baslangic_tarih_saat).weekday()
         for etkinlik in haftalik_plana_bagli_etkinlikler:
@@ -259,7 +259,7 @@ def haftalik_plani_takvimde_guncelle(plan):
                 etkinlik.baslangic_tarih_saat = yeni_baslangic_tarih_saat
                 etkinlik.bitis_tarih_saat = yeni_bitis_tarih_saat
                 etkinlik.antrenor = plan.antrenor
-                etkinlik.top_rengi = plan.top_rengi
+                etkinlik.seviye = plan.seviye
                 etkinlik.aciklama = plan.aciklama
                 etkinlik.save()
 

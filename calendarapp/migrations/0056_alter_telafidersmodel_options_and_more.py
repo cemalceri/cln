@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='ucrettarifesimodel',
             name='abonelik_tipi',
-            field=models.CharField(choices=[('Uyelik', 'Üyelik'), ('Paket', 'Paket'), ('Demo', 'Demo'), ('TekDers', 'Tek Ders')], max_length=20),
+            field=models.CharField(choices=[('Aidat', 'Aidat'), ('Paket', 'Paket'), ('Demo', 'Demo'), ('TekDers', 'Tek Ders')], max_length=20),
         ),
     ]

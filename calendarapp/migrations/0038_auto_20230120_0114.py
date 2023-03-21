@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='haftalikplanmodel',
             name='abonelik_tipi',
-            field=models.CharField(choices=[('Paket', 'Paket'), ('Uyelik', 'Üyelik')], default=calendarapp.models.Enums.AbonelikTipiEnum['Uyelik'], max_length=50, verbose_name='Abonelik Tipi'),
+            field=models.CharField(choices=[('Paket', 'Paket'), ('Aidat', 'Aidat')], default=calendarapp.models.Enums.AbonelikTipiEnum['Aidat'], max_length=50, verbose_name='Abonelik Tipi'),
         ),
     ]

@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('yil', models.IntegerField(verbose_name='Yıl')),
                 ('hafta', models.IntegerField(verbose_name='Hafta')),
-                ('abonelik_tipi', models.IntegerField(choices=[(1, 'Paket'), (2, 'Üyelik')], default=2, verbose_name='Abonelik Tipi')),
+                ('abonelik_tipi', models.IntegerField(choices=[(1, 'Paket'), (2, 'Aidat')], default=2, verbose_name='Abonelik Tipi')),
                 ('baslangic_tarih_saat', models.DateTimeField(verbose_name='Başlangıç Tarih Saat')),
                 ('bitis_tarih_saat', models.DateTimeField(verbose_name='Bitiş Tarih Saat')),
                 ('top_rengi', models.CharField(choices=[('red', 'Kırmızı'), ('orange', 'Turuncu'), ('yellow', 'Sarı'), ('green', 'Yeşil')], default='gray', max_length=20, verbose_name='Top Rengi')),

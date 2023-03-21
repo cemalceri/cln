@@ -48,7 +48,7 @@
                 kort_div.append('<div class="row" id="' + id + '" style="height:30px"></div>');
                 saatdiv = $('#' + id);
                 for (let i = 0; i < {{ kort.max_etkinlik_sayisi }}; i++) {
-                    saatdiv.append('<div class="col bosEtkinlik border black bg-white" id="saat_{{ item.saat_for_id }}_kort_{{kort.id}}_tarih_{{ tarih_str }}_hucre_' + i + '" style="height:30px"></div>');
+                    saatdiv.append('<div class="col bosEtkinlik border black bg-white text-wrap" id="saat_{{ item.saat_for_id }}_kort_{{kort.id}}_tarih_{{ tarih_str }}_hucre_' + i + '" style="height:30px;"></div>');
                 }
             {% endfor %}
         {% endfor %}

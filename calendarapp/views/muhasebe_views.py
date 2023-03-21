@@ -104,32 +104,44 @@ def hesapla_uye_borcu(request, uye_id):
 def borc_hesapla(uye_id, uyenin_haftalik_planlari):
     yil = date.today().year
     ay = date.today().month
-    for plan in uyenin_haftalik_planlari:
-        ucret = UcretTarifesiModel.objects.filter(seviye=plan.top_rengi, abonelik_tipi=AbonelikTipiEnum.Uyelik.name,
-                                                  kisi_sayisi=plan.grup.uye_sayisi()).first().kisi_basi_ucret
-        if plan.antrenor:
-            ucret *= plan.antrenor.ucret_katsayisi
-        kayit = ParaHareketiModel.objects.filter(uye_id=uye_id, abonelik_id=plan.id)
-        if not kayit.exists():
-            aciklama = "Sistem tarafından " + gun_adi_ve_saati_getir(
-                plan.baslangic_tarih_saat) + " aboneliği için otomatik olarak oluşturuldu." + datetime.now().strftime(
-                "%d.%m.%Y %H:%M:%S")
-            ParaHareketiModel.objects.create(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
-                                             ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(yil, ay, 1),
-                                             tutar=ucret, abonelik_id=plan.id, aciklama=aciklama)
-        else:
-            aciklama = "Sistem tarafından " + gun_adi_ve_saati_getir(
-                plan.baslangic_tarih_saat) + " aboneliği için yeniden hesaplandı." + datetime.now().strftime(
-                "%d.%m.%Y %H:%M:%S")
-            kayit.update(tutar=ucret, aciklama=aciklama)
+    uye = UyeModel.objects.filter(pk=uye_id).first()
+    if uyenin_haftalik_planlari.count() > 0:
+        for plan in uyenin_haftalik_planlari:
+            temel_ucret = UcretTarifesiModel.objects.filter(seviye=plan.seviye,
+                                                            abonelik_tipi=AbonelikTipiEnum.Aidat.name,
+                                                            kisi_sayisi=plan.grup.uye_sayisi()).first().kisi_basi_ucret
+            if plan.antrenor:
+                temel_ucret *= plan.antrenor.ucret_katsayisi
+            hesaplanan_ucret = temel_ucret * 4  # haftalık plan için aylık ücret hesaplanıyor.
+            if uye.indirim_orani > 0:
+                indirim = hesaplanan_ucret * uye.indirim_orani / 100
+                aciklama = gun_adi_ve_saati_getir(
+                    plan.baslangic_tarih_saat) + " aidatı. " + str(temel_ucret) + "X4=" + str(
+                    hesaplanan_ucret) + " TL. " + str(uye.indirim_orani) + "% indirim uygulandı."
+                hesaplanan_ucret = hesaplanan_ucret - indirim
+            else:
+                aciklama = gun_adi_ve_saati_getir(
+                    plan.baslangic_tarih_saat) + " aidatı. " + str(temel_ucret) + "X4=" + str(hesaplanan_ucret) + " TL."
+            kayit = ParaHareketiModel.objects.filter(uye_id=uye_id, abonelik_id=plan.id)
+            if not kayit.exists():
+                ParaHareketiModel.objects.create(uye_id=uye_id, hareket_turu=ParaHareketTuruEnum.Borc.name,
+                                                 ucret_turu=UcretTuruEnum.Aidat.value, tarih=date(yil, ay, 1),
+                                                 tutar=hesaplanan_ucret, abonelik_id=plan.id, aciklama=aciklama)
+            else:
+                kayit.update(tutar=hesaplanan_ucret, aciklama=aciklama)
+    else:
+        # Haftalık plandan silinmişse yansıtılan borçların silinmesi gerekiyor
+        ParaHareketiModel.objects.filter(uye_id=uye_id, tarih__year=yil, tarih__month=ay,
+                                         ucret_turu=UcretTuruEnum.Aidat.value,
+                                         hareket_turu=ParaHareketTuruEnum.Borc.name).delete()
 
 
 def planlarin_ucret_bilgisi_var_mi(request, planlar):
     for plan in planlar:
-        if not UcretTarifesiModel.objects.filter(seviye=plan.top_rengi, abonelik_tipi=AbonelikTipiEnum.Uyelik.name,
+        if not UcretTarifesiModel.objects.filter(seviye=plan.seviye, abonelik_tipi=AbonelikTipiEnum.Aidat.name,
                                                  kisi_sayisi=plan.grup.uye_sayisi()).first():
-            mesaj = "Seviye: " + str(plan.top_rengi) + ", Abonelik Tipi: Üyelik, Kişi Sayısı:" + str(
-                plan.grup.uye_sayisi()) + " olan ücret tarifesi bulunamadı. Ücret tarifesini ekledikten sonra tekrar deneyiniz."
+            mesaj = "Ücret tarifesi ekleyiniz. Seviye: " + str(
+                plan.seviye) + ", Abonelik Tipi: Aidat, Kişi Sayısı:" + str(plan.grup.uye_sayisi())
             messages.error(request, mesaj)
             return False
     return True

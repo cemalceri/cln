@@ -55,7 +55,7 @@
                                 if (eklenecekDivs == null || eklenecekDivs.length == 0) {
                                     continue;
                                 } else {
-                                    let bolunme_sayisi = bolunmeSayisiGetir(plan.top_rengi);
+                                    let bolunme_sayisi = bolunmeSayisiGetir(plan.seviye);
                                     for (let t = bolunme_sayisi; t < eklenecekDivs.length; t++) {
                                         //fazla divleri sil
                                         eklenecekDivs[t].remove();
@@ -99,14 +99,14 @@
             return idList;
         }
 
-        function bolunmeSayisiGetir(top_rengi) {
-            if (top_rengi === 'Kirmizi') {
+        function bolunmeSayisiGetir(seviye) {
+            if (seviye === 'Kirmizi') {
                 return 5;
-            } else if (top_rengi === 'Turuncu' | top_rengi === 'Sari' | top_rengi === 'Yesil') {
+            } else if (seviye === 'Turuncu' | seviye === 'Sari' | seviye === 'Yesil') {
                 return 2;
-            } else if (top_rengi === 'Yetiskin') {
+            } else if (seviye === 'Yetiskin') {
                 return 1;
-            } else if (top_rengi === 'TenisOkulu') {
+            } else if (seviye === 'TenisOkulu') {
                 return 6;
             }
         }

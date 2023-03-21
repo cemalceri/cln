@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='etkinlikmodel',
             name='abonelik_tipi',
-            field=models.IntegerField(choices=[(1, 'Paket'), (2, 'Üyelik')], default=2, max_length=20, verbose_name='Abonelik Tipi'),
+            field=models.IntegerField(choices=[(1, 'Paket'), (2, 'Aidat')], default=2, max_length=20, verbose_name='Abonelik Tipi'),
         ),
     ]

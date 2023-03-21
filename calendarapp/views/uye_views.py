@@ -64,15 +64,35 @@ def sil(request, id):
 
 
 @login_required
+def pasife_cevir(request, id):
+    uye = UyeModel.objects.filter(pk=id).first()
+    if uye:
+        uye.aktif_mi = False
+        uye.save()
+    messages.success(request, "İşlem başarılı.")
+    return redirect("calendarapp:index_uye")
+
+@login_required
+def aktife_cevir(request, id):
+    uye = UyeModel.objects.filter(pk=id).first()
+    if uye:
+        uye.aktif_mi = True
+        uye.save()
+    messages.success(request, "İşlem başarılı.")
+    return redirect("calendarapp:index_uye")
+
+@login_required
 def profil(request, id):
     uye = UyeModel.objects.filter(pk=id).first()
     abonelikler = UyeAbonelikModel.objects.filter(uye_id=id)
     paketler = UyePaketModel.objects.filter(uye_id=id)
     gruplar = UyeGrupModel.objects.filter(uye_id=id).values_list('grup_id', flat=True)
-    yapilacak_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar,iptal_mi=False, baslangic_tarih_saat__gt=datetime.now(
-    )).order_by('baslangic_tarih_saat')
-    yapilan_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar,iptal_mi=False, bitis_tarih_saat__lt=datetime.now(
-    )).order_by('-baslangic_tarih_saat')
+    yapilacak_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, iptal_mi=False,
+                                                         baslangic_tarih_saat__gt=datetime.now(
+                                                         )).order_by('baslangic_tarih_saat')
+    yapilan_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, iptal_mi=False,
+                                                       bitis_tarih_saat__lt=datetime.now(
+                                                       )).order_by('-baslangic_tarih_saat')
     iptal_etkinlikler = EtkinlikModel.objects.filter(grup_id__in=gruplar, iptal_mi=True).order_by(
         '-baslangic_tarih_saat')
     return render(request, "calendarapp/uye/profil.html",
@@ -89,7 +109,7 @@ def muhasebe_uye(request, uye_id):
     muhasebe_list = MuhasebeModel.objects.filter(uye_id=uye_id).order_by('yil', 'ay')
     toplam_borc = muhasebe_list.first().toplam_borc if muhasebe_list.first() else 0
     toplam_odeme = muhasebe_list.first().toplam_odeme if muhasebe_list.first() else 0
-    toplam_fark = muhasebe_list.first().toplam_odeme if muhasebe_list.first() else 0
+    toplam_fark = muhasebe_list.first().toplam_fark if muhasebe_list.first() else 0
     contex = {
         "muhasebe_list": muhasebe_list,
         "toplam_borc": toplam_borc,

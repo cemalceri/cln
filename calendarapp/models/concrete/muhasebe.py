@@ -54,12 +54,12 @@ class MuhasebeModel(BaseAbstract):
     def toplam_odeme(self):
         return \
             ParaHareketiModel.objects.filter(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Odeme.name).aggregate(
-                Sum('tutar'))['tutar__sum']
+                Sum('tutar'))['tutar__sum'] or 0
 
     def toplam_borc(self):
         return \
             ParaHareketiModel.objects.filter(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Borc.name).aggregate(
-                Sum('tutar'))['tutar__sum']
+                Sum('tutar'))['tutar__sum'] or 0
 
     def toplam_fark(self):
         return self.toplam_odeme() - self.toplam_borc()

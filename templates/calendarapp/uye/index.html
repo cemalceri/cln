@@ -49,7 +49,8 @@
                                                     <td class="sorting_1">{{ forloop.counter }}</td>
                                                     <td>{{ uye.adi }}</td>
                                                     <td>{{ uye.soyadi }}</td>
-                                                    <td>{% if uye.uye_tipi == 1 %}Yetişkin{% else %}Sporcu{% endif %}</td>
+                                                    <td>{% if uye.uye_tipi == 1 %}Yetişkin{% else %}
+                                                        Sporcu{% endif %}</td>
                                                     <td>{{ uye.telefon | default_if_none:"" }}</td>
                                                     <td>{{ uye.email| default_if_none:"" }}</td>
                                                     <td>
@@ -59,16 +60,14 @@
                                                         <a class="btn btn-info btn-circle" title="Profile Git"
                                                            href="{% url 'calendarapp:profil_uye' uye.id %}">
                                                             <i class="fa fas fa-sitemap" style="color: black"></i></a>
-                                                        <a class="btn btn-success btn-circle"
+                                                        <a class="btn btn-warning btn-circle"
                                                            href="{% url 'calendarapp:muhasebe_uye' uye.id %}"
                                                            title="Ödeme Bilgileri">
                                                             <i class="fa fas fa-money" style="color: black"></i></a>
-                                                        <a href="{% url 'calendarapp:sil_uye' uye.id %}"
-                                                           class=" btn btn-danger btn-circle confirm-delete" title="Sil"
-                                                           data-toggle="modal"
-                                                           data-target="#confirmDeleteModal"
-                                                           id="delete_uye_{{ uye.id }}">
-                                                            <i class="fa fa-trash" style="color: black"></i></a>
+                                                        <a href="{% url 'calendarapp:pasife_cevir_uye' uye.id %}"
+                                                           class=" btn btn-danger btn-circle confirm-delete"
+                                                           title="Pasife Çevir">
+                                                            <i class="fa fa-eye-slash" style="color: black"></i></a>
                                                     </td>
                                                 </tr>
                                             {% endif %}
@@ -125,12 +124,9 @@
                                                         <a class="btn btn-info btn-circle" title="Detayına Git"
                                                            href="{% url 'calendarapp:profil_uye' uye.id %}">
                                                             <i class="fa fas fa-sitemap" style="color: black"></i></a>
-                                                        <a href="{% url 'calendarapp:sil_uye' uye.id %}"
-                                                           class=" btn btn-danger btn-circle confirm-delete" title="Sil"
-                                                           data-toggle="modal"
-                                                           data-target="#confirmDeleteModal"
-                                                           id="delete_uye_{{ uye.id }}">
-                                                            <i class="fa fa-trash" style="color: black"></i></a>
+                                                        <a href="{% url 'calendarapp:aktife_cevir_uye' uye.id %}"
+                                                           class=" btn btn-success btn-circle " title="Aktife Çevir">
+                                                            <i class="fa fa-check-circle-o" style="color: black"></i></a>
                                                     </td>
                                                 </tr>
                                             {% endif %}

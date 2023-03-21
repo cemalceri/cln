@@ -109,7 +109,7 @@ def gunun_etkinlikleri_ajax(request):
             "id": plan.id,
             "grup": plan.grup.adi[0:5],
             "kort_id": plan.kort_id,
-            "top_rengi": plan.top_rengi,
+            "seviye": plan.seviye,
             "renk": plan.antrenor.renk if plan.antrenor else "gray",
             "baslangic_tarih_saat": plan.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M"),
             "bitis_tarih_saat": plan.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M"),
@@ -146,7 +146,7 @@ def gunun_etkinlikleri_ajax_eski(request):
                     "id": etkinlik.id,
                     "sure": int((etkinlik.bitis_tarih_saat - etkinlik.baslangic_tarih_saat).seconds / 60),
                     "renk": etkinlik.antrenor.renk if etkinlik.antrenor else "gray",
-                    "seviye": "(" + etkinlik.top_rengi[0:1].upper() + (")" if etkinlik.top_rengi else "-"),
+                    "seviye": "(" + etkinlik.seviye[0:1].upper() + (")" if etkinlik.seviye else "-"),
                 })
     return JsonResponse(data={"status": "success", "list": list})
 
@@ -201,7 +201,7 @@ def kaydet_etkinlik_ajax(request):
 
 def etkinlik_kaydi_hata_var_mi(form):
     if ayni_saatte_etkinlik_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
-                                     form.data["kort"], form.cleaned_data["top_rengi"],
+                                     form.data["kort"], form.cleaned_data["seviye"],
                                      form.cleaned_data["pk"]) is False:
         mesaj = "Bu saatte kayıtlı olan diğer kayıtlar için bu top rengi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
@@ -218,7 +218,7 @@ def etkinlik_kaydi_hata_var_mi(form):
     return False
 
 
-def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, top_rengi, etkinlik_id=None):
+def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, seviye, etkinlik_id=None):
     planlar = EtkinlikModel.objects.filter(Q(kort_id=kort_id, iptal_mi=False) & (
         # başlangıç saati herhangi bir etkinliğin içinde olan
             Q(baslangic_tarih_saat__lt=baslangic_tarih_saat, bitis_tarih_saat__gt=baslangic_tarih_saat) |
@@ -230,19 +230,19 @@ def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_i
             Q(baslangic_tarih_saat__gte=baslangic_tarih_saat, bitis_tarih_saat__lte=bitis_tarih_saat))).exclude(
         id=etkinlik_id)
     result = True
-    if planlar.filter(top_rengi=SeviyeEnum.Kirmizi).exists() and (
-            top_rengi != SeviyeEnum.Kirmizi.name or top_rengi != SeviyeEnum.TenisOkulu.name):
+    if planlar.filter(seviye=SeviyeEnum.Kirmizi).exists() and (
+            seviye != SeviyeEnum.Kirmizi.name or seviye != SeviyeEnum.TenisOkulu.name):
         result = False
-    if planlar.filter(top_rengi=SeviyeEnum.TenisOkulu).exists() and (
-            top_rengi != SeviyeEnum.Kirmizi.name or top_rengi != SeviyeEnum.Kirmizi.name):
+    if planlar.filter(seviye=SeviyeEnum.TenisOkulu).exists() and (
+            seviye != SeviyeEnum.Kirmizi.name or seviye != SeviyeEnum.Kirmizi.name):
         result = False
-    if top_rengi == SeviyeEnum.Yetiskin.name and planlar.exists():
+    if seviye == SeviyeEnum.Yetiskin.name and planlar.exists():
         result = False
     if ((
-            top_rengi == SeviyeEnum.Turuncu.name or top_rengi == SeviyeEnum.Sari.name or top_rengi == SeviyeEnum.Yesil.name)
-            and (planlar.filter(top_rengi=SeviyeEnum.Kirmizi).exists()
-                 or planlar.filter(top_rengi=SeviyeEnum.TenisOkulu).exists()
-                 or planlar.filter(top_rengi=SeviyeEnum.Yetiskin).exists())):
+            seviye == SeviyeEnum.Turuncu.name or seviye == SeviyeEnum.Sari.name or seviye == SeviyeEnum.Yesil.name)
+            and (planlar.filter(seviye=SeviyeEnum.Kirmizi).exists()
+                 or planlar.filter(seviye=SeviyeEnum.TenisOkulu).exists()
+                 or planlar.filter(seviye=SeviyeEnum.Yetiskin).exists())):
         result = False
     return result
 
@@ -387,7 +387,7 @@ def haftayi_sabit_plandan_olustur_ajax(request):
                                          baslangic_tarih_saat=plan.baslangic_tarih_saat + timedelta(days=gun_farki),
                                          bitis_tarih_saat=plan.bitis_tarih_saat + timedelta(days=gun_farki),
                                          kort=plan.kort,
-                                         antrenor=plan.antrenor, top_rengi=plan.top_rengi, aciklama=plan.aciklama)
+                                         antrenor=plan.antrenor, seviye=plan.seviye, aciklama=plan.aciklama)
     return JsonResponse(data={"status": "success", "message": "İşlem başarılı."})
 
 

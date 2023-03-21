@@ -2,6 +2,7 @@ from django.db import models
 
 from django.conf import settings
 
+from calendarapp.models.Enums import SeviyeEnum
 from calendarapp.models.abstract.base_abstract import BaseAbstract
 from calendarapp.models.concrete.antrenor import AntrenorModel
 from calendarapp.models.concrete.commons import GunlerModel, SaatlerModel
@@ -21,6 +22,8 @@ class RezervasyonModel(BaseAbstract):
     uye = models.ForeignKey(UyeModel, on_delete=models.CASCADE, related_name="rezervasyonlar", verbose_name="Üye",
                             null=True, blank=True)
     misafir = models.CharField(max_length=100, verbose_name="Misafir", null=True, blank=True)
+    seviye = models.CharField('Seviye', max_length=20, choices=SeviyeEnum.choices(), null=False,
+                                    blank=False, default="red")
     onem_derecesi = models.IntegerField('Önem Derecesi', null=True, blank=True, default=0)
     referans = models.CharField('Referans', max_length=100, null=True, blank=True)
     gunler = models.ManyToManyField(GunlerModel, verbose_name='Günler', blank=True, null=True,

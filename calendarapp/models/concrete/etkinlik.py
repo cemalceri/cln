@@ -65,7 +65,7 @@ class EtkinlikModel(BaseAbstract):
                              related_name="kort")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name="anternor")
-    top_rengi = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="Kirmizi", null=False,
+    seviye = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="Kirmizi", null=False,
                                  blank=False, verbose_name="Top Rengi")
     tamamlandi_antrenor = models.BooleanField(default=False, verbose_name="Tamamlandı mı?")
     tamamlandi_yonetici = models.BooleanField(default=False, verbose_name="Tamamlandı mı? (Yönetici)")
@@ -112,7 +112,7 @@ class HaftalikPlanModel(BaseAbstract):
     grup = models.ForeignKey(GrupModel, verbose_name="Katılımcı Grubu", on_delete=models.CASCADE, blank=False,
                              null=False, related_name="haftalikplan_grup_relations")
     abonelik_tipi = models.CharField(max_length=50, choices=AbonelikTipiEnum.haftalik_plan_kaydinda_kullanilacaklar(),
-                                     default=AbonelikTipiEnum.Uyelik, verbose_name="Abonelik Tipi")
+                                     default=AbonelikTipiEnum.Aidat, verbose_name="Abonelik Tipi")
     baslangic_tarih_saat = models.DateTimeField(verbose_name="Başlangıç Tarih Saat", blank=False, null=False)
     bitis_tarih_saat = models.DateTimeField(verbose_name="Bitiş Tarih Saat", blank=False, null=False)
     ders_baslangic_tarihi = models.DateField(verbose_name="İlk Ders Başlangıç Tarihi", blank=True, null=True)
@@ -120,7 +120,7 @@ class HaftalikPlanModel(BaseAbstract):
                              related_name="haftalikplan_kort_relations")
     antrenor = models.ForeignKey(AntrenorModel, verbose_name="Antrenör", on_delete=models.SET_NULL, blank=True,
                                  null=True, related_name="haftalikplan_antrenor_relations")
-    top_rengi = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="gray", null=False, blank=False,
+    seviye = models.CharField(max_length=20, choices=SeviyeEnum.choices(), default="gray", null=False, blank=False,
                                  verbose_name="Top Rengi")
     aciklama = models.CharField(max_length=500, null=True, blank=True, verbose_name="Açıklama")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,

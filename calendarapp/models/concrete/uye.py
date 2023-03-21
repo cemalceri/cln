@@ -29,19 +29,20 @@ class UyeModel(BaseAbstract):
     adi = models.CharField('Adı', max_length=30, null=False, blank=False)
     soyadi = models.CharField('Soyadı', max_length=30, null=False, blank=False)
     kimlik_no = models.CharField("Kimlik No", max_length=11, blank=True, null=True)
-    cinsiyet = models.CharField('Cinsiyet', max_length=10, choices=CinsiyetEnum.choices(), null=True, blank=True)
-    telefon = models.CharField('Telefon', max_length=11, null=True, blank=True)
+    cinsiyet = models.CharField('Cinsiyet', max_length=10, choices=CinsiyetEnum.choices(), null=False, blank=False)
+    telefon = models.CharField('Telefon', max_length=11, null=False, blank=False)
     email = models.EmailField('E-Mail', max_length=50, null=True, blank=True)
     dogum_tarihi = models.DateField('Doğum Tarihi', null=True, blank=True)
     dogum_yeri = models.CharField('Doğum Yeri', max_length=50, null=True, blank=True)
-    adres = models.CharField('Adres', max_length=250, null=True, blank=True)
+    adres = models.CharField('Adres', max_length=250, null=False, blank=False)
     uye_no = models.IntegerField('Üye No', default=uye_no_uret, null=False, blank=False)
-    seviye_rengi = models.CharField("Seviye Rengi", max_length=20, choices=SeviyeEnum.choices(), default="red")
+    seviye_rengi = models.CharField("Seviye", max_length=20, choices=SeviyeEnum.choices(), null=False,
+                                    blank=False, default="red")
     onaylandi_mi = models.BooleanField('Onay Durumu', null=True, blank=True, default=False)
     aktif_mi = models.BooleanField('Aktif mi', null=True, blank=True, default=True)
     uye_tipi = models.SmallIntegerField('Üye Tipi', choices=UyeTipiEnum.choices(), default=UyeTipiEnum.Yetişkin.value,
                                         null=False, blank=False)
-    referansi = models.CharField('Referans', max_length=50, null=True, blank=True)
+    referansi = models.CharField('Referans', max_length=50, null=False, blank=False)
     tenis_gecmisi_var_mi = models.CharField('Tenis Eğitim Geçmişi',
                                             choices=[('Var', 'Var'), ('Yok', 'Yok'), ('Az', 'Az')],
                                             max_length=10, null=True, blank=True)
@@ -53,6 +54,7 @@ class UyeModel(BaseAbstract):
     saatler = models.ManyToManyField(SaatlerModel, verbose_name='Tercih Edilen Saatler', blank=True, null=True,
                                      related_name='saatler_uye_tablosu')
     profil_fotografi = models.ImageField('Profil Fotoğrafı', upload_to='profiles/', null=True, blank=True)
+    indirim_orani = models.IntegerField('İndirim Oranı', null=True, blank=True, default=0)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="uye", null=True,
                              blank=True, verbose_name="Ekleyen")
     # Yetişkin

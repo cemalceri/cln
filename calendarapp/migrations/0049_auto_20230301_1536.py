@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('adi', models.CharField(max_length=50, verbose_name='Adı')),
                 ('seviye', models.CharField(choices=[('Kirmizi', 'Kırmızı'), ('Turuncu', 'Turuncu'), ('Sari', 'Sarı'), ('Yesil', 'Yeşil'), ('Yetiskin', 'Yetişkin'), ('TenisOkulu', 'Tenis Okulu')], max_length=20)),
-                ('abonelik_tipi', models.CharField(choices=[('Uyelik', 'Üyelik'), ('Paket', 'Paket')], max_length=20)),
+                ('abonelik_tipi', models.CharField(choices=[('Aidat', 'Aidat'), ('Paket', 'Paket')], max_length=20)),
                 ('kisi_sayisi', models.SmallIntegerField(verbose_name='Kişi Sayısı')),
                 ('kisi_basi_ucret', models.SmallIntegerField(verbose_name='Kişi Başı Ücret')),
                 ('ders_sayisi', models.SmallIntegerField(blank=True, null=True, verbose_name='Ders Sayısı')),

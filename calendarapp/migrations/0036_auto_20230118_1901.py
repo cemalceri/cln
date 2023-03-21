@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='haftalikplanmodel',
             name='abonelik_tipi',
-            field=models.IntegerField(choices=[('Paket', 'Paket'), ('Üyelik', 'Uyelik'), ('Telafi', 'Telafi'), ('Demo', 'Demo'), ('Tek Ders', 'TekDers'), ('Diğer', 'Diger')], default=2, verbose_name='Abonelik Tipi'),
+            field=models.IntegerField(choices=[('Paket', 'Paket'), ('Aidat', 'Aidat'), ('Telafi', 'Telafi'), ('Demo', 'Demo'), ('Tek Ders', 'TekDers'), ('Diğer', 'Diger')], default=2, verbose_name='Abonelik Tipi'),
         ),
     ]
