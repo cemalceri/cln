@@ -102,7 +102,7 @@ def gunun_planlari_ajax(request):
             "id": plan.id,
             "grup": plan.grup.adi[0:5],
             "kort_id": plan.kort_id,
-            "top_rengi": plan.top_rengi,
+            "seviye": plan.seviye,
             "renk": plan.antrenor.renk if plan.antrenor else "gray",
             "baslangic_tarih_saat": plan.baslangic_tarih_saat.strftime("%Y-%m-%dT%H:%M"),
             "bitis_tarih_saat": plan.bitis_tarih_saat.strftime("%Y-%m-%dT%H:%M"),
@@ -223,7 +223,7 @@ def plan_kaydi_icin_hata_var_mi(form):
         mesaj = "Başlangıç ve bitiş saati 30 dakikanın katları olmalıdır."
         return JsonResponse(data={"status": "error", "message": mesaj})
     if ayni_saatte_plan_uygun_mu(form.cleaned_data["baslangic_tarih_saat"], form.cleaned_data["bitis_tarih_saat"],
-                                 form.data["kort"], form.cleaned_data["top_rengi"], form.cleaned_data["pk"]) is False:
+                                 form.data["kort"], form.cleaned_data["seviye"], form.cleaned_data["pk"]) is False:
         mesaj = "Bu saatte kayıtlı olan diğer kayıtlar için bu top rengi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
     uyelik_var_mi = grup_uyesinin_bu_saatte_plan_var_mi(form.cleaned_data["pk"],
@@ -314,7 +314,7 @@ def haftalik_plani_takvimde_guncelle(plan):
                                          baslangic_tarih_saat=plan.baslangic_tarih_saat,
                                          bitis_tarih_saat=plan.bitis_tarih_saat, kort=plan.kort,
                                          antrenor=plan.antrenor,
-                                         top_rengi=plan.top_rengi, aciklama=plan.aciklama)
+                                         seviye=plan.seviye, aciklama=plan.aciklama)
     else:  # Haftalık plana bağlı etkinli varsa güncelle
         plan_haftanin_gunu = plan.baslangic_tarih_saat.weekday()
         for etkinlik in haftalik_plana_bagli_etkinlikler:
@@ -334,12 +334,12 @@ def haftalik_plani_takvimde_guncelle(plan):
                 etkinlik.baslangic_tarih_saat = yeni_baslangic_tarih_saat
                 etkinlik.bitis_tarih_saat = yeni_bitis_tarih_saat
                 etkinlik.antrenor = plan.antrenor
-                etkinlik.top_rengi = plan.top_rengi
+                etkinlik.seviye = plan.seviye
                 etkinlik.aciklama = plan.aciklama
                 etkinlik.save()
 
 
-def ayni_saatte_plan_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, top_rengi, plan_id=None):
+def ayni_saatte_plan_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, seviye, plan_id=None):
     planlar = HaftalikPlanModel.objects.filter(Q(kort_id=kort_id) & (
         # başlangıç saati herhangi bir etkinliğin içinde olan
             Q(baslangic_tarih_saat__lt=baslangic_tarih_saat, bitis_tarih_saat__gt=baslangic_tarih_saat) |
@@ -351,19 +351,19 @@ def ayni_saatte_plan_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, t
             Q(baslangic_tarih_saat__gte=baslangic_tarih_saat, bitis_tarih_saat__lte=bitis_tarih_saat))).exclude(
         id=plan_id)
     result = True
-    if planlar.filter(top_rengi=SeviyeEnum.Kirmizi).exists() and (
-            top_rengi != SeviyeEnum.Kirmizi.name or top_rengi != SeviyeEnum.TenisOkulu.name):
+    if planlar.filter(seviye=SeviyeEnum.Kirmizi).exists() and (
+            seviye != SeviyeEnum.Kirmizi.name or seviye != SeviyeEnum.TenisOkulu.name):
         result = False
-    if planlar.filter(top_rengi=SeviyeEnum.TenisOkulu).exists() and (
-            top_rengi != SeviyeEnum.Kirmizi.name or top_rengi != SeviyeEnum.Kirmizi.name):
+    if planlar.filter(seviye=SeviyeEnum.TenisOkulu).exists() and (
+            seviye != SeviyeEnum.Kirmizi.name or seviye != SeviyeEnum.Kirmizi.name):
         result = False
-    if top_rengi == SeviyeEnum.Yetiskin.name and planlar.exists():
+    if seviye == SeviyeEnum.Yetiskin.name and planlar.exists():
         result = False
     if ((
-            top_rengi == SeviyeEnum.Turuncu.name or top_rengi == SeviyeEnum.Sari.name or top_rengi == SeviyeEnum.Yesil.name)
-            and (planlar.filter(top_rengi=SeviyeEnum.Kirmizi).exists()
-                 or planlar.filter(top_rengi=SeviyeEnum.TenisOkulu).exists()
-                 or planlar.filter(top_rengi=SeviyeEnum.Yetiskin).exists())):
+            seviye == SeviyeEnum.Turuncu.name or seviye == SeviyeEnum.Sari.name or seviye == SeviyeEnum.Yesil.name)
+            and (planlar.filter(seviye=SeviyeEnum.Kirmizi).exists()
+                 or planlar.filter(seviye=SeviyeEnum.TenisOkulu).exists()
+                 or planlar.filter(seviye=SeviyeEnum.Yetiskin).exists())):
         result = False
     return result
 
@@ -398,12 +398,12 @@ def haftalik_plan_yeni_haftaya_tasindi_kontrolu():
 def ornek_veri_olustur():
     gun = datetime.now() - timedelta(days=datetime.now().weekday()),
     for t in range(0, 7):
-        for i in range(9, 23):
+        for i in range(8, 24):
             for kort in KortModel.objects.all():
                 baslangic_tarih_saat = datetime(gun[0].year, gun[0].month, gun[0].day, i, 0, 0)
                 bitis_tarih_saat = datetime(gun[0].year, gun[0].month, gun[0].day, i + 1, 0, 0)
-                HaftalikPlanModel.objects.create(abonelik_tipi="Uyelik", top_rengi="Kirmizi", antrenor_id=1, grup_id=7,
-                                                 kort_id=kort.id,
-                                                 user_id=1, baslangic_tarih_saat=baslangic_tarih_saat,
+                HaftalikPlanModel.objects.create(abonelik_tipi="Aidat", seviye="Kirmizi", antrenor_id=1,
+                                                 grup_id=UyeGrupModel.objects.first(), kort_id=kort.id, user_id=1,
+                                                 baslangic_tarih_saat=baslangic_tarih_saat,
                                                  bitis_tarih_saat=bitis_tarih_saat, aciklama="Test")
         gun = (gun[0] + timedelta(days=1),)

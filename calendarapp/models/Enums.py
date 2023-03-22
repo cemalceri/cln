@@ -58,7 +58,6 @@ class AbonelikTipiEnum(Enum):
     Telafi = "Telafi"
     Demo = "Demo"
     TekDers = "Tek Ders"
-    Diger = "Diğer"
 
     @classmethod
     def choices(cls):

@@ -15,6 +15,7 @@ from calendarapp.models.concrete.etkinlik import EtkinlikModel, HaftalikPlanMode
 from django.contrib import messages
 
 from calendarapp.models.concrete.kort import KortModel
+from calendarapp.models.concrete.muhasebe import UcretTarifesiModel
 from calendarapp.models.concrete.rezervasyon import RezervasyonModel
 from calendarapp.models.concrete.telafi_ders import TelafiDersModel
 from calendarapp.models.concrete.uye import UyeGrupModel
@@ -168,6 +169,7 @@ def sil_etkinlik_ajax(request):
         EtkinlikModel.objects.filter(haftalik_plan_kodu=etkinlik.haftalik_plan_kodu, iptal_mi=False,
                                      baslangic_tarih_saat__gte=etkinlik.baslangic_tarih_saat).delete()
     etkinlik.delete()
+    UyePaketModel.objects.filter(etkinlik_id=id).delete()
     return JsonResponse({"status": "success", "message": "Etkinlik silindi."})
 
 
@@ -189,11 +191,12 @@ def kaydet_etkinlik_ajax(request):
         if form.cleaned_data["pk"] and form.cleaned_data["pk"] > 0:
             eski_etkinlik = EtkinlikModel.objects.get(id=form.cleaned_data["pk"])
             form = EtkinlikForm(data=request.GET, instance=eski_etkinlik)
-            form.save()
+            item = form.save()
         else:
             item = form.save(commit=False)
             item.user = request.user
             item.save()
+        uyelere_paket_ekle_veya_guncelle(item)
         return JsonResponse(data={"status": "success", "message": "Etkinlik kaydedildi."})
     else:
         return JsonResponse(data={"status": "error", "message": formErrorsToText(form.errors, EtkinlikModel)})
@@ -205,17 +208,52 @@ def etkinlik_kaydi_hata_var_mi(form):
                                      form.cleaned_data["pk"]) is False:
         mesaj = "Bu saatte kayıtlı olan diğer kayıtlar için bu top rengi uygun değil."
         return JsonResponse(data={"status": "error", "message": mesaj})
-    if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Demo.name or form.cleaned_data["abonelik_tipi"] == \
-            AbonelikTipiEnum.TekDers.name:
-        paketi_olmayan_grup_uyeleri = paketi_olmayan_grup_uyeleri_getir(form)
-        if paketi_olmayan_grup_uyeleri:
-            mesaj = paketi_olmayan_grup_uyeleri + " üye/üyeleri bu ders tipi için paket almamış. Paket kaydı yapınız."
-            return JsonResponse(data={"status": "error", "message": mesaj})
     telafi_dersi_olmayan_grup = telafi_dersi_grup_uyeleri_getir(form)
     if form.cleaned_data["abonelik_tipi"] == AbonelikTipiEnum.Telafi.name and telafi_dersi_olmayan_grup:
         mesaj = telafi_dersi_olmayan_grup + " üye/üyelerinin telafi hakkı bulunmamaktadır."
         return JsonResponse(data={"status": "error", "message": mesaj})
-    return False
+    if ucret_tarifesi_var_mi(form.cleaned_data["seviye"], form.cleaned_data["abonelik_tipi"],
+                             form.data["grup"]) is False:
+        mesaj = "Lütfen ücret tarifesi menüsünden ücret bilgisini ekleyiniz."
+        return JsonResponse(data={"status": "error", "message": mesaj})
+
+
+def ucret_tarifesi_var_mi(seviye, abonelik_tipi, grup_id):
+    if abonelik_tipi == AbonelikTipiEnum.Telafi.name:
+        return True
+    kisi_sayisi = UyeGrupModel.objects.filter(grup_id=grup_id).count()
+    tarife = UcretTarifesiModel.objects.filter(seviye=seviye, abonelik_tipi=abonelik_tipi,
+                                               kisi_sayisi=kisi_sayisi)
+    return tarife.exists()
+
+
+def uyelere_paket_ekle_veya_guncelle(etkinlik):
+    uye_grubu = UyeGrupModel.objects.filter(grup_id=etkinlik.grup_id)
+    ucret_tarifesi = UcretTarifesiModel.objects.filter(seviye=etkinlik.seviye,
+                                                       abonelik_tipi=etkinlik.abonelik_tipi,
+                                                       kisi_sayisi=uye_grubu.count()).first()
+    if ucret_tarifesi:
+        grup_mu = True if uye_grubu.count() > 1 else False
+        for item in uye_grubu:
+            paket = UyePaketModel.objects.filter(uye=item.uye, etkinlik_id=etkinlik.id)
+            if not paket.exists():
+                UyePaketModel.objects.create(ucret_tarifesi=ucret_tarifesi, uye=item.uye, grup_mu=grup_mu,
+                                             baslangic_tarih=etkinlik.baslangic_tarih_saat.date(),
+                                             bitis_tarih=etkinlik.bitis_tarih_saat.date(),
+                                             adet=1, etkinlik_id=etkinlik.id)
+            else:
+                paket = paket.first()
+                paket.ucret_tarifesi = ucret_tarifesi
+                paket.uye = item.uye
+                paket.grup_mu = grup_mu
+                paket.baslangic_tarih = etkinlik.baslangic_tarih_saat.date()
+                paket.bitis_tarih = etkinlik.bitis_tarih_saat.date()
+                paket.adet = 1
+                paket.aktif_mi = True
+                paket.save()
+    else: # ücret tarifesi yoksa telefi ders olarak güncellenmiştir. Çünkü kayıt öncesinde ücret tarifesi olup olmadığı kontrol edilmiştir.
+        UyePaketModel.objects.filter(etkinlik_id=etkinlik.id).delete()
+
 
 
 def ayni_saatte_etkinlik_uygun_mu(baslangic_tarih_saat, bitis_tarih_saat, kort_id, seviye, etkinlik_id=None):
@@ -306,7 +344,6 @@ def etkinlik_tamamlandi_ajax(request):
         for item in uye_grup:
             paket = UyePaketModel.objects.filter(uye_id=item.uye_id, aktif_mi=True, grup_mu=grup_mu,
                                                  ucret_tarifesi__abonelik_tipi=etkinlik.abonelik_tipi).first()
-            print(paket)
             if paket and not PaketKullanimModel.objects.filter(uye_paket_id=paket.id, etkinlik_id=etkinlik.id,
                                                                uye_id=item.uye_id).exists():
                 PaketKullanimModel.objects.create(uye_paket_id=paket.id, etkinlik_id=etkinlik.id,

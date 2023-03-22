@@ -10,7 +10,7 @@ class UyePaketKayitForm(ModelForm):
     class Meta:
         model = UyePaketModel
         fields = '__all__'
-        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'adet']
+        exclude = ['created_at', 'is_active', 'is_deleted', 'updated_at', 'user', 'adet', 'etkinlik_id']
         widgets = {
             "baslangic_tarih": DateInput(
                 attrs={"type": "date", "class": "form-control"},

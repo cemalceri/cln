@@ -11,7 +11,7 @@ class EtkinlikForm(ModelForm):
         fields = '__all__'
         exclude = ['tamamlandi_uye', 'tamamlandi_antrenor', 'tamamlandi_yonetici', 'ilk_etkinlik_id',
                    'haftalik_plan_kodu', 'iptal_mi', 'iptal_eden', 'iptal_tarih_saat', 'created_at',
-                   'is_active', 'is_deleted', 'updated_at', 'user']
+                   'is_active', 'is_deleted', 'updated_at', 'user', 'paket_id']
         # datetime-local is a HTML5 input type
         widgets = {
             "baslangic_tarih_saat": DateInput(

@@ -48,6 +48,7 @@ class UyePaketModel(BaseAbstract):
                                        null=False)
     ozellikler = models.TextField(max_length=500, verbose_name="Özellikler", null=True, blank=True)
     aktif_mi = models.BooleanField(default=True)
+    etkinlik_id = models.IntegerField(verbose_name="Etkinlik ID", null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
                              related_name="uyepaket_relations", null=True, blank=True, verbose_name="Ekleyen")
 
@@ -72,20 +73,20 @@ class UyePaketModel(BaseAbstract):
         self.adet = self.ucret_tarifesi.ders_sayisi
         super(UyePaketModel, self).save(*args, **kwargs)
         para_hareketi = ParaHareketiModel.objects.filter(paket_id=self.id).first()
+        aciklama = str(self.ucret_tarifesi.adi) + ", paketi. 1X" + str(self.ucret_tarifesi.kisi_basi_ucret) + "=" + str(
+            self.ucret_tarifesi.kisi_basi_ucret) + " TL"
         if self.id and para_hareketi:
             para_hareketi.paket_id = self.id
             para_hareketi.tutar = self.ucret_tarifesi.kisi_basi_ucret
             para_hareketi.tarih = datetime.now().date()
-            para_hareketi.aciklama = "Sistem tarafından '" + self.ucret_tarifesi.adi + "' paketi güncelleme işleminde eklendi. " + datetime.now().strftime(
-                "%d.%m.%Y %H:%M:%S")
+            para_hareketi.aciklama = aciklama
             para_hareketi.save()
         else:
             ParaHareketiModel.objects.create(uye_id=self.uye.id, hareket_turu=ParaHareketTuruEnum.Borc.name,
                                              ucret_turu=UcretTuruEnum.Paket.name, paket_id=self.id,
                                              tutar=self.ucret_tarifesi.kisi_basi_ucret,
                                              tarih=datetime.now().date(),
-                                             aciklama="Sistem tarafından '" + self.ucret_tarifesi.adi + "' paketi kaydında otomatik olarak oluşturuldu. " + datetime.now().strftime(
-                                                 "%d.%m.%Y %H:%M:%S"))
+                                             aciklama=aciklama)
 
     def delete(self, *args, **kwargs):
         ParaHareketiModel.objects.filter(paket_id=self.id).delete()

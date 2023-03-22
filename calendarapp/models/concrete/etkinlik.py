@@ -103,6 +103,7 @@ class EtkinlikModel(BaseAbstract):
         return f'<a href="{url}"> {self.baslik} </a>'
 
 
+
 def generate_uuid():
     return uuid.uuid4()
 
